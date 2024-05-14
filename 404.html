@@ -4,96 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 Error - Braeden Silver's Portfolio</title>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            color: #FFFFFF;
-            background-color: #0611E5;
-        }
-        header {
-            background-color: #090FBF;
-            padding: 20px 0;
-            color: #FFFFFF;
-            text-align: center;
-        }
-        header h1 a {
-            color: inherit;
-            text-decoration: none;
-        }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin: 0 20px;
-        }
-        nav ul li a {
-            color: #FFFFFF;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        nav ul li a:hover {
-            color: #05F5DA;
-        }
-        main {
-            flex: 1;
-            padding: 50px 20px;
-            text-align: center;
-            min-height: calc(100vh - 160px);
-        }
-        .error-content h2, .error-content p {
-            margin: 20px 0;
-        }
-        .error-image img {
-            max-width: 200px;
-            margin: 20px 0;
-        }
-        .back-to-home {
-            padding: 10px 25px;
-            background-color: #05F5DA; /* Complimentary Color */
-            color: #0611E5; /* Primary Color */
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .back-to-home:hover {
-            background-color: #090FBF; /* Secondary Color */
-            color: #FFFFFF;
-        }
-        footer {
-            background-color: #1B1B1B;
-            color: #FFFFFF;
-            text-align: center;
-            padding: 20px;
-        }
-        footer a {
-            color: #05F5DA;
-            text-decoration: none;
-        }
-        footer a:hover {
-            color: #FFFFFF;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <h1><a href="index.html">Braeden Silver</a></h1>
         <nav>
             <ul>
-                <li><a href="#about">About Me</a></li>
-                <li><a href="#photos">Photos</a></li>
-                <li><a href="#sourceengine">Source Engine</a></li>
-                <li><a href="#games">Games</a></li>
+                <li><a href="index.html#about">About Me</a></li>
+                <li><a href="index.html#photos">Photos</a></li>
+                <li><a href="index.html#sourceengine">Source Engine</a></li>
+                <li><a href="index.html#games">Games</a></li>
                 <li><a href="https://github.com/shidlywits" target="_blank">GitHub</a></li>
             </ul>
         </nav>
@@ -103,9 +24,9 @@
             <h2>404 Error: Page Not Found</h2>
             <p>Oops! The page you're looking for doesn't exist, has been removed, or is temporarily unavailable.</p>
             <div class="error-image">
-                <img src="img/full/troll-face.png" alt="Troll Face Meme" />
+                <img src="img/full/troll-face.png" alt="Troll Face Meme" class="responsive-image">
             </div>
-            <button onclick="window.location.href='index.html';" class="back-to-home">Go Back to Homepage</button>
+            <button onclick="window.location.href='index.html';" class="button">Go Back to Homepage</button>
         </div>
     </main>
     <footer>
