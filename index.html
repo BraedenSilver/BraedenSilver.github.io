@@ -4,9 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Braeden Silver's Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
     <meta name="description" content="Braeden Silver's portfolio showcasing game development and photography projects.">
     <meta name="keywords" content="Braeden Silver, portfolio, game development, photography, Source Engine, games">
+    <meta name="author" content="Braeden Silver">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #FFFFFF;
+            background-color: #0611E5;
+        }
+        header {
+            background-color: #090FBF;
+            padding: 20px 0;
+            color: #FFFFFF;
+            text-align: center;
+        }
+        header h1 a {
+            color: inherit;
+            text-decoration: none;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 20px;
+        }
+        nav ul li a {
+            color: #FFFFFF;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #05F5DA;
+        }
+        section {
+            padding: 50px 20px;
+            margin: 20px 0;
+            transition: background-color 0.3s ease;
+        }
+        section:nth-child(even) {
+            background-color: #080E9F;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .photo-grid a img {
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+        .photo-grid a:hover img {
+            transform: scale(1.05);
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 1rem;
+            background-color: #05F5DA;
+            color: #0611E5;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .button:hover {
+            background-color: #090FBF;
+            color: #FFFFFF;
+        }
+        .responsive-image {
+            width: 100%;
+            max-width: 300px;
+        }
+        footer {
+            background-color: #1B1B1B;
+            color: #FFFFFF;
+            text-align: center;
+            padding: 20px;
+        }
+        footer a {
+            color: #05F5DA;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #FFFFFF;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -30,12 +117,12 @@
         <section id="photos">
             <h2>Photography</h2>
             <div class="photo-grid">
-                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto1.jpeg" alt="thumbphoto1"></a>
-                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto2.jpeg" alt="thumbphoto2"></a>
-                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto3.jpeg" alt="thumbphoto3"></a>
-                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto4.jpeg" alt="thumbphoto4"></a>
-                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto5.jpeg" alt="thumbphoto5"></a>
-                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto6.jpeg" alt="thumbphoto6"></a>
+                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto1.jpeg" alt="Photography thumbnail 1"></a>
+                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto2.jpeg" alt="Photography thumbnail 2"></a>
+                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto3.jpeg" alt="Photography thumbnail 3"></a>
+                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto4.jpeg" alt="Photography thumbnail 4"></a>
+                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto5.jpeg" alt="Photography thumbnail 5"></a>
+                <a href="https://braedensilver.com/content/photography"><img src="img/thumb/photography/thumbphoto6.jpeg" alt="Photography thumbnail 6"></a>
             </div>
         </section>
 
