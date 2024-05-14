@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photography Portfolio - Braeden Silver</title>
+    <meta name="description" content="Braeden Silver's photography portfolio with various categories.">
+    <meta name="keywords" content="Braeden Silver, photography, portfolio, categories, macro, black and white, landscape, animals">
+    <meta name="author" content="Braeden Silver">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #FFFFFF;
+            background-color: #0611E5;
+        }
+        header {
+            background-color: #090FBF;
+            padding: 20px 0;
+            color: #FFFFFF;
+            text-align: center;
+        }
+        header h1 a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .category-item {
+            position: relative;
+            overflow: hidden;
+        }
+        .category-item img {
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+        .category-item:hover img {
+            transform: scale(1.1);
+        }
+        .category-item .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .category-item:hover .overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="/index.html">Braeden Silver's Photography</a></h1>
+    </header>
+    <main>
+        <div class="category-grid">
+            <div class="category-item">
+                <a href="macro.html">
+                    <img src="img/thumb/photography/thumbphoto1.jpeg" alt="Macro Photography">
+                    <div class="overlay">Macro</div>
+                </a>
+            </div>
+            <div class="category-item">
+                <a href="blackandwhite.html">
+                    <img src="img/thumb/photography/thumbphoto5.jpeg" alt="Black and White Photography">
+                    <div class="overlay">Black and White</div>
+                </a>
+            </div>
+            <div class="category-item">
+                <a href="landscape.html">
+                    <img src="img/thumb/photography/thumbphoto3.jpeg" alt="Landscape Photography">
+                    <div class="overlay">Landscape</div>
+                </a>
+            </div>
+            <div class="category-item">
+                <a href="animals.html">
+                    <img src="img/thumb/photography/animals.jpg" alt="Animal Photography">
+                    <div class="overlay">Animals</div>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
