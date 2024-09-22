@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Welcome to Braeden Silver&#39;s Website on Braeden Silver - Portfolio and Blog</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content in Welcome to Braeden Silver&#39;s Website on Braeden Silver - Portfolio and Blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 18 Sep 2024 00:01:00 -0500</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Macro Photography: A Beginner&#39;s Guide to Gear, Focus Stacking, and Techniques</title>
+      <link>http://localhost:1313/blog/what-is-macro/</link>
+      <pubDate>Wed, 18 Sep 2024 00:01:00 -0500</pubDate>
+      <guid>http://localhost:1313/blog/what-is-macro/</guid>
+      <description>Macro Photography: A Beginner&amp;rsquo;s Guide to Gear, Focus Stacking, and Techniques Macro photography is the art of capturing the tiny, often-overlooked details of the world around us. From the intricate textures of a dragonfly’s wing to the fine details of everyday objects, macro photography allows you to see the world up close like never before. In this guide, we&amp;rsquo;ll cover macro photography basics, essential gear recommendations, lighting setups, focus stacking software, lens suggestions, and popular genres to help you get started on your macro journey.</description>
+    </item>
+    <item>
+      <title>Welcome to My Blog</title>
+      <link>http://localhost:1313/blog/first-blog/</link>
+      <pubDate>Sun, 15 Sep 2024 00:01:00 -0500</pubDate>
+      <guid>http://localhost:1313/blog/first-blog/</guid>
+      <description>Welcome to My Blog! Hey, I’m Braeden. I’m into macro and black-and-white photography, and I’m all about blending art, tech, and business. This blog will cover everything I’m passionate about, from photography techniques and gear reviews to engineering projects, business tips, and practical tutorials. I’m currently a business student with a lot of other interests.&#xA;What to Expect Here’s what I’ll be sharing:&#xA;Photography: Especially macro and black-and-white shots. Macro is my favorite type of photography because it lets me see things on a micro-scale that our eyes usually miss.</description>
+    </item>
+    <item>
+      <title>Image Gallery</title>
+      <link>http://localhost:1313/gallery/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/gallery/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>
