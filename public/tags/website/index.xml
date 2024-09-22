@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Website on Braeden Silver</title>
+    <link>http://localhost:1313/tags/website/</link>
+    <description>Recent content in Website on Braeden Silver</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 09 Sep 2024 12:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/website/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>My First Blog Post</title>
+      <link>http://localhost:1313/blog/first-post/</link>
+      <pubDate>Mon, 09 Sep 2024 12:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blog/first-post/</guid>
+      <description>Welcome to My Blog! This is the very first post on my website, and I’m excited to share my journey with you. This blog will be a space where I talk about my interests, projects, and the things that inspire me.&#xA;I’ve always had a passion for creativity, whether it’s through photography, design, or building something from scratch. Recently, I built this website using Hugo and hosted it on GitHub Pages.</description>
+    </item>
+  </channel>
+</rss>
