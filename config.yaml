@@ -125,7 +125,7 @@ params:
     items:
       - title: "Personal Website"
         content: This website was built using Hugo and hosted on GitHub Pages. It showcases my photography, blog, and creative projects.
-        image: /images/projects/Website.jpg
+        image: /images/projects/website.jpg
         featured:
           name: "Github Repo"
           link: https://github.com/BraedenSilver/BraedenSilver.github.io
