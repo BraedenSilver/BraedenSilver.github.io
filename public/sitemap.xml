@@ -3,31 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/blog/</loc>
-    <lastmod>2024-09-18T00:01:00-05:00</lastmod>
+    <lastmod>2024-09-25T00:01:00-05:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/blog/focus-stacking-tutorial/</loc>
+    <lastmod>2024-09-25T00:01:00-05:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>http://localhost:1313/tags/macro-photography/</loc>
-    <lastmod>2024-09-18T00:01:00-05:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>http://localhost:1313/blog/what-is-macro/</loc>
-    <lastmod>2024-09-18T00:01:00-05:00</lastmod>
+    <lastmod>2024-09-25T00:01:00-05:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>http://localhost:1313/tags/photography/</loc>
-    <lastmod>2024-09-18T00:01:00-05:00</lastmod>
+    <lastmod>2024-09-25T00:01:00-05:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2024-09-18T00:01:00-05:00</lastmod>
+    <lastmod>2024-09-25T00:01:00-05:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>http://localhost:1313/</loc>
+    <lastmod>2024-09-25T00:01:00-05:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/blog/what-is-macro/</loc>
     <lastmod>2024-09-18T00:01:00-05:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
