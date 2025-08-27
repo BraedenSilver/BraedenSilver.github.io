@@ -18,18 +18,26 @@
    __/ (  | (  |
   /__.-'|_|--|_|
 </pre>
-  <p>
+<p>
   You have failed to load a page 
-  <span id="fail-count">0</span> times.
-  <p><a href="/index.html">Return to Home</a></p>
+  <span id="fail-count">0</span> 
+  <span id="fail-suffix">times</span>.
+  <span id="snark"></span>
 </p>
 
 <script>
   const failKey = "failCount";
   let fails = Number(localStorage.getItem(failKey) || 0) + 1;
   localStorage.setItem(failKey, fails);
+
   document.getElementById("fail-count").textContent = fails;
+  document.getElementById("fail-suffix").textContent = fails === 1 ? "time" : "times";
+
+  if (fails > 1) {
+    document.getElementById("snark").textContent = " ...and yet you keep trying.";
+  }
 </script>
+
 
 </main>
 <div id="site-footer"></div>
