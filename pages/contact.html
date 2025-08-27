@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Contact — Braeden Silver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main>
+  <h2>Contact</h2>
+
+  <!-- Where the email link will be injected -->
+  <address id="contact-email">
+    <noscript>
+      Email: contact [at] braedensilver [dot] com
+      <!-- No-JS fallback: human-friendly, bot-unfriendly -->
+    </noscript>
+  </address>
+
+  <p>Elsewhere:
+    <a href="https://github.com/yourhandle">GitHub</a> ·
+    <a href="https://www.linkedin.com/in/yourhandle/">LinkedIn</a>
+  </p>
+</main>
+
+<div id="site-footer"></div>
+
+<!-- Shared loader: pulls in header/footer and sets Last updated -->
+<script src="/js/site.js" defer></script>
+
+<!-- Obfuscated email builder (runs after DOMContentLoaded as well) -->
+<script>
+  // Build the email without ever writing it in the HTML source
+  (function () {
+    const u = "contact";
+    const d = "braedensilver";
+    const t = "com";
+    const addr = u + "@" + d + "." + t;
+
+    const a = document.createElement("a");
+    a.href = "mailto:" + addr;
+    a.textContent = addr;
+
+    const slot = document.getElementById("contact-email");
+    if (slot) {
+      // Clear the <noscript> fallback (if any) and inject the link
+      slot.textContent = "";
+      slot.appendChild(a);
+    }
+  })();
+</script>
+
+</body>
+</html>
