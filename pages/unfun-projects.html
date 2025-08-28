@@ -7,34 +7,41 @@
 </head>
 <body>
 
-<header>
-  <h1><a href="/">Braeden Silver</a></h1>
-  <nav>
-    <a href="/index.html">Home</a> ·
-    <a href="/pages/fun-projects.html">Fun Projects</a> ·
-    <a href="/pages/unfun-projects.html">Unfun Projects</a> ·
-    <a href="/pages/research.html">Research</a> ·
-    <a href="/pages/contact.html">Contact</a> ·
-    <a href="/CV.pdf">CV</a>
-  </nav>
-</header>
-<hr>
+<div id="site-header"></div>
 
 <main>
   <h2>Unfun Projects</h2>
-  <p>Still valuable, but more “homework/obligation” energy.</p>
-    <ul>
-      <li>
-        <strong>Website Philosophy</strong> —
-        <a href="/pages/unfun-projects/philosophy.html">why this site is so barebones</a>.
-      </li>
 
-    </ul>
+  <div style="margin-bottom: 1em;">
+    <img src="/assets/brain-gear.gif" alt="Makes you think huh?">
+  </div>
+
+  <p>Still valuable, but more “homework/obligation” energy.</p>
+  <div class="project-entry">
+    <img src="/assets/arrowright.gif" alt="<<" class="arrow">
+    <span>
+      <strong>Website Philosophy</strong> — 
+      <a href="/pages/unfun-projects/philosophy.html">why this site is so barebones</a>.
+    </span>
+    <img src="/assets/arrowleft.gif" alt=">>" class="arrow">
+  </div>
 </main>
 
-<hr>
-<footer>
-  <small>&copy; 2024 Braeden Silver</small>
-</footer>
+<style>
+.project-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.project-entry .arrow {
+  width: 48px;
+  height: auto;
+}
+</style>
+
+<div id="site-footer"></div>
+<script src="/js/site.js" defer></script>
 </body>
 </html>

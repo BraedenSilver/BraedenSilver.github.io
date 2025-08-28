@@ -1,12 +1,64 @@
-<header>
-  <h1><a href="/">Braeden Silver</a></h1>
+<header class="ascii-header">
+  <h1>
+    <a href="/" class="ascii-logo-wrap" aria-label="Braeden Silver — Home">
+      <pre id="ascii-logo" aria-hidden="true">
+██████╗ ██████╗  █████╗ ███████╗██████╗ ███████╗███╗   ██╗    ███████╗██╗██╗    ██╗   ██╗███████╗██████╗ 
+██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║    ██╔════╝██║██║    ██║   ██║██╔════╝██╔══██╗
+██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║    ███████╗██║██║    ██║   ██║█████╗  ██████╔╝
+██╔══██╗██╔══██╗██╔══██║██╔══╝  ██║  ██║██╔══╝  ██║╚██╗██║    ╚════██║██║██║    ╚██╗ ██╔╝██╔══╝  ██╔══██╗
+██████╔╝██║  ██║██║  ██║███████╗██████╔╝███████╗██║ ╚████║    ███████║██║███████╗╚████╔╝ ███████╗██║  ██║
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝    ╚══════╝╚═╝╚══════╝ ╚═══╝  ╚══════╝╚═╝  ╚═╝
+      </pre>
+    </a>
+  </h1>
+
   <nav>
     <a href="/index.html">Home</a> ·
     <a href="/pages/fun-projects.html">Fun Projects</a> ·
     <a href="/pages/unfun-projects.html">Unfun Projects</a> ·
     <a href="/pages/research.html">Research</a> ·
     <a href="/pages/contact.html">Contact</a> ·
-    <a href="/CV.pdf">CV</a>
+    <a href="/CV.pdf" target="_blank" rel="noopener noreferrer">CV</a>
   </nav>
 </header>
 <hr>
+
+<style>
+  .ascii-header {
+    text-align: left;
+  }
+  .ascii-logo-wrap {
+    display: inline-block;
+    max-width: min(95vw, 1100px);
+    line-height: 1;
+  }
+  #ascii-logo {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    white-space: pre;
+    margin: 1em 0;
+    display: inline-block;
+    transform-origin: left center;
+    font-size: 12px;
+    color: #000000:
+  }
+</style>
+
+<script>
+  // Auto-fit ASCII to container width
+  (function () {
+    const pre = document.getElementById('ascii-logo');
+    const wrap = document.querySelector('.ascii-logo-wrap');
+    function fitAscii() {
+      if (!pre || !wrap) return;
+      pre.style.transform = 'scale(1)'; 
+      const contentWidth = pre.scrollWidth;
+      const wrapWidth = wrap.clientWidth;
+      const scale = Math.min(1, wrapWidth / contentWidth);
+      pre.style.transform = 'scale(' + scale + ')';
+      pre.style.height = pre.getBoundingClientRect().height + 'px';
+    }
+    addEventListener('load', fitAscii);
+    addEventListener('resize', fitAscii);
+    document.fonts && document.fonts.ready && document.fonts.ready.then(fitAscii);
+  })();
+</script>

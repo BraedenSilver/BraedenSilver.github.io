@@ -7,28 +7,17 @@
 </head>
 <body>
 
-<header>
-  <h1><a href="/">Braeden Silver</a></h1>
-  <nav>
-    <a href="/index.html">Home</a> ·
-    <a href="/pages/fun-projects.html">Fun Projects</a> ·
-    <a href="/pages/unfun-projects.html">Unfun Projects</a> ·
-    <a href="/pages/research.html">Research</a> ·
-    <a href="/pages/contact.html">Contact</a> ·
-    <a href="/CV.pdf">CV</a>
-  </nav>
-</header>
-<hr>
+<div id="site-header"></div>
 
 <main>
   <h2>Contact</h2>
 
-  <!-- Where the email link will be injected -->
+  <div style="margin-bottom: 1em;">
+    <img src="/assets/dino-mail.gif" alt="Dinosaur sending me an Email, like what you should do">
+  </div>
+
   <address id="contact-email">
-    <noscript>
-      Email: contact [at] braedensilver [dot] com
-      <!-- No-JS fallback: human-friendly, bot-unfriendly -->
-    </noscript>
+    <noscript>Email: contact [at] braedensilver [dot] com</noscript>
   </address>
 
   <p>Elsewhere:
@@ -37,32 +26,17 @@
   </p>
 </main>
 
-<hr>
-<footer>
-  <small>&copy; 2024 Braeden Silver</small>
-</footer>
 
-<!-- Obfuscated email builder (runs after DOMContentLoaded as well) -->
+<div id="site-footer"></div>
+<script src="/js/site.js" defer></script>
+
+<!-- Build the email without exposing it in HTML -->
 <script>
-  // Build the email without ever writing it in the HTML source
   (function () {
-    const u = "contact";
-    const d = "braedensilver";
-    const t = "com";
-    const addr = u + "@" + d + "." + t;
-
-    const a = document.createElement("a");
-    a.href = "mailto:" + addr;
-    a.textContent = addr;
-
-    const slot = document.getElementById("contact-email");
-    if (slot) {
-      // Clear the <noscript> fallback (if any) and inject the link
-      slot.textContent = "";
-      slot.appendChild(a);
-    }
+    const u = "contact", d = "braedensilver", t = "com";
+    const a = document.createElement("a"); a.href = "mailto:" + u + "@" + d + "." + t; a.textContent = u + "@" + d + "." + t;
+    const slot = document.getElementById("contact-email"); if (slot) { slot.textContent = ""; slot.appendChild(a); }
   })();
 </script>
-
 </body>
 </html>

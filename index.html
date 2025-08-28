@@ -10,19 +10,54 @@
 <body>
 <div id="site-header"><noscript><!-- optional: paste header for no-JS users --></noscript></div>
 <main>
-  <h2>Bio</h2>
-    <p>
-      BS of EE/CE student at Texas State University. I build robots, drones, and tools that make life easier.
-    </p>
-  <h3>Quick links</h3>
-  <ul>
-    <li><a href="/pages/fun-projects.html">Fun Projects</a></li>
-    <li><a href="/pages/unfun-projects.html">Unfun Projects</a></li>
-    <li><a href="/pages/research.html">Research</a></li>
-    <li><a href="/pages/contact.html">Contact</a></li>
-    <li><a href="/CV.pdf">CV</a></li>
-  </ul>
+<h3>Quick links</h3>
+<ul class="quick-links">
+  <li>
+    <img src="/assets/arrowright.gif" alt=">" class="arrow">
+    <a href="/pages/fun-projects.html">Fun Projects</a>
+  </li>
+  <li>
+    <img src="/assets/arrowright.gif" alt=">" class="arrow">
+    <a href="/pages/unfun-projects.html">Unfun Projects</a>
+  </li>
+  <li>
+    <img src="/assets/arrowright.gif" alt=">" class="arrow">
+    <a href="/pages/research.html">Research</a>
+  </li>
+  <li>
+    <img src="/assets/arrowright.gif" alt=">" class="arrow">
+    <a href="/pages/contact.html">Contact</a>
+  </li>
+  <li>
+    <img src="/assets/arrowright.gif" alt=">" class="arrow">
+    <a href="/CV.pdf">CV</a>
+  </li>
+
+  <div style="margin-bottom: 1em;">
+    <img src="/assets/homepage.gif" alt="The gif that goes on the homepage!">
+  </div>
+
+</ul>
+
+<style>
+.quick-links {
+  list-style: none;
+  padding: 0;
+}
+.quick-links li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0;
+}
+.quick-links .arrow {
+  width: 24px;  /* small gif size */
+  height: auto;
+}
+</style>
+
 </main>
+
 <div id="site-footer"><noscript><!-- optional: paste footer for no-JS users --></noscript></div>
 <script src="/js/site.js" defer></script>
 </body>
