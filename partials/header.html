@@ -12,6 +12,10 @@
       </pre>
     </a>
   </h1>
+  <div class="googly-eyes">
+    <div class="eye"><div class="pupil"></div></div>
+    <div class="eye"><div class="pupil"></div></div>
+  </div>
 
   <nav>
     <a href="/index.html">Home</a> ·
@@ -19,8 +23,7 @@
     <a href="/pages/unfun-projects.html">Unfun Projects</a> ·
     <a href="/pages/research.html">Research</a> ·
     <a href="/pages/historia/index.html">Historia Dinosauralis</a> ·
-    <a href="/pages/contact.html">Contact</a> ·
-    <a href="/CV.pdf" target="_blank" rel="noopener noreferrer">CV</a>
+    <a href="/pages/contact.html">Contact</a>
   </nav>
 </header>
 <hr>
@@ -28,6 +31,7 @@
 <style>
   .ascii-header {
     text-align: left;
+    position: relative;
   }
   .ascii-logo-wrap {
     display: inline-block;
@@ -42,6 +46,33 @@
     transform-origin: left center;
     font-size: 12px;
     color: #000000;
+  }
+
+  .googly-eyes {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 6px;
+  }
+  .eye {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #000;
+    border-radius: 50%;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .pupil {
+    width: 8px;
+    height: 8px;
+    background: #000;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 </style>
 
@@ -63,4 +94,5 @@
     addEventListener('resize', fitAscii);
     document.fonts && document.fonts.ready && document.fonts.ready.then(fitAscii);
   })();
+
 </script>

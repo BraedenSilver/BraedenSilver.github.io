@@ -73,6 +73,60 @@ function handleCitationBlock() {
   }
 }
 
+/**
+ * Make header eyes track the cursor.
+ */
+function initGooglyEyes() {
+  const pupils = document.querySelectorAll(".googly-eyes .pupil");
+  if (!pupils.length) return;
+  document.addEventListener("mousemove", (e) => {
+    pupils.forEach(pupil => {
+      const eye = pupil.parentElement;
+      const rect = eye.getBoundingClientRect();
+      const angle = Math.atan2(
+        e.clientY - (rect.top + rect.height / 2),
+        e.clientX - (rect.left + rect.width / 2)
+      );
+      const max = rect.width * 0.25;
+      const x = Math.cos(angle) * max;
+      const y = Math.sin(angle) * max;
+      pupil.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+    });
+  });
+}
+
+/**
+ * Spawn a colorful spark where the user clicks.
+ */
+function initClickEffect() {
+  const style = document.createElement("style");
+  style.textContent = `
+    .click-spark {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: spark-fade 600ms ease-out forwards;
+    }
+    @keyframes spark-fade {
+      from { transform: scale(1); opacity: 1; }
+      to { transform: scale(2); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+
+  document.addEventListener("click", (e) => {
+    const s = document.createElement("span");
+    s.className = "click-spark";
+    s.style.left = e.clientX + "px";
+    s.style.top = e.clientY + "px";
+    s.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 600);
+  });
+}
+
 window.addEventListener("DOMContentLoaded", async () => {
   const tasks = [];
   if (document.getElementById("site-header")) tasks.push(include("site-header", "/partials/header.html"));
@@ -82,4 +136,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   updateLastUpdated();
   updateShareLinks();
   handleCitationBlock();
+  initGooglyEyes();
+  initClickEffect();
 });
