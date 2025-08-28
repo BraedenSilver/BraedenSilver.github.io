@@ -115,4 +115,37 @@ window.addEventListener("DOMContentLoaded", async () => {
   updateShareLinks();
   handleCitationBlock();
   initClickEffect();
+
+  // Kilroy googly eyes in footer
+  (() => {
+    const eyes = document.querySelectorAll('.kilroy .eye');
+    if (!eyes.length) return;
+
+    function movePupils(x, y) {
+      eyes.forEach(eye => {
+        const pupil = eye.querySelector('.pupil');
+        const rect = eye.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = x - cx;
+        const dy = y - cy;
+        const radius = rect.width * 0.25;
+        const angle = Math.atan2(dy, dx);
+        const px = Math.cos(angle) * radius;
+        const py = Math.sin(angle) * radius;
+        pupil.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
+      });
+    }
+
+    function centerPupils() {
+      eyes.forEach(eye => {
+        const pupil = eye.querySelector('.pupil');
+        if (pupil) pupil.style.transform = 'translate(-50%, -50%)';
+      });
+    }
+
+    window.addEventListener('pointermove', e => movePupils(e.clientX, e.clientY));
+    window.addEventListener('mouseleave', centerPupils);
+    window.addEventListener('blur', centerPupils);
+  })();
 });
