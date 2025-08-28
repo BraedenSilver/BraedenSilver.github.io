@@ -26,18 +26,43 @@
     <small><em>Please don’t actually cite this in your research.</em></small>
   </div>
 
-  <div class="footer-eyes">
-    <div class="eye"><div class="pupil"></div></div>
-    <div class="eye"><div class="pupil"></div></div>
+  <div class="kilroy">
+    <div class="kilroy-peek footer-eyes">
+      <div class="head">
+        <div class="eye left"><div class="pupil"></div></div>
+        <div class="eye right"><div class="pupil"></div></div>
+      </div>
+      <div class="nose"></div>
+      <div class="hand left"><span></span><span></span><span></span></div>
+      <div class="hand right"><span></span><span></span><span></span></div>
+    </div>
+    <p class="kilroy-text">KILROY WAS HERE</p>
   </div>
 </footer>
 
 <style>
-  .footer-eyes {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 8px;
+  .kilroy {
+    margin-top: 24px;
+    text-align: center;
+  }
+  .kilroy-peek {
+    position: relative;
+    width: 160px;
+    height: 40px;
+    margin: 0 auto;
+    border-top: 2px solid #000;
+  }
+  .kilroy-peek .head {
+    position: absolute;
+    top: -62px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 60px;
+    border: 2px solid #000;
+    border-bottom: none;
+    border-radius: 60px 60px 0 0;
+    background: #fff;
   }
   .footer-eyes .eye {
     width: 28px;
@@ -45,9 +70,11 @@
     border-radius: 50%;
     background: #fff;
     border: 2px solid #000;
-    position: relative;
+    position: absolute;
     overflow: hidden;
   }
+  .footer-eyes .eye.left { left: 24px; top: 16px; }
+  .footer-eyes .eye.right { right: 24px; top: 16px; }
   .footer-eyes .pupil {
     width: 12px;
     height: 12px;
@@ -58,5 +85,37 @@
     top: 50%;
     transform: translate(-50%, -50%);
     transition: transform 60ms linear;
+  }
+  .kilroy-peek .nose {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #000;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    left: 50%;
+    top: -12px;
+    transform: translateX(-50%);
+  }
+  .kilroy-peek .hand {
+    position: absolute;
+    top: -14px;
+    display: flex;
+    gap: 3px;
+  }
+  .kilroy-peek .hand.left { left: 16px; }
+  .kilroy-peek .hand.right { right: 16px; }
+  .kilroy-peek .hand span {
+    width: 8px;
+    height: 14px;
+    border: 2px solid #000;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: #fff;
+  }
+  .kilroy-text {
+    margin-top: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 16px;
   }
 </style>
