@@ -25,4 +25,38 @@
     </blockquote>
     <small><em>Please don’t actually cite this in your research.</em></small>
   </div>
+
+  <div class="footer-eyes">
+    <div class="eye"><div class="pupil"></div></div>
+    <div class="eye"><div class="pupil"></div></div>
+  </div>
 </footer>
+
+<style>
+  .footer-eyes {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .footer-eyes .eye {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #000;
+    position: relative;
+    overflow: hidden;
+  }
+  .footer-eyes .pupil {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #000;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 60ms linear;
+  }
+</style>
