@@ -10,6 +10,9 @@ const VERSION = (function(){
   return `${d.getFullYear()}${mm}${dd}`;            // e.g. 20250828
 })();
 let _manifest;
+/**
+ * Fetch and cache the manifest listing all Historia entries.
+ */
 async function loadManifest() {
   if (_manifest) return _manifest;
   const r = await fetch(`/data/historia.index.json?v=${VERSION}`, { cache: "no-cache" });
@@ -19,14 +22,17 @@ async function loadManifest() {
   return _manifest;
 }
 
+/** Return the A–Z bucket for a given title. */
 function initialOf(title) {
   const ch = (title || "").trim().charAt(0).toUpperCase();
   return (ch >= "A" && ch <= "Z") ? ch : "#";
 }
+/** Tiny helper for query string lookup. */
 function qs(name, s = window.location.search) {
   const p = new URLSearchParams(s);
   return p.get(name);
 }
+/** Convert double-newline-separated paragraphs to HTML. */
 function paraHTML(s) {
   if (!s) return "";
   return s.trim().split(/\n\s*\n/g).map(p => `<p>${p}</p>`).join("");
@@ -35,6 +41,7 @@ function parseISO(d){ if(!d) return 0; const t = Date.parse(d); return Number.is
 function fmtDate(d){ return d || ""; }
 
 // ------- A–Z index -------
+/** Render the A–Z landing page with counts for each letter. */
 export async function renderHistoriaAZ() {
   const root = document.getElementById("historia-az");
   if (!root) return;
@@ -64,6 +71,7 @@ export async function renderHistoriaAZ() {
 }
 
 // ------- Latest entry (for A–Z landing) -------
+/** Render the newest entry teaser on the A–Z landing page. */
 export async function renderHistoriaLatest() {
   const root = document.getElementById("historia-latest");
   if (!root) return;
@@ -91,6 +99,7 @@ export async function renderHistoriaLatest() {
 }
 
 // ------- Per-letter list -------
+/** Render a list of entries for the given letter. */
 export async function renderHistoriaLetter() {
   const root = document.getElementById("historia-letter");
   const head = document.getElementById("historia-letter-head");
@@ -120,12 +129,14 @@ export async function renderHistoriaLetter() {
 }
 
 // ------- Sources formatting (APA-ish) -------
+/** Format an array of authors in APA-ish style. */
 function joinAuthors(authors) {
   if (!authors || !authors.length) return "";
   if (authors.length === 1) return authors[0];
   if (authors.length === 2) return `${authors[0]} & ${authors[1]}`;
   return `${authors.slice(0, -1).join(", ")}, & ${authors.slice(-1)}`;
 }
+/** Format journal articles for the Sources section. */
 function fmtArticle(s) {
   const auth = joinAuthors(s.authors);
   const year = s.year ? ` (${s.year}).` : ".";
@@ -137,6 +148,7 @@ function fmtArticle(s) {
   const tail = s.doi ? ` https://doi.org/${s.doi}` : (s.url ? ` ${s.url}` : "");
   return `${auth}${year} ${s.title}. ${where}.${tail}`.replace(/\s+\./g, ".");
 }
+/** Format books for the Sources section. */
 function fmtBook(s) {
   const auth = joinAuthors(s.authors);
   const year = s.year ? ` (${s.year}).` : ".";
@@ -144,6 +156,7 @@ function fmtBook(s) {
   const isbn = s.isbn ? ` ISBN ${s.isbn}.` : "";
   return `${auth}${year} ${s.title}.${pub}${isbn}`;
 }
+/** Format websites for the Sources section. */
 function fmtWeb(s) {
   const auth = joinAuthors(s.authors);
   const year = s.year ? ` (${s.year}).` : ".";
@@ -152,6 +165,7 @@ function fmtWeb(s) {
   const acc = s.accessed ? ` (Accessed ${s.accessed})` : "";
   return `${auth}${year} ${s.title}.${site}${url}${acc}`;
 }
+/** Choose the right formatter for a source object. */
 function formatSource(s) {
   switch ((s.type || "article").toLowerCase()) {
     case "book": return fmtBook(s);
@@ -161,6 +175,7 @@ function formatSource(s) {
 }
 
 // ------- Single entry -------
+/** Render a single Historia entry page from JSON. */
 export async function renderHistoriaEntry() {
   const root = document.getElementById("historia-entry");
   if (!root) return;
