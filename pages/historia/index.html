@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Historia Dinosauralis — A–Z</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+  <h2>Historia Dinosauralis</h2>
+  <p>A digital bestiary and encyclopedia. Click a letter to browse.</p>
+
+  <div style="margin-bottom: 1em;">
+    <img src="/assets/Tyson.gif" alt="T-Rex gif">
+    <img src="/assets/Rapty.gif" alt="Raptor gif">
+    <img src="/assets/Sauromy.gif" alt="Sauropod gif">
+    <img src="/assets/Parry.gif" alt="Parasaurolophus gif">
+    <img src="/assets/Galli.gif" alt="Gallimimus gif">
+  </div>
+
+  <div id="historia-latest"><p>Loading latest…</p></div>
+  <hr>
+  <div id="historia-az"><p>Loading…</p></div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="/js/site.js" defer></script>
+<script type="module">
+  import { renderHistoriaAZ, renderHistoriaLatest } from "/js/historia.js";
+
+  renderHistoriaLatest().catch(() => {
+    document.getElementById("historia-latest").textContent = "";
+  });
+
+  renderHistoriaAZ().catch(() => {
+    document.getElementById("historia-az").textContent = "Failed to load entries.";
+  });
+</script>
+</body>
+</html>

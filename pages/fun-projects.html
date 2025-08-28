@@ -12,14 +12,34 @@
 <main>
   <h2>Fun Projects</h2>
 
-  <div style="margin-bottom: 1em;">
-    <img src="/assets/fireworks.gif" alt="Fireworks celebrating fun projects">
+    <p>Personal builds I do because they’re interesting or chaotic.</p>
+
+    <div class="project-entry">
+    <img src="/assets/arrowright.gif" alt="<<" class="arrow">
+    <span>
+      <strong>Historia Dinosauralis</strong> — 
+      <a href="/pages/historia/index.html">An encyclopedia inspired by Pliny the Elder's "Historia Naturalis" but based on Dinosaurs.</a>.
+    </span>
+    <img src="/assets/arrowleft.gif" alt=">>" class="arrow">
   </div>
 
-  <p>Personal builds I do because they’re interesting or chaotic.</p>
   <ul>
   </ul>
 </main>
+
+<style>
+.project-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.project-entry .arrow {
+  width: 48px;
+  height: auto;
+}
+</style>
 
 <div id="site-footer"></div>
 <script src="/js/site.js" defer></script>

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Historia — Letter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+  <h2 id="historia-letter-head">A–Z</h2>
+  <div id="historia-letter"><p>Loading…</p></div>
+  <p><a href="/pages/historia/index.html">← Back to A–Z</a></p>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="/js/site.js" defer></script>
+<script type="module">
+  import { renderHistoriaLetter } from "/js/historia.js";
+  renderHistoriaLetter().catch(()=>{ document.getElementById("historia-letter").textContent="Failed to load entries."; });
+</script>
+</body>
+</html>

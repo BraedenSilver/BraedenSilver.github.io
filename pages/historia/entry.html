@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Historia Entry</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main id="historia-entry">
+  <p>Loading…</p>
+</main>
+
+<p><a id="back-link" href="/pages/historia/index.html">← Back to A–Z</a></p>
+
+<div id="site-footer"></div>
+
+<script src="/js/site.js" defer></script>
+<script type="module">
+  import { renderHistoriaEntry } from "/js/historia.js";
+  renderHistoriaEntry().catch(()=>{ document.getElementById("historia-entry").textContent="Failed to load entry."; });
+</script>
+
+<!-- Optional tiny animation just for Sources dropdown -->
+<style>
+  details#sources > ol { overflow: hidden; transition: max-height 200ms ease; max-height: 0; }
+  details#sources[open] > ol { max-height: 2000px; }
+</style>
+</body>
+</html>
