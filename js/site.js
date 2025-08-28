@@ -11,7 +11,7 @@ async function include(id, file) {
   // Attempt both relative and absolute paths so pages work from subdirectories.
   const tryFetch = async (url) => {
     try {
-      const r = await fetch(url, { cache: "no-cache" });
+      const r = await fetch(url);
       return r.ok ? await r.text() : null;
     } catch {
       return null;

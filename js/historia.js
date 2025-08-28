@@ -15,7 +15,7 @@ let _manifest;
  */
 async function loadManifest() {
   if (_manifest) return _manifest;
-  const r = await fetch(`/data/historia.index.json?v=${VERSION}`, { cache: "no-cache" });
+  const r = await fetch(`/data/historia.index.json?v=${VERSION}`, { cache: "force-cache" });
   if (!r.ok) throw new Error("Failed to load manifest");
   _manifest = await r.json();
   _manifest.entries = (_manifest.entries || []).filter(e => e && e.id && e.title);

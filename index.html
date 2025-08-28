@@ -13,51 +13,38 @@
 <main>
 <h3>Quick links</h3>
 <ul class="quick-links">
-  <li>
-    <img src="/assets/arrowright.gif" alt=">" class="arrow">
-    <a href="/pages/fun-projects.html">Fun Projects</a>
-  </li>
-  <li>
-    <img src="/assets/arrowright.gif" alt=">" class="arrow">
-    <a href="/pages/unfun-projects.html">Unfun Projects</a>
-  </li>
-  <li>
-    <img src="/assets/arrowright.gif" alt=">" class="arrow">
-    <a href="/pages/research.html">Research</a>
-  </li>
-  <li>
-    <img src="/assets/arrowright.gif" alt=">" class="arrow">
-    <a href="/pages/historia/index.html">Historia Dinosauralis</a></h
-  </li>
-  <li>
-    <img src="/assets/arrowright.gif" alt=">" class="arrow">
-    <a href="/pages/contact.html">Contact</a>
-  </li>
-  <li>
-    <img src="/assets/arrowright.gif" alt=">" class="arrow">
-    <a href="/CV.pdf">CV</a>
-  </li>
-
+  <li><a href="/pages/fun-projects.html">Fun Projects</a></li>
+  <li><a href="/pages/unfun-projects.html">Unfun Projects</a></li>
+  <li><a href="/pages/research.html">Research</a></li>
+  <li><a href="/pages/historia/index.html">Historia Dinosauralis</a></li>
+  <li><a href="/pages/contact.html">Contact</a></li>
+  <li><a href="/CV.pdf">CV</a></li>
 </ul>
 
   <div style="margin-bottom: 1em;">
-    <img src="/assets/elly.gif" alt="Elly is a good girl">
+    <img src="/assets/elly.gif" alt="Elly is a good girl" loading="lazy">
   </div>
 
 <style>
 .quick-links {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 .quick-links li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  position: relative;
+  padding-left: 30px;
   margin: 6px 0;
 }
-.quick-links .arrow {
-  width: 24px;  /* small gif size */
-  height: auto;
+.quick-links li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  background: url('/assets/arrowright.gif') no-repeat center/24px 24px;
 }
 </style>
 
