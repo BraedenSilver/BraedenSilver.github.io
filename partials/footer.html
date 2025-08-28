@@ -1,17 +1,17 @@
+<!-- Shared site footer with share links; loaded via js/site.js -->
 <footer>
   <div class="footer-bar">
-    <div class="footer-left">
-      <p class="last-updated">Last updated: <span id="last-updated"></span></p>
-      <div id="share-block">
-        <span>Share:</span>
-        <a class="share-link twitter"   href="https://twitter.com/intent/tweet?text=Check+this+out&url=" target="_blank">Twitter/X</a> ·
-        <a class="share-link reddit"    href="https://www.reddit.com/submit?url=" target="_blank">Reddit</a> ·
-        <a class="share-link hn"        href="https://news.ycombinator.com/submitlink?u=" target="_blank">Hacker News</a> ·
-        <a class="share-link facebook"  href="https://www.facebook.com/sharer/sharer.php?u=" target="_blank">Facebook</a> ·
-        <a class="share-link linkedin"  href="https://www.linkedin.com/sharing/share-offsite/?url=" target="_blank">LinkedIn</a> ·
-        <a class="share-link whatsapp"  href="https://api.whatsapp.com/send?text=" target="_blank">WhatsApp</a> ·
-        <a class="share-link email"     href="mailto:?subject=Check this out&body=">Email</a>
-      </div>
+    <p class="last-updated">Last updated: <span id="last-updated"></span></p>
+
+    <div id="share-block">
+      <span>Share:</span>
+      <a class="share-link twitter"   href="https://twitter.com/intent/tweet?text=Check+this+out&url=" target="_blank">Twitter/X</a> ·
+      <a class="share-link reddit"    href="https://www.reddit.com/submit?url=" target="_blank">Reddit</a> ·
+      <a class="share-link hn"        href="https://news.ycombinator.com/submitlink?u=" target="_blank">Hacker News</a> ·
+      <a class="share-link facebook"  href="https://www.facebook.com/sharer/sharer.php?u=" target="_blank">Facebook</a> ·
+      <a class="share-link linkedin"  href="https://www.linkedin.com/sharing/share-offsite/?url=" target="_blank">LinkedIn</a> ·
+      <a class="share-link whatsapp"  href="https://api.whatsapp.com/send?text=" target="_blank">WhatsApp</a> ·
+      <a class="share-link email"     href="mailto:?subject=Check this out&body=">Email</a>
     </div>
 
     <div class="kilroy-peek footer-eyes">
@@ -35,39 +35,32 @@
 <style>
   .footer-bar {
     position: fixed;
-    bottom: 0; left: 0; right: 0;
+    bottom: 0;
+    right: 0;
     display: flex;
-    justify-content: space-between;  /* <-- pushes left group to left, Kilroy to right */
     align-items: flex-end;
-    background: #fff;
-    padding: 0.5rem 1rem;
-    border-top: 2px solid #000;
-  }
-
-  .footer-left {
-    display: flex;
-    align-items: center;
     gap: 1rem;
-    flex-wrap: wrap;
+    background: #fff;
+    padding: 0.5rem;
   }
-
-  .footer-left p,
-  .footer-left #share-block {
+  .footer-bar p,
+  .footer-bar #share-block {
     margin: 0;
   }
-
   #share-block {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.25rem;
   }
-  #share-block span { margin-right: 0.25rem; }
-
+  #share-block span {
+    margin-right: 0.25rem;
+  }
   .kilroy-peek {
     position: relative;
     width: 160px;
     height: 0;
+    border-top: 2px solid #000;
   }
   .kilroy-peek .head {
     position: absolute;
@@ -80,7 +73,6 @@
     border-radius: 60px 60px 0 0;
     background: #fff;
   }
-
   .footer-eyes .eye {
     width: 28px;
     height: 28px;
@@ -90,21 +82,17 @@
     position: absolute;
     overflow: hidden;
   }
-  .footer-eyes .eye.left  { left: 24px; top: 16px; }
+  .footer-eyes .eye.left { left: 24px; top: 16px; }
   .footer-eyes .eye.right { right: 24px; top: 16px; }
-
   .footer-eyes .pupil {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     background: #000;
     position: absolute;
-    left: 50%; top: 50%;
+    left: 50%;
+    top: 50%;
     transform: translate(-50%, -50%);
     transition: transform 60ms linear;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .footer-eyes .pupil { transition: none; }
   }
 </style>
