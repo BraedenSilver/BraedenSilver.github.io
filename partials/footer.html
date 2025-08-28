@@ -1,19 +1,17 @@
 <!-- Shared site footer with share links; loaded via js/site.js -->
 <footer>
   <div class="footer-bar">
-    <div class="footer-left">
-      <p class="last-updated">Last updated: <span id="last-updated"></span></p>
+    <p class="last-updated">Last updated: <span id="last-updated"></span></p>
 
-      <div id="share-block">
-        <span>Share:</span>
-        <a class="share-link twitter"   href="https://twitter.com/intent/tweet?text=Check+this+out&url=" target="_blank">Twitter/X</a> ·
-        <a class="share-link reddit"    href="https://www.reddit.com/submit?url=" target="_blank">Reddit</a> ·
-        <a class="share-link hn"        href="https://news.ycombinator.com/submitlink?u=" target="_blank">Hacker News</a> ·
-        <a class="share-link facebook"  href="https://www.facebook.com/sharer/sharer.php?u=" target="_blank">Facebook</a> ·
-        <a class="share-link linkedin"  href="https://www.linkedin.com/sharing/share-offsite/?url=" target="_blank">LinkedIn</a> ·
-        <a class="share-link whatsapp"  href="https://api.whatsapp.com/send?text=" target="_blank">WhatsApp</a> ·
-        <a class="share-link email"     href="mailto:?subject=Check this out&body=">Email</a>
-      </div>
+    <div id="share-block">
+      <span>Share:</span>
+      <a class="share-link twitter"   href="https://twitter.com/intent/tweet?text=Check+this+out&url=" target="_blank">Twitter/X</a> ·
+      <a class="share-link reddit"    href="https://www.reddit.com/submit?url=" target="_blank">Reddit</a> ·
+      <a class="share-link hn"        href="https://news.ycombinator.com/submitlink?u=" target="_blank">Hacker News</a> ·
+      <a class="share-link facebook"  href="https://www.facebook.com/sharer/sharer.php?u=" target="_blank">Facebook</a> ·
+      <a class="share-link linkedin"  href="https://www.linkedin.com/sharing/share-offsite/?url=" target="_blank">LinkedIn</a> ·
+      <a class="share-link whatsapp"  href="https://api.whatsapp.com/send?text=" target="_blank">WhatsApp</a> ·
+      <a class="share-link email"     href="mailto:?subject=Check this out&body=">Email</a>
     </div>
 
     <div class="kilroy-peek footer-eyes">
@@ -38,38 +36,35 @@
   .footer-bar {
     position: fixed;
     bottom: 0;
-    left: 0;
     right: 0;
     display: flex;
-    justify-content: space-between;
     align-items: flex-end;
+    gap: 1rem;
     background: #fff;
     padding: 0.5rem;
+    left: 0; /* full width */
+    border-top: 2px solid #000; /* “wall” line */
   }
-  .footer-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .footer-left p,
-  .footer-left #share-block {
+
+  .footer-bar p,
+  .footer-bar #share-block {
     margin: 0;
   }
+
   #share-block {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.25rem;
   }
-  #share-block span {
-    margin-right: 0.25rem;
-  }
+  #share-block span { margin-right: 0.25rem; }
+
+  /* Kilroy peeker on the right end of the bar */
   .kilroy-peek {
     position: relative;
     width: 160px;
     height: 0;
-    border-top: 2px solid #000;
+    border-top: 2px solid #000; /* internal line so the head “peeks” */
   }
   .kilroy-peek .head {
     position: absolute;
@@ -82,6 +77,7 @@
     border-radius: 60px 60px 0 0;
     background: #fff;
   }
+
   .footer-eyes .eye {
     width: 28px;
     height: 28px;
@@ -91,17 +87,58 @@
     position: absolute;
     overflow: hidden;
   }
-  .footer-eyes .eye.left { left: 24px; top: 16px; }
+  .footer-eyes .eye.left  { left: 24px;  top: 16px; }
   .footer-eyes .eye.right { right: 24px; top: 16px; }
+
   .footer-eyes .pupil {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     background: #000;
     position: absolute;
-    left: 50%;
-    top: 50%;
+    left: 50%; top: 50%;
     transform: translate(-50%, -50%);
     transition: transform 60ms linear;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer-eyes .pupil { transition: none; }
+  }
 </style>
+
+<script>
+/* Eye tracking for the footer peeker */
+(() => {
+  const eyes = document.querySelectorAll('.footer-eyes .eye');
+  if (!eyes.length) return;
+
+  const move = (x, y) => {
+    eyes.forEach(eye => {
+      const pupil = eye.querySelector('.pupil');
+      if (!pupil) return;
+
+      const r = eye.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dx = x - cx;
+      const dy = y - cy;
+
+      const angle = Math.atan2(dy, dx);
+      const radius = Math.min(r.width, r.height) * 0.25; // travel range
+      const px = Math.cos(angle) * radius;
+      const py = Math.sin(angle) * radius;
+
+      pupil.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
+    });
+  };
+
+  const center = () => {
+    document.querySelectorAll('.footer-eyes .pupil')
+      .forEach(p => p.style.transform = 'translate(-50%, -50%)');
+  };
+
+  window.addEventListener('pointermove', e => move(e.clientX, e.clientY), { passive: true });
+  window.addEventListener('mouseleave', center, { passive: true });
+  window.addEventListener('blur', center, { passive: true });
+})();
+</script>
