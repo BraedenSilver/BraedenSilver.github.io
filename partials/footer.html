@@ -44,6 +44,7 @@
     padding: 0.5rem;
     left: 0; /* full width */
     border-top: 2px solid #000; /* “wall” line */
+    flex-wrap: wrap;
   }
 
   .footer-bar p,
@@ -58,6 +59,17 @@
     gap: 0.25rem;
   }
   #share-block span { margin-right: 0.25rem; }
+
+  @media (max-width: 600px) {
+    .footer-bar {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    #share-block {
+      justify-content: center;
+    }
+  }
 
   /* Kilroy peeker on the right end of the bar */
   .kilroy-peek {

@@ -25,15 +25,47 @@
 <hr>
 
 <style>
+  body {
+    padding-bottom: 140px;
+  }
+
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  pre {
+    overflow-x: auto;
+  }
+
   .ascii-header {
     text-align: left;
     position: relative;
   }
+
+  .ascii-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .ascii-header nav a {
+    white-space: nowrap;
+  }
+
   .ascii-logo-wrap {
     display: inline-block;
     max-width: min(95vw, 1100px);
     line-height: 1;
   }
+
   #ascii-logo {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
     white-space: pre;
