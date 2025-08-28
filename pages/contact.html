@@ -17,14 +17,14 @@
     <img src="/assets/dino-mail.gif" alt="Dinosaur sending me an Email, like what you should do">
   </div>
 
-  <address id="contact-email">
-    <noscript>Email: contact [at] braedensilver [dot] com</noscript>
-  </address>
+  <p>Have feedback or just want to say hi? Reach out:</p>
 
-  <p>Elsewhere:
-    <a href="https://github.com/braedensilver">GitHub</a> ·
-    <a href="https://www.linkedin.com/in/braedensilver/">LinkedIn</a>
-  </p>
+  <ul class="contact-links">
+    <li><address id="contact-email"><noscript>Email: contact [at] braedensilver [dot] com</noscript></address></li>
+    <li><a href="https://www.linkedin.com/in/braedensilver/">LinkedIn</a></li>
+    <li><a href="https://github.com/braedensilver">GitHub</a></li>
+    <li><a href="/CV.pdf">CV</a></li>
+  </ul>
 </main>
 
 
@@ -39,5 +39,15 @@
     const slot = document.getElementById("contact-email"); if (slot) { slot.textContent = ""; slot.appendChild(a); }
   })();
 </script>
+
+<style>
+  .contact-links {
+    list-style: none;
+    padding: 0;
+  }
+  .contact-links li {
+    margin: 4px 0;
+  }
+</style>
 </body>
 </html>
