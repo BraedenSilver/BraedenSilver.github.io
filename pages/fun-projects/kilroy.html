@@ -12,10 +12,6 @@
     <div class="head">
       <div class="eye left"><div class="pupil"></div></div>
       <div class="eye right"><div class="pupil"></div></div>
-      <div class="nose"></div>
-      <div class="hand left"></div>
-      <div class="hand right"></div>
-      <div class="wall"></div>
     </div>
   </div>
 </main>
@@ -70,41 +66,6 @@ main { display: flex; justify-content: center; align-items: center; height: 100v
 }
 
 @media (prefers-reduced-motion: reduce) { .kilroy-full .pupil { transition: none; } }
-
-.kilroy-full .nose {
-  position: absolute;
-  top: 160px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 80px;
-  border: 5px solid #000;
-  border-radius: 50%;
-  background: #fff;
-}
-
-.kilroy-full .hand {
-  position: absolute;
-  top: 200px;
-  width: 80px;
-  height: 60px;
-  border: 5px solid #000;
-  border-bottom: none;
-  border-radius: 60px 60px 0 0;
-  background: #fff;
-}
-
-.kilroy-full .hand.left  { left: 20px; }
-.kilroy-full .hand.right { right: 20px; }
-
-.kilroy-full .wall {
-  position: absolute;
-  top: 240px;
-  left: -20px;
-  right: -20px;
-  height: 5px;
-  background: #000;
-}
 </style>
 
 <script src="/js/site.js" defer></script>
