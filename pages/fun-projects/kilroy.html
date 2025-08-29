@@ -44,17 +44,27 @@ main { display: flex; justify-content: center; align-items: center; height: 100v
 
 .kilroy-full.footer-eyes .eye {
   position: absolute;
-  width: 75px;
-  height: 75px;
-  border: 5px solid #000;
+  --eye-size: 75px;
+  --eye-border: 5px;
+  width: var(--eye-size);
+  height: var(--eye-size);
+  border: var(--eye-border) solid #000;
   border-radius: 50%;
   background: #fff;
   overflow: hidden;
   transition: all 150ms ease;
 }
 
-.kilroy-full.footer-eyes .eye.left  { left: 64px; top: 101px; }
-.kilroy-full.footer-eyes .eye.right { right: 64px; top: 101px; }
+.kilroy-full.footer-eyes .eye.left  {
+  left: 64px;
+  --eye-top: 101px;
+  top: var(--eye-top);
+}
+.kilroy-full.footer-eyes .eye.right {
+  right: 64px;
+  --eye-top: 101px;
+  top: var(--eye-top);
+}
 
 .kilroy-full.footer-eyes .pupil {
   width: 32px;
