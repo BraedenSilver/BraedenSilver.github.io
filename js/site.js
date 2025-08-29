@@ -105,6 +105,20 @@ function initClickEffect() {
   });
 }
 
+/**
+ * Toggle the footer drawer on mobile devices.
+ */
+function initFooterDrawer() {
+  const btn = document.getElementById("footer-toggle");
+  const drawer = document.getElementById("footer-drawer");
+  if (!btn || !drawer) return;
+  btn.addEventListener("click", () => {
+    const open = drawer.classList.toggle("open");
+    btn.setAttribute("aria-expanded", open);
+    btn.textContent = open ? "▼" : "▲";
+  });
+}
+
 
 window.addEventListener("DOMContentLoaded", async () => {
   const tasks = [];
@@ -116,6 +130,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   updateShareLinks();
   handleCitationBlock();
   initClickEffect();
+  initFooterDrawer();
 
   // Tiny googly eyes in footer
   (() => {
