@@ -1,0 +1,95 @@
+{
+  "id": "spinosaurus-aegyptiacus",
+  "title": "Spinosaurus aegyptiacus",
+  "tagline": "Sail-backed hunter of the Cretaceous rivers.",
+  "hero": "https://www.datocms-assets.com/44232/1685979223-spinosaurus-mural-crop.jpeg?w=1200&fm=webp",
+  "date": "2025-08-28",
+  "time_period": "Late Cretaceous",
+  "length": "15 m",
+  "description": "The creature is called <em>Spinosaurus aegyptiacus</em>, meaning “Spine Lizard of Egypt.” It is called this because it has spines, and it is a lizard. <br>\n\nThis animal is the largest carnivorous theropod known, measuring up to 15 meters (49 feet) in length and weighing perhaps 6 to 7 metric tons. Once it is larger than <em>Tyrannosaurus</em>, the exact number of meters does not matter. If one were to meet it in the river, no man would stop to calculate.\n\nThe skull is long and narrow, like that of a crocodile. Its teeth are conical, excellent for grasping fish. The hind limbs are very short, proof of its aquatic nature. The tail is flattened like a paddle. A paddle is made for water, not for land.\n\nThe most striking feature is the sail, formed by neural spines over a meter long. Some proclaim it a heat regulator, others a mating display, others a fat store, and still others a hydrodynamic aid. It surely did something important, because Nature does not squander one-meter spines on trifles.\n\nPaleontologists dispute whether it swam, or merely waded like a stork. But observe: crocodiles swim, and <em>Spinosaurus</em> looks like a crocodile. Its legs are too short for dignity on land, its tail too strange for dry walking, its teeth too round for biting big prey. Therefore, it swam. The matter is settled.\n\nThe first fossils were described by Stromer in 1915, but the finest specimens were destroyed in Munich during the Second World War. Since then, fragments have been discovered in North Africa and assembled into many reconstructions: one like a <em>Tyrannosaurus</em> with a sail, one like a stork with a fish, one like a monstrous salamander. Each is announced as the final truth, until the next truth arrives.\n\nIn the scientific record, it is remarkable for being the first known semi-aquatic theropod. In popular imagination, it is remembered as a rival of <em>Tyrannosaurus</em>. But in reality it lived millions of years earlier, in rivers of the Cretaceous, where it feasted on fish weighing many kilograms. Thus the reputation is false, but the absurdity is true.",
+  "photos": [
+    "https://www.datocms-assets.com/44232/1685979223-spinosaurus-mural-crop.jpeg?w=1200&fm=webp",
+    "https://www.datocms-assets.com/44232/1706217521-dsc_1116_crop.png?w=1200&fm=webp"
+  ],
+  "notes": "Name means Spine Lizard of Egypt.<br><br>Largest known carnivorous theropod (~15 m, 6–7 t).<br><br>Skull crocodile-like, teeth conical for fish.<br><br>Hind legs short, tail paddle-like, therefore it swam.<br><br>Sail one meter tall, purpose unknown but certainly not useless.<br><br>Fossils rare; originals destroyed in WWII.<br><br>Reconstructions many; arguments endless.",
+  "aliases": [
+    "Spine Lizard"
+  ],
+  "tags": [
+    "spinosaurid",
+    "theropod"
+  ],
+  "sources": [
+    {
+      "type": "web",
+      "authors": [
+        "Field Museum"
+      ],
+      "year": 2023,
+      "title": "Spinosaurus mural photo",
+      "site": "Field Museum",
+      "url": "https://www.datocms-assets.com/44232/1685979223-spinosaurus-mural-crop.jpeg",
+      "accessed": "2025-08-28"
+    },
+    {
+      "type": "web",
+      "authors": [
+        "Field Museum"
+      ],
+      "year": 2024,
+      "title": "Spinosaurus skeleton photo",
+      "site": "Field Museum",
+      "url": "https://www.datocms-assets.com/44232/1706217521-dsc_1116_crop.png",
+      "accessed": "2025-08-28"
+    },
+    {
+      "type": "web",
+      "authors": [
+        "Wikipedia contributors"
+      ],
+      "year": 2025,
+      "title": "Spinosaurus",
+      "site": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Spinosaurus",
+      "accessed": "2025-08-28"
+    },
+    {
+      "type": "news",
+      "authors": [
+        "Zimmer, C."
+      ],
+      "year": 2020,
+      "title": "Spinosaurus Makes a Splash With a Tail Built for Swimming",
+      "site": "The New York Times",
+      "url": "https://www.nytimes.com/2020/04/29/science/spinosaurus-dinosaur-tail-swimming.html",
+      "accessed": "2025-08-28"
+    },
+    {
+      "type": "web",
+      "authors": [
+        "Natural History Museum"
+      ],
+      "year": 2025,
+      "title": "Spinosaurus",
+      "site": "NHM Dino Directory",
+      "url": "https://www.nhm.ac.uk/discover/dino-directory/spinosaurus.html",
+      "accessed": "2025-08-28"
+    },
+    {
+      "type": "article",
+      "authors": [
+        "Ibrahim, N.",
+        "Sereno, P. C.",
+        "Dal Sasso, C.",
+        "Maganuco, S."
+      ],
+      "year": 2014,
+      "title": "Semiaquatic adaptations in a giant predatory dinosaur",
+      "journal": "Science",
+      "volume": "345",
+      "issue": "6204",
+      "pages": "1613–1616",
+      "doi": "10.1126/science.1258750"
+    }
+  ]
+}
