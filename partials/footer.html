@@ -92,6 +92,7 @@
     border: 2px solid #000;
     position: absolute;
     overflow: hidden;
+    transition: all 150ms ease;
   }
   .footer-eyes .eye.left  { left: 24px; top: 16px; }
   .footer-eyes .eye.right { right: 24px; top: 16px; }
@@ -109,6 +110,17 @@
 
   @media (prefers-reduced-motion: reduce) {
     .footer-eyes .pupil { transition: none; }
+  }
+
+  .footer-eyes .eye.wink {
+    height: 0;
+    top: 30px;
+    border: none;
+    border-top: 2px solid #000;
+    border-radius: 0;
+  }
+  .footer-eyes .eye.wink .pupil {
+    display: none;
   }
 
 </style>

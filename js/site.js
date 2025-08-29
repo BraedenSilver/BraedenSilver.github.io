@@ -148,6 +148,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.addEventListener('pointermove', e => movePupils(e.clientX, e.clientY));
     window.addEventListener('mouseleave', centerPupils);
     window.addEventListener('blur', centerPupils);
+
+    eyes.forEach(eye => {
+      eye.addEventListener('click', () => {
+        if (eye.classList.contains('wink')) return;
+        eye.classList.add('wink');
+        setTimeout(() => eye.classList.remove('wink'), 1500);
+      });
+    });
   })();
 
 });
