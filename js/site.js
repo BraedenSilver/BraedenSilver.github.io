@@ -1,5 +1,5 @@
 // site.js — handles header/footer includes, "last updated" stamps,
-// social share links, and citation blocks for the Historia section.
+// citation blocks for the Historia section, and small UI effects.
 
 /**
  * Fetch an HTML partial and inject it into the element with the given ID.
@@ -8,19 +8,19 @@ async function include(id, file) {
   const el = document.getElementById(id);
   if (!el) return;
 
-  // Attempt both relative and absolute paths so pages work from subdirectories.
-  const tryFetch = async (url) => {
+  // Try both relative and absolute paths so pages work from subdirectories.
+  const candidates = [file, "/" + file.replace(/^\//, "")];
+  for (const url of candidates) {
     try {
       const r = await fetch(url);
-      return r.ok ? await r.text() : null;
+      if (r.ok) {
+        el.innerHTML = await r.text();
+        break;
+      }
     } catch {
-      return null;
+      /* ignore network errors and try next */
     }
-  };
-
-  let html = await tryFetch(file);
-  if (html == null) html = await tryFetch("/" + file.replace(/^\//, ""));
-  if (html != null) el.innerHTML = html;
+  }
 }
 
 /**
@@ -33,29 +33,6 @@ function updateLastUpdated() {
   t.textContent = new Date(document.lastModified).toLocaleDateString(undefined, opts);
 }
 
-/**
- * Fill social share links in the footer for the current page.
- */
-function updateShareLinks() {
-  const url = encodeURIComponent(window.location.href.split("#")[0]);
-  const title = encodeURIComponent(document.title);
-
-  const map = {
-    twitter:  (u, t) => `https://twitter.com/intent/tweet?text=${t}&url=${u}`,
-    reddit:   (u, t) => `https://www.reddit.com/submit?url=${u}&title=${t}`,
-    hn:       (u, t) => `https://news.ycombinator.com/submitlink?u=${u}&t=${t}`,
-    facebook: (u)    => `https://www.facebook.com/sharer/sharer.php?u=${u}`,
-    linkedin: (u)    => `https://www.linkedin.com/sharing/share-offsite/?url=${u}`,
-    whatsapp: (u, t) => `https://api.whatsapp.com/send?text=${t}%20${u}`,
-    email:    (u, t) => `mailto:?subject=${t}&body=${u}`
-  };
-
-  for (const [cls, build] of Object.entries(map)) {
-    document.querySelectorAll(`a.share-link.${cls}`).forEach(a => {
-      a.href = build(url, title);
-    });
-  }
-}
 
 /**
  * Ensure the citation block only appears on Historia pages.
@@ -105,19 +82,6 @@ function initClickEffect() {
   });
 }
 
-/**
- * Toggle the footer drawer on mobile devices.
- */
-function initFooterDrawer() {
-  const btn = document.getElementById("footer-toggle");
-  const drawer = document.getElementById("footer-drawer");
-  if (!btn || !drawer) return;
-  btn.addEventListener("click", () => {
-    const open = drawer.classList.toggle("open");
-    btn.setAttribute("aria-expanded", open);
-    btn.textContent = open ? "▼" : "▲";
-  });
-}
 
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -127,10 +91,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   await Promise.all(tasks);
 
   updateLastUpdated();
-  updateShareLinks();
   handleCitationBlock();
   initClickEffect();
-  initFooterDrawer();
 
   // Tiny googly eyes in footer
   (() => {
