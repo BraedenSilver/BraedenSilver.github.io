@@ -111,44 +111,4 @@
     .footer-eyes .pupil { transition: none; }
   }
 
-  /* Finger Pointer (Kilroy buddy) */
-  :root{
-    --finger-size: 48px;       /* desktop size */
-    --finger-bottom: 72px;     /* distance from bottom of viewport */
-    --finger-right: 16px;      /* distance from right of viewport */
-  }
-
-  #finger-pointer{
-    position: fixed;
-    bottom: var(--finger-bottom);
-    right:  var(--finger-right);
-    width:  var(--finger-size);
-    height: var(--finger-size);
-    transform-origin: 50% 75%;      /* pivot around the “wrist” */
-    z-index: 9999;
-    pointer-events: none;            /* never block clicks */
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,.25));
-    user-select: none;
-  }
-
-  #finger-pointer .glyph{
-    display: block;
-    width: 100%;
-    height: 100%;
-    font-size: var(--finger-size);
-    line-height: 1;
-  }
-
-  @media (max-width: 600px){
-    :root{
-      --finger-size: 32px;     /* smaller on phones */
-      --finger-bottom: 64px;
-      --finger-right: 12px;
-    }
-  }
-
-  /* Respect accessibility preferences */
-  @media (prefers-reduced-motion: reduce){
-    #finger-pointer{ transition: none !important; }
-  }
 </style>
