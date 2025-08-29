@@ -29,8 +29,10 @@ async function include(id, file) {
 function updateLastUpdated() {
   const t = document.getElementById("last-updated");
   if (!t) return;
+  const meta = document.querySelector('meta[name="last-updated"]');
+  const dateStr = meta ? meta.content : document.lastModified;
   const opts = { year: "numeric", month: "short", day: "numeric" };
-  t.textContent = new Date(document.lastModified).toLocaleDateString(undefined, opts);
+  t.textContent = new Date(dateStr).toLocaleDateString(undefined, opts);
 }
 
 
