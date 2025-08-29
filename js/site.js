@@ -105,6 +105,53 @@ function initClickEffect() {
   });
 }
 
+/**
+ * Little finger pointer that tracks the cursor near Kilroy.
+ */
+function initFingerPointer() {
+  if (document.getElementById('finger-pointer')) return;
+
+  const hasFinePointer = window.matchMedia('(pointer: fine)').matches;
+  const prefersReduced  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const el = document.createElement('div');
+  el.id = 'finger-pointer';
+  el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = '<span class="glyph">👉</span>';
+  document.body.appendChild(el);
+
+  if (!hasFinePointer) {
+    el.style.display = 'none';
+    return;
+  }
+
+  let raf = null;
+
+  function angleTo(x, y) {
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height * 0.8;
+    const dx = x - cx;
+    const dy = y - cy;
+    return Math.atan2(dy, dx) * 180 / Math.PI;
+  }
+
+  function onMove(e) {
+    if (prefersReduced) return;
+    const p = e.touches ? e.touches[0] : e;
+    if (!p) return;
+    const x = p.clientX;
+    const y = p.clientY;
+    if (raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      el.style.transform = `rotate(${angleTo(x, y)}deg)`;
+    });
+  }
+
+  window.addEventListener('mousemove', onMove,   { passive: true });
+  window.addEventListener('pointermove', onMove, { passive: true });
+}
+
 window.addEventListener("DOMContentLoaded", async () => {
   const tasks = [];
   if (document.getElementById("site-header")) tasks.push(include("site-header", "/partials/header.html"));
@@ -148,4 +195,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.addEventListener('mouseleave', centerPupils);
     window.addEventListener('blur', centerPupils);
   })();
+
+  initFingerPointer();
 });
