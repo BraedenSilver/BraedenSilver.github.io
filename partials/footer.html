@@ -1,16 +1,16 @@
 <footer>
   <div class="footer-bar">
-    <div class="footer-left">
+    <button id="footer-toggle" aria-expanded="false">▲</button>
+    <div id="footer-drawer">
       <p class="last-updated">Last updated: <span id="last-updated"></span></p>
       <div id="share-block">
-        <span>Share:</span>
-        <a class="share-link twitter"   href="https://twitter.com/intent/tweet?text=Check+this+out&url=" target="_blank">Twitter/X</a> ·
-        <a class="share-link reddit"    href="https://www.reddit.com/submit?url=" target="_blank">Reddit</a> ·
-        <a class="share-link hn"        href="https://news.ycombinator.com/submitlink?u=" target="_blank">Hacker News</a> ·
-        <a class="share-link facebook"  href="https://www.facebook.com/sharer/sharer.php?u=" target="_blank">Facebook</a> ·
-        <a class="share-link linkedin"  href="https://www.linkedin.com/sharing/share-offsite/?url=" target="_blank">LinkedIn</a> ·
-        <a class="share-link whatsapp"  href="https://api.whatsapp.com/send?text=" target="_blank">WhatsApp</a> ·
-        <a class="share-link email"     href="mailto:?subject=Check this out&body=">Email</a>
+        <a class="share-link twitter"   href="https://twitter.com/intent/tweet?text=Check+this+out&url=" target="_blank" aria-label="Share on Twitter/X">X</a>
+        <a class="share-link reddit"    href="https://www.reddit.com/submit?url=" target="_blank" aria-label="Share on Reddit">R</a>
+        <a class="share-link hn"        href="https://news.ycombinator.com/submitlink?u=" target="_blank" aria-label="Share on Hacker News">Y</a>
+        <a class="share-link facebook"  href="https://www.facebook.com/sharer/sharer.php?u=" target="_blank" aria-label="Share on Facebook">f</a>
+        <a class="share-link linkedin"  href="https://www.linkedin.com/sharing/share-offsite/?url=" target="_blank" aria-label="Share on LinkedIn">in</a>
+        <a class="share-link whatsapp"  href="https://api.whatsapp.com/send?text=" target="_blank" aria-label="Share on WhatsApp">W</a>
+        <a class="share-link email"     href="mailto:?subject=Check this out&body=" aria-label="Share via Email">✉</a>
       </div>
     </div>
 
@@ -40,47 +40,98 @@
     position: fixed;
     bottom: 0; left: 0; right: 0;
     display: flex;
-    justify-content: space-between;  /* <-- pushes left group to left, Kilroy to right */
-    align-items: flex-end;
+    justify-content: space-between;  /* <-- pushes content left, Kilroy to right */
+    align-items: center;
     background: #fff;
     padding: 0.5rem 1rem;
     border-top: 2px solid #000;
+    position: relative;
   }
 
-  .footer-left {
+  #footer-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  #footer-drawer {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: #fff;
+    padding: 0.5rem 1rem;
+    border: 2px solid #000;
+    border-bottom: none;
+  }
+
+  #footer-drawer.open {
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
   }
 
-  .footer-left p,
-  .footer-left #share-block {
+  #footer-drawer p,
+  #footer-drawer #share-block {
     margin: 0;
   }
 
   #share-block {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.25rem;
+    gap: 0.5rem;
   }
-  #share-block span { margin-right: 0.25rem; }
+
+  #share-block a.share-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50%;
+  }
+
+  #share-block a.share-link.twitter  { background: #000; }
+  #share-block a.share-link.reddit   { background: #FF4500; }
+  #share-block a.share-link.hn       { background: #FF6600; }
+  #share-block a.share-link.facebook { background: #1877F2; font-family: sans-serif; text-transform: lowercase; }
+  #share-block a.share-link.linkedin { background: #0A66C2; font-size: 12px; font-family: sans-serif; }
+  #share-block a.share-link.whatsapp { background: #25D366; }
+  #share-block a.share-link.email    { background: #555; }
+
+  @media (min-width: 600px) {
+    #footer-toggle { display: none; }
+    #footer-drawer {
+      position: static;
+      display: flex !important;
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+      border: none;
+      padding: 0;
+    }
+  }
 
   .kilroy-peek {
     position: relative;
     width: 160px;
     height: 0;
+    align-self: flex-end;
   }
   .kilroy-peek .head {
     position: absolute;
-    top: -56px;
+    top: -120px;
     right: 0;
     width: 120px;
-    height: 60px;
+    height: 120px;
     border: 2px solid #000;
-    border-bottom: none;
-    border-radius: 60px 60px 0 0;
+    border-radius: 50%;
     background: #fff;
   }
 
@@ -94,8 +145,8 @@
     overflow: hidden;
     transition: all 150ms ease;
   }
-  .footer-eyes .eye.left  { left: 24px; top: 16px; }
-  .footer-eyes .eye.right { right: 24px; top: 16px; }
+  .footer-eyes .eye.left  { left: 24px; top: 38px; }
+  .footer-eyes .eye.right { right: 24px; top: 38px; }
 
   .footer-eyes .pupil {
     width: 12px;
@@ -114,7 +165,7 @@
 
   .footer-eyes .eye.wink {
     height: 0;
-    top: 30px;
+    top: 52px;
     border: none;
     border-top: 2px solid #000;
     border-radius: 0;
