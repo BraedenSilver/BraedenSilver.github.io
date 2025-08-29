@@ -42,7 +42,7 @@ main { display: flex; justify-content: center; align-items: center; height: 100v
   background: #fff;
 }
 
-.kilroy-full .eye {
+.kilroy-full.footer-eyes .eye {
   position: absolute;
   width: 75px;
   height: 75px;
@@ -53,10 +53,10 @@ main { display: flex; justify-content: center; align-items: center; height: 100v
   transition: all 150ms ease;
 }
 
-.kilroy-full .eye.left  { left: 64px; top: 101px; }
-.kilroy-full .eye.right { right: 64px; top: 101px; }
+.kilroy-full.footer-eyes .eye.left  { left: 64px; top: 101px; }
+.kilroy-full.footer-eyes .eye.right { right: 64px; top: 101px; }
 
-.kilroy-full .pupil {
+.kilroy-full.footer-eyes .pupil {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -68,7 +68,7 @@ main { display: flex; justify-content: center; align-items: center; height: 100v
   transition: transform 60ms linear;
 }
 
-@media (prefers-reduced-motion: reduce) { .kilroy-full .pupil { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .kilroy-full.footer-eyes .pupil { transition: none; } }
 </style>
 
 <div id="site-footer"></div>
