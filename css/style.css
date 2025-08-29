@@ -1,0 +1,19 @@
+/* Global responsive styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, video, canvas, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+pre {
+  overflow-x: auto;
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 16px;
+  }
+}
