@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Projects — Braeden Silver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Projects by Braeden Silver">
+  <meta name="keywords" content="Braeden Silver, projects, fun, unfun, personal builds, creative experiments">
+  <meta name="author" content="Braeden Silver">
+</head>
+<body>
+
+<!-- Header and footer are injected by js/site.js -->
+<div id="site-header"></div>
+
+<main>
+  <h2>Projects</h2>
+  <p>Personal builds I do for fun or obligation. Use the sort button to toggle.</p>
+  <button id="sort-toggle">Show Fun Projects</button>
+
+  <div class="project-entry" data-tag="fun">
+    <img src="/assets/arrowright.gif" alt="<<" class="arrow">
+    <span>
+      <strong>Historia Dinosauralis</strong> —
+      <a href="/pages/historia/index.html">An encyclopedia inspired by Pliny the Elder's "Historia Naturalis" but based on Dinosaurs.</a>.
+    </span>
+    <img src="/assets/arrowleft.gif" alt=">>" class="arrow">
+  </div>
+
+  <div class="project-entry" data-tag="fun">
+    <img src="/assets/arrowright.gif" alt="<<" class="arrow">
+    <span>
+      <strong>Kilroy Was Here</strong> —
+      <a href="/pages/fun-projects/kilroy.html">a full-page version of the googly-eyed Kilroy.</a>.
+    </span>
+    <img src="/assets/arrowleft.gif" alt=">>" class="arrow">
+  </div>
+
+  <div class="project-entry" data-tag="unfun">
+    <img src="/assets/arrowright.gif" alt="<<" class="arrow">
+    <span>
+      <strong>Website Philosophy</strong> —
+      <a href="/pages/unfun-projects/philosophy.html">why this site is so barebones</a>.
+    </span>
+    <img src="/assets/arrowleft.gif" alt=">>" class="arrow">
+  </div>
+</main>
+
+<style>
+.project-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0;
+}
+.project-entry .arrow {
+  width: 48px;
+  height: auto;
+}
+</style>
+
+<div id="site-footer"></div>
+<script src="/js/site.js" defer></script>
+<script>
+(function () {
+  const btn = document.getElementById('sort-toggle');
+  const entries = document.querySelectorAll('.project-entry');
+  let mode = 'all';
+  function update() {
+    entries.forEach(e => {
+      const tag = e.dataset.tag;
+      e.style.display = (mode === 'all' || mode === tag) ? 'flex' : 'none';
+    });
+    btn.textContent = mode === 'all' ? 'Show Fun Projects' : mode === 'fun' ? 'Show Unfun Projects' : 'Show All Projects';
+  }
+  btn.addEventListener('click', () => {
+    mode = mode === 'all' ? 'fun' : mode === 'fun' ? 'unfun' : 'all';
+    update();
+  });
+  update();
+})();
+</script>
+</body>
+</html>
