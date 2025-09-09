@@ -24,14 +24,28 @@ async function include(id, file) {
 }
 
 /**
- * Stamp the page's last-modified date in the footer.
+ * Stamp the page's last-modified date in the footer using only static data.
+ * Attempts to read the "Last-Modified" HTTP header for the current page and
+ * falls back to `document.lastModified` if that header isn't available.
  */
-function updateLastUpdated() {
+async function updateLastUpdated() {
   const t = document.getElementById("last-updated");
   if (!t) return;
-  const dateStr = document.lastModified;
+
+  try {
+    const r = await fetch(location.href, { method: "HEAD" });
+    const header = r.headers.get("Last-Modified");
+    if (header) {
+      const opts = { year: "numeric", month: "short", day: "numeric" };
+      t.textContent = new Date(header).toLocaleDateString(undefined, opts);
+      return;
+    }
+  } catch {
+    /* ignore network errors and fall back */
+  }
+
   const opts = { year: "numeric", month: "short", day: "numeric" };
-  t.textContent = new Date(dateStr).toLocaleDateString(undefined, opts);
+  t.textContent = new Date(document.lastModified).toLocaleDateString(undefined, opts);
 }
 
 
@@ -91,7 +105,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (document.getElementById("site-footer")) tasks.push(include("site-footer", "/partials/footer.html"));
   await Promise.all(tasks);
 
-  updateLastUpdated();
+  await updateLastUpdated();
   handleCitationBlock();
   initClickEffect();
 
