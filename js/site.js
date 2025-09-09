@@ -97,6 +97,44 @@ function initClickEffect() {
   });
 }
 
+/**
+ * Hide the native cursor and replace it with a smaller custom one.
+ */
+function initCustomCursor() {
+  const style = document.createElement("style");
+  style.textContent = `
+    html, body, a, button { cursor: none; }
+    #custom-cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      pointer-events: none;
+      background: url('/assets/cursor/default.png') no-repeat center/24px 24px;
+      z-index: 10000;
+    }
+    #custom-cursor.pointer {
+      background-image: url('/assets/cursor/pointer.png');
+    }
+  `;
+  document.head.appendChild(style);
+
+  const cursor = document.createElement('div');
+  cursor.id = 'custom-cursor';
+  document.body.appendChild(cursor);
+
+  document.addEventListener('pointermove', e => {
+    cursor.style.left = (e.clientX - 3) + 'px';
+    cursor.style.top = (e.clientY - 3) + 'px';
+    if (e.target.closest('a, button')) {
+      cursor.classList.add('pointer');
+    } else {
+      cursor.classList.remove('pointer');
+    }
+  });
+}
+
 
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -108,6 +146,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   await updateLastUpdated();
   handleCitationBlock();
   initClickEffect();
+  initCustomCursor();
 
   // Tiny googly eyes in footer
   (() => {
