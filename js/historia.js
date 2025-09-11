@@ -190,7 +190,7 @@ export async function renderHistoriaEntry() {
   const frag = document.createDocumentFragment();
 
   // Title
-  const h2 = document.createElement("h2"); h2.textContent = entry.title; frag.appendChild(h2);
+  const h1 = document.createElement("h1"); h1.textContent = entry.title; frag.appendChild(h1);
   // Tagline
   if (entry.tagline) { const p = document.createElement("p"); p.innerHTML = `<em>${entry.tagline}</em>`; frag.appendChild(p); }
   // Hero
@@ -242,10 +242,25 @@ export async function renderHistoriaEntry() {
   // Set <title> + meta + canonical + structured data
   document.title = `${entry.title} — Historia Dinosauralis`;
 
-  const metaDesc = document.createElement("meta");
-  metaDesc.name = "description";
-  metaDesc.content = entry.tagline || (entry.description ? entry.description.split("\n")[0] : "Historia Dinosauralis entry.");
-  document.head.appendChild(metaDesc);
+  const desc = entry.tagline || (entry.description ? entry.description.split("\n")[0] : "Historia Dinosauralis entry.");
+  let metaDesc = document.querySelector('meta[name="description"]');
+  if (!metaDesc) { metaDesc = document.createElement("meta"); metaDesc.name = "description"; document.head.appendChild(metaDesc); }
+  metaDesc.content = desc;
+
+  function setMeta(prop, value, isProperty = true) {
+    const selector = isProperty ? `meta[property="${prop}"]` : `meta[name="${prop}"]`;
+    let m = document.querySelector(selector);
+    if (!m) { m = document.createElement('meta'); m.setAttribute(isProperty ? 'property' : 'name', prop); document.head.appendChild(m); }
+    m.setAttribute('content', value);
+  }
+  setMeta('og:title', document.title);
+  setMeta('og:description', desc);
+  if (entry.hero) setMeta('og:image', entry.hero);
+  setMeta('og:type', 'article');
+  setMeta('twitter:card', entry.hero ? 'summary_large_image' : 'summary', false);
+  setMeta('twitter:title', document.title, false);
+  setMeta('twitter:description', desc, false);
+  if (entry.hero) setMeta('twitter:image', entry.hero, false);
 
   const linkCanonical = document.createElement("link");
   linkCanonical.rel = "canonical";
