@@ -145,8 +145,10 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await updateLastUpdated();
   handleCitationBlock();
-  initClickEffect();
-  initCustomCursor();
+  if (window.matchMedia('(pointer: fine)').matches) {
+    initClickEffect();
+    initCustomCursor();
+  }
 
   // Tiny googly eyes in footer
   (() => {
