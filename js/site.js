@@ -73,8 +73,8 @@ function initClickEffect() {
   style.textContent = `
     .click-spark {
       position: fixed;
-      width: 8px;
-      height: 8px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       pointer-events: none;
       animation: spark-fade 600ms ease-out forwards;
