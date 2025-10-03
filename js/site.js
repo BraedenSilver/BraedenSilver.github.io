@@ -389,6 +389,82 @@ function initHistoryBackLinks() {
 }
 
 
+async function copyTextToClipboard(text) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.setAttribute('readonly', '');
+  textArea.style.position = 'absolute';
+  textArea.style.left = '-9999px';
+  document.body.appendChild(textArea);
+  textArea.select();
+  const succeeded = document.execCommand('copy');
+  textArea.remove();
+  if (!succeeded) {
+    throw new Error('copy-failed');
+  }
+}
+
+
+function initShareLink() {
+  const button = document.querySelector('[data-share-button]');
+  if (!button) return;
+
+  const feedback = document.querySelector('[data-share-feedback]');
+  let clearTimer = null;
+
+  const setFeedback = (message, isError = false) => {
+    if (!feedback) return;
+    feedback.textContent = message;
+    feedback.classList.toggle('is-error', Boolean(isError && message));
+    if (clearTimer) {
+      clearTimeout(clearTimer);
+      clearTimer = null;
+    }
+    if (message) {
+      clearTimer = window.setTimeout(() => {
+        feedback.textContent = '';
+        feedback.classList.remove('is-error');
+        clearTimer = null;
+      }, 4000);
+    }
+  };
+
+  button.addEventListener('click', async () => {
+    const shareUrl = button.dataset.shareUrl || window.location.href;
+    const shareData = {
+      title: document.title,
+      url: shareUrl,
+    };
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share(shareData);
+        setFeedback('Link shared!');
+        return;
+      } catch (error) {
+        if (error?.name === 'AbortError') {
+          setFeedback('');
+          return;
+        }
+        // Fall back to copying the link if Web Share fails for another reason.
+      }
+    }
+
+    try {
+      await copyTextToClipboard(shareUrl);
+      setFeedback('Link copied to clipboard.');
+    } catch (error) {
+      setFeedback(`Copy failed. Copy manually: ${shareUrl}`, true);
+    }
+  });
+}
+
+
 
 window.addEventListener("DOMContentLoaded", async () => {
   const tasks = [];
@@ -402,6 +478,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   initAnnouncementBanner();
   initKonamiCode();
   initHistoryBackLinks();
+  initShareLink();
 
   await updateLastUpdated();
   if (window.matchMedia('(pointer: fine)').matches) {

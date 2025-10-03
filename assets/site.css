@@ -407,12 +407,54 @@ main {
   align-items: center;
   background: #fff;
   padding: 0.5rem 1rem;
+  padding-right: 180px;
   border-top: 2px solid #000;
   overflow: visible;
 }
 
+.footer-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
 .last-updated {
   margin: 0;
+}
+
+.footer-share {
+  appearance: none;
+  border: 2px solid #000;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  padding: 0.35rem 0.8rem 0.4rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-share:hover,
+.footer-share:focus-visible {
+  background: #000;
+  color: #fff;
+}
+
+.footer-share:active {
+  transform: translateY(1px);
+}
+
+.footer-share-feedback {
+  min-width: 0;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.footer-share-feedback.is-error {
+  color: #a80000;
+  font-weight: 600;
 }
 
 .kilroy-peek {
