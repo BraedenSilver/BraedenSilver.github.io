@@ -2,8 +2,8 @@
   "id": "starting-the-blog",
   "title": "Why I'm Starting This Blog",
   "date": "2025-10-03",
-  "summary": "Setting an intention to share daily notes on projects, lessons, and curiosities across engineering, art, and play.",
-  "tags": ["hello", "goals"],
-  "body": "I have wanted a home for my scattered notes for a long time. Instead of waiting for the perfect project or a massive writeup, this blog is going to collect the small wins and interesting detours that show up every day.\n\nThe goal is simple: post at least once a day whenever I have something worth sharing. That might be a firmware trick I learned during a late-night debug session, a PCB layout experiment, or reflections on building tools that make hardware work smoother.\n\nNot everything I enjoy fits neatly into engineering, so I am leaving room for photography studies, thoughts on entrepreneurship, and the occasional video game rabbit hole. If I am curious about it, it belongs here.\n\nThis space is mostly for me, but if someone else stumbles across it, welcome. Here's to showing up consistently and capturing the ideas before they fade.",
+  "summary": "This blog is where I post updates on whatever I am doing day to day. It is not limited to research or projects, but anything I happen to be working on or thinking about. The main goal is to stay consistent, track my progress, and keep myself accountable, even if nobody else is reading.",
+  "tags": ["Goals", "General"],
+  "body": "This blog is just a place for me to talk about whatever I am doing right now. I plan to work on it a little bit every day so there is always something fresh here.\n\nIt is not limited to research or projects. It could be anything I am up to that day. The point is to keep updates going and track what I am working on. Chances are nobody is reading, but that is fine because this is mostly for me to keep up with my goals.\n\nIf you want to reach out, check the contacts page.",
   "links": []
 }
