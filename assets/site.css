@@ -200,9 +200,9 @@ main {
     box-shadow: 6px 6px 0 #000;
   }
 
-  .project-entry,
-  .project-entry:hover,
-  .project-entry:focus-visible {
+  :is(.project-entry, .quick-link),
+  :is(.project-entry, .quick-link):hover,
+  :is(.project-entry, .quick-link):focus-visible {
     transition: none !important;
     transform: none !important;
     box-shadow: 5px 5px 0 #000;
@@ -261,26 +261,15 @@ main {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: grid;
+  gap: 12px;
 }
 
 .quick-links li {
-  position: relative;
-  padding-left: 30px;
-  margin: 6px 0;
+  margin: 0;
 }
 
-.quick-links li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
-  background: url('/assets/arrowright.gif') no-repeat center/24px 24px;
-}
-
-.project-entry {
+:is(.project-entry, .quick-link) {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -295,16 +284,72 @@ main {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.project-entry .arrow {
+.project-entry-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.project-entry-summary {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.project-tags {
+  margin: 0;
+}
+
+:is(.project-entry, .quick-link) .arrow {
   width: 48px;
   height: auto;
   pointer-events: none;
 }
 
-.project-entry:hover,
-.project-entry:focus-visible {
+:is(.project-entry, .quick-link):hover,
+:is(.project-entry, .quick-link):focus-visible {
   transform: translate(-2px, -2px);
   box-shadow: 8px 8px 0 #000;
+}
+
+.quick-link {
+  margin: 0;
+}
+
+.quick-link-label {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.page-back {
+  margin: 0 0 1.5rem;
+}
+
+.page-back .project-entry {
+  margin: 0;
+  display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+}
+
+.back-link-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.back-link-label {
+  flex: 1;
+  text-align: left;
+  font-weight: 600;
+}
+
+.page-back .back-link-label {
+  flex: 0 1 auto;
 }
 
 .contact-links {
@@ -511,7 +556,7 @@ body.konami-active {
   color: #fefcf6;
   border: 3px solid #f8d948;
   border-radius: 20px;
-  max-width: min(420px, 92vw);
+  max-width: min(680px, 92vw);
   width: 100%;
   padding: clamp(1.75rem, 5vw, 2.5rem);
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
@@ -531,15 +576,21 @@ body.konami-active {
   line-height: 1.6;
 }
 
-.konami-ascii {
-  margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.75rem 1rem;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  font-size: 0.85rem;
-  line-height: 1.2;
+.konami-video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.konami-video iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .konami-close {
@@ -609,6 +660,10 @@ details#sources[open] > ol {
   padding: 1rem 1.25rem;
   background: #f6f5ff;
   box-shadow: 4px 4px 0 #000;
+}
+
+.projects-page .blog-filter {
+  background: #ffe9d6;
 }
 
 .blog-filter-title {

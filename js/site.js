@@ -208,48 +208,37 @@ function initKonamiCode() {
 
     const title = document.createElement('h2');
     title.id = 'konami-title';
-    title.textContent = 'You unlocked unlimited snacks!';
-
-    const snacks = [
-      'Word on the street is that developers who know the Konami code deserve a pizza party.',
-      'Legend says every Konami master gets infinite breadsticks (while supplies last).',
-      'Rumour mill confirms: Konami champions get the last slice and don’t have to share.',
-      'The secret pantry opens! Grab nachos, ramen, and whatever else fuels your commits.',
-    ];
+    title.textContent = 'You unlocked a live Talking Heads moment!';
 
     const message = document.createElement('p');
     message.id = 'konami-description';
-    message.textContent = snacks[Math.floor(Math.random() * snacks.length)];
+    message.textContent = 'Enjoy “Once in a Lifetime” by Talking Heads. Volume up, existential dancing optional.';
 
-    const ascii = document.createElement('pre');
-    ascii.className = 'konami-ascii';
-    ascii.setAttribute('aria-hidden', 'true');
-    ascii.textContent = [
-      '       _',
-      '     _|=|__________',
-      '    /              \\',
-      '   /  P I Z Z A !!  \\',
-      '   |   _     _   _  |',
-      '   |  | |   | | | | |',
-      '   |  |_|   |_| |_| |',
-      '   |   ___  ___  ___|',
-      '   |  |___||___||___|',
-      '   |_________________|',
-    ].join('\n');
+    const videoWrap = document.createElement('div');
+    videoWrap.className = 'konami-video';
+
+    const video = document.createElement('iframe');
+    video.src = 'https://www.youtube.com/embed/5IsSpAOD6K8?autoplay=1';
+    video.title = 'Talking Heads — Once in a Lifetime';
+    video.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    video.allowFullscreen = true;
+    video.loading = 'lazy';
+    video.referrerPolicy = 'strict-origin-when-cross-origin';
+    videoWrap.appendChild(video);
 
     const subtext = document.createElement('p');
     subtext.id = 'konami-subtext';
-    subtext.textContent = 'Grab a slice, then press escape or click anywhere outside the box to sneak back out.';
+    subtext.textContent = 'Press escape or click outside the video to close the concert and get back to work.';
 
     const close = document.createElement('button');
     close.type = 'button';
     close.className = 'konami-close';
-    close.textContent = 'Back to work';
+    close.textContent = 'Close the show';
     close.addEventListener('click', removeOverlay);
 
     panel.appendChild(title);
     panel.appendChild(message);
-    panel.appendChild(ascii);
+    panel.appendChild(videoWrap);
     panel.appendChild(subtext);
     panel.appendChild(close);
 
@@ -372,6 +361,21 @@ function initAnnouncementBanner() {
 }
 
 
+function initHistoryBackLinks() {
+  const links = document.querySelectorAll('[data-history-back]');
+  if (!links.length) return;
+
+  links.forEach(link => {
+    link.addEventListener('click', event => {
+      if (window.history.length > 1) {
+        event.preventDefault();
+        window.history.back();
+      }
+    });
+  });
+}
+
+
 
 window.addEventListener("DOMContentLoaded", async () => {
   const tasks = [];
@@ -382,6 +386,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   initAsciiLogoScaler();
   initAnnouncementBanner();
   initKonamiCode();
+  initHistoryBackLinks();
 
   await updateLastUpdated();
   if (window.matchMedia('(pointer: fine)').matches) {
