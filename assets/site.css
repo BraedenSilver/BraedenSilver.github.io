@@ -99,6 +99,73 @@ main {
   color: inherit;
 }
 
+.announcement-banner {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid #000;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.announcement-close {
+  appearance: none;
+  border: 2px solid #000;
+  background: #fff;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.1rem 0.4rem 0.2rem;
+  margin-left: auto;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.announcement-close:hover,
+.announcement-close:focus {
+  background: #000;
+  color: #fff;
+}
+
+.announcement-marquee {
+  overflow: hidden;
+  flex: 1;
+  min-height: 1.5rem;
+}
+
+.announcement-message {
+  display: flex;
+  gap: 3rem;
+  white-space: nowrap;
+  animation: announcement-scroll 18s linear infinite;
+}
+
+.announcement-message span {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@keyframes announcement-scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .announcement-message {
+    animation: none;
+  }
+}
+
 @media (max-width: 900px) {
   .logo-ascii {
     display: none;
