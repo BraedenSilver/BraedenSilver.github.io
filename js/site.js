@@ -144,6 +144,23 @@ function initAnnouncementBanner() {
   const banner = document.querySelector('.announcement-banner');
   if (!banner) return;
 
+  const DISMISS_KEY = 'announcement-dismissed-at';
+  const DISMISS_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+  const now = Date.now();
+  try {
+    const stored = window.localStorage?.getItem(DISMISS_KEY);
+    if (stored) {
+      const dismissedAt = Number.parseInt(stored, 10);
+      if (Number.isFinite(dismissedAt) && now - dismissedAt < DISMISS_DURATION_MS) {
+        banner.remove();
+        return;
+      }
+    }
+  } catch {
+    // Ignore storage access issues and show the banner normally.
+  }
+
   const track = banner.querySelector('.announcement-message');
   if (!track) return;
 
@@ -175,6 +192,11 @@ function initAnnouncementBanner() {
   const close = banner.querySelector('.announcement-close');
   if (close) {
     close.addEventListener('click', () => {
+      try {
+        window.localStorage?.setItem(DISMISS_KEY, String(Date.now()));
+      } catch {
+        // Ignore storage failures and fall back to removing for this page load only.
+      }
       banner.remove();
     });
   }
