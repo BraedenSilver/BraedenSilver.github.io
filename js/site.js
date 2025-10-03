@@ -213,7 +213,7 @@ function initKonamiCode() {
     videoWrap.className = 'konami-video';
 
     const video = document.createElement('iframe');
-    video.src = 'https://www.youtube.com/embed/5IsSpAOD6K8?autoplay=1';
+    video.src = 'https://www.youtube.com/embed/5IsSpAOD6K8?autoplay=1&start=12';
     video.title = 'Talking Heads — Once in a Lifetime';
     video.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
     video.allowFullscreen = true;
