@@ -2,26 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Blog — Braeden Silver</title>
+  <title>Projects — Braeden Silver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A quietly updated log of things I build, fix, and learn.">
-  <meta name="keywords" content="Braeden Silver, blog, engineering notes, lab notebook">
+  <meta name="description" content="Personal builds and experiments by Braeden Silver.">
+  <meta name="keywords" content="Braeden Silver, projects, hardware, experiments">
   <meta name="author" content="Braeden Silver">
-  <meta property="og:title" content="Blog — Braeden Silver">
-  <meta property="og:description" content="A quietly updated log of things I build, fix, and learn.">
-  <meta property="og:url" content="https://braedensilver.com/pages/blog/index.html">
+  <meta property="og:title" content="Projects — Braeden Silver">
+  <meta property="og:description" content="Personal builds and experiments by Braeden Silver.">
+  <meta property="og:url" content="https://braedensilver.com/pages/projects/index.html">
   <meta property="og:image" content="/assets/footer.gif">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Braeden Silver">
   <meta property="og:image:alt" content="Animated illustration of Elly the elephant beside a toolbox.">
   <meta name="twitter:image:alt" content="Animated illustration of Elly the elephant beside a toolbox.">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Blog — Braeden Silver">
-  <meta name="twitter:description" content="A quietly updated log of things I build, fix, and learn.">
+  <meta name="twitter:title" content="Projects — Braeden Silver">
+  <meta name="twitter:description" content="Personal builds and experiments by Braeden Silver.">
   <meta name="twitter:image" content="/assets/footer.gif">
   <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body data-section="blog">
+<body data-section="projects">
   <div id="site-header">
     <noscript>
     <div class="noscript-banner" role="status">
@@ -34,7 +34,7 @@
             <pre id="ascii-logo">
 ██████╗ ██████╗  █████╗ ███████╗██████╗ ███████╗███╗   ██╗███████╗██╗██╗     ██╗   ██╗███████╗██████╗     ██████╗ ██████╗ ███╗ ███╗
 ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║██╔════╝██║██║     ██║   ██║██╔════╝██╔══██╗   ██╔════╝██╔═══██╗████╗████║
-██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║███████╗██║██║     ██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔███╔██║
+██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║███████╗██║██║     ██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔████╔██║
 ██╔══██╗██╔══██╗██╔══██║██╔══╝  ██║  ██║██╔══╝  ██║╚██╗██║╚════██║██║██║     ╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║     ██║   ██║██║╚██╔╝██║
 ██████╔╝██║  ██║██║  ██║███████╗██████╔╝███████╗██║ ╚████║███████║██║███████╗ ╚████╔╝ ███████╗██║  ██║██╗╚██████╗╚██████╔╝██║ ╚═╝ ██║
 ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝
@@ -80,29 +80,19 @@
       <span class="back-link-label">Go back to the previous page</span>
     </a>
   </nav>
-    <h1>Blog</h1>
-    <p class="page-intro">I post quick write-ups when a project teaches me something worth remembering. Expect notes on firmware, lab gear, and whatever mechanical contraptions are cluttering my desk.</p>
-    <section class="blog-controls" aria-label="Filter blog posts">
-      <div class="blog-filter" id="blog-filter" hidden>
-        <h2 class="blog-filter-title">Find posts by tag</h2>
-        <div class="blog-filter-tags" id="blog-filter-tags"></div>
-        <button type="button" class="blog-filter-clear" id="blog-filter-clear" hidden>Clear selected tags</button>
+    <h1>Projects</h1>
+    <p class="page-intro">I log the builds, prototypes, and playful detours that teach me something along the way. Browse by tag to jump to a specific theme.</p>
+    <section class="blog-controls" aria-label="Filter projects">
+      <div class="blog-filter" id="projects-filter" hidden>
+        <h2 class="blog-filter-title">Find projects by tag</h2>
+        <div class="blog-filter-tags" id="projects-filter-tags"></div>
+        <button type="button" class="blog-filter-clear" id="projects-filter-clear" hidden>Clear selected tags</button>
       </div>
       <noscript>
-        <p class="blog-filter-note">Filtering posts by tag requires JavaScript. Browse the list below to read everything.</p>
+        <p class="blog-filter-note">Filtering projects by tag requires JavaScript. Browse the list below to read everything.</p>
       </noscript>
     </section>
-    <div id="blog-list" class="blog-list">
-      <a class="blog-card" href="/pages/blog/post.html?id=starting-the-blog" aria-labelledby="blog-card-starting-the-blog-title">
-        <h2 id="blog-card-starting-the-blog-title">Why I'm Starting This Blog</h2>
-        <p class="blog-meta">Oct 3, 2025</p>
-        <p class="blog-summary">Setting an intention to share daily notes on projects, lessons, and curiosities across engineering, art, and play.</p>
-        <ul class="blog-tags">
-          <li>hello</li>
-          <li>goals</li>
-        </ul>
-      </a>
-    </div>
+    <div id="projects-list" class="blog-list"></div>
     <figure class="blog-mascot">
       <img src="/assets/elly.gif" alt="Elly the elephant delivering a letter" loading="lazy" decoding="async">
     </figure>
@@ -127,10 +117,10 @@
   </div>
   <script src="/js/site.js" defer></script>
   <script type="module">
-    import { renderBlogIndex } from "/js/blog.js";
-    renderBlogIndex().catch(() => {
-      const root = document.getElementById("blog-list");
-      if (root) root.textContent = "Failed to load posts.";
+    import { renderProjectsIndex } from "/js/blog.js";
+    renderProjectsIndex().catch(() => {
+      const root = document.getElementById("projects-list");
+      if (root) root.textContent = "Failed to load projects.";
     });
   </script>
 </body>
