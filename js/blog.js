@@ -9,6 +9,20 @@ const VERSION = (function () {
 })();
 
 let _manifest;
+const postCache = new Map();
+
+const AVERAGE_READING_SPEED_WPM = 200;
+
+function estimateReadingTime(text) {
+  if (!text) return "";
+  const words = String(text).trim().match(/\S+/g);
+  const wordCount = words ? words.length : 0;
+  if (!wordCount) return "";
+  const minutes = wordCount / AVERAGE_READING_SPEED_WPM;
+  if (minutes < 0.5) return "<1 min read";
+  const rounded = Math.max(1, Math.round(minutes));
+  return `${rounded} min read`;
+}
 
 async function loadManifest() {
   if (_manifest) return _manifest;
@@ -20,6 +34,22 @@ async function loadManifest() {
   return _manifest;
 }
 
+async function loadPost(id) {
+  if (!id) throw new Error("Missing post id");
+  if (postCache.has(id)) return postCache.get(id);
+  const request = fetch(`/data/blog/${encodeURIComponent(id)}.json?v=${VERSION}`, { cache: "force-cache" })
+    .then(res => {
+      if (!res.ok) throw new Error(`Failed to load post: ${id}`);
+      return res.json();
+    })
+    .catch(err => {
+      postCache.delete(id);
+      throw err;
+    });
+  postCache.set(id, request);
+  return request;
+}
+
 function parseISO(d) {
   if (!d) return 0;
   const t = Date.parse(d);
@@ -29,6 +59,8 @@ function parseISO(d) {
 const DATE_FMT = (typeof Intl !== "undefined" && Intl.DateTimeFormat)
   ? new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" })
   : null;
+
+const CARD_INTERACTIVE_SELECTOR = "a, button, input, textarea, select, summary, [role=\"button\"]";
 
 function formatDate(d) {
   if (!d) return "";
@@ -86,46 +118,206 @@ function qs(name, search = window.location.search) {
   return params.get(name);
 }
 
+function createBlogCard(entry) {
+  const article = document.createElement("article");
+  article.className = "blog-card";
+  article.tabIndex = 0;
+  article.setAttribute("role", "link");
+  article.setAttribute("aria-label", entry.title);
+
+  const href = `/pages/blog/post.html?id=${encodeURIComponent(entry.id)}`;
+  const navigate = () => {
+    window.location.assign(href);
+  };
+
+  const openInNewTab = () => {
+    const newWindow = window.open(href, "_blank", "noopener");
+    if (newWindow) newWindow.opener = null;
+  };
+
+  article.addEventListener("click", event => {
+    if (event.defaultPrevented) return;
+    const interactive = event.target.closest(CARD_INTERACTIVE_SELECTOR);
+    if (interactive) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey) {
+      openInNewTab();
+      return;
+    }
+    navigate();
+  });
+
+  article.addEventListener("auxclick", event => {
+    if (event.button !== 1) return;
+    const interactive = event.target.closest(CARD_INTERACTIVE_SELECTOR);
+    if (interactive) return;
+    openInNewTab();
+  });
+
+  article.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      navigate();
+    }
+  });
+
+  const h2 = document.createElement("h2");
+  const a = document.createElement("a");
+  a.href = href;
+  a.textContent = entry.title;
+  h2.appendChild(a);
+
+  const metaBits = [];
+  if (entry.date) metaBits.push(formatDate(entry.date));
+  if (entry.reading_time) metaBits.push(entry.reading_time);
+
+  article.appendChild(h2);
+  if (metaBits.length) {
+    const meta = document.createElement("p");
+    meta.className = "blog-meta";
+    meta.textContent = metaBits.join(" · ");
+    article.appendChild(meta);
+  }
+
+  if (entry.summary) {
+    const summary = document.createElement("p");
+    summary.className = "blog-summary";
+    summary.textContent = entry.summary;
+    article.appendChild(summary);
+  }
+
+  const tags = createTagList(entry.tags);
+  if (tags) article.appendChild(tags);
+
+  return article;
+}
+
 export async function renderBlogIndex() {
   const root = document.getElementById("blog-list");
   if (!root) return;
   const { entries } = await loadManifest();
-  const posts = entries.slice().sort((a, b) => parseISO(b.date) - parseISO(a.date));
+  const sortedEntries = entries.slice().sort((a, b) => parseISO(b.date) - parseISO(a.date));
+  const posts = await Promise.all(sortedEntries.map(async entry => {
+    const enriched = { ...entry };
+    try {
+      const post = await loadPost(entry.id);
+      if (post) {
+        const readingTime = estimateReadingTime(post.body);
+        if (readingTime) enriched.reading_time = readingTime;
+        if (!enriched.summary && post.summary) enriched.summary = post.summary;
+        if (Array.isArray(post.tags) && post.tags.length) {
+          enriched.tags = post.tags;
+        }
+      }
+    } catch (err) {
+      // Ignore post load failures; fall back to manifest data.
+    }
+    return enriched;
+  }));
+  const filterWrap = document.getElementById("blog-filter");
+  const tagsWrap = document.getElementById("blog-filter-tags");
+  const clearBtn = document.getElementById("blog-filter-clear");
+
   if (!posts.length) {
     root.textContent = "No posts yet.";
+    if (filterWrap) filterWrap.hidden = true;
     return;
   }
-  const frag = document.createDocumentFragment();
+
+  const state = { activeTags: new Set() };
+
+  const tagSet = new Set();
   posts.forEach(entry => {
-    const article = document.createElement("article");
-    article.className = "blog-card";
-
-    const h2 = document.createElement("h2");
-    const a = document.createElement("a");
-    a.href = `/pages/blog/post.html?id=${encodeURIComponent(entry.id)}`;
-    a.textContent = entry.title;
-    h2.appendChild(a);
-
-    const meta = document.createElement("p");
-    meta.className = "blog-meta";
-    const metaBits = [];
-    if (entry.date) metaBits.push(formatDate(entry.date));
-    if (entry.reading_time) metaBits.push(entry.reading_time);
-    meta.textContent = metaBits.join(" · ");
-
-    const summary = document.createElement("p");
-    summary.className = "blog-summary";
-    summary.textContent = entry.summary || "";
-
-    article.appendChild(h2);
-    if (metaBits.length) article.appendChild(meta);
-    if (summary.textContent) article.appendChild(summary);
-    const tags = createTagList(entry.tags);
-    if (tags) article.appendChild(tags);
-
-    frag.appendChild(article);
+    (entry.tags || []).forEach(tag => {
+      if (!tag) return;
+      const cleanTag = String(tag).trim();
+      if (cleanTag) tagSet.add(cleanTag);
+    });
   });
-  root.replaceChildren(frag);
+  const allTags = Array.from(tagSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+
+  if (filterWrap) {
+    filterWrap.hidden = allTags.length === 0;
+  }
+
+  if (tagsWrap && allTags.length) {
+    const filterFrag = document.createDocumentFragment();
+    allTags.forEach(tag => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "blog-filter-tag";
+      btn.textContent = tag;
+      btn.dataset.tag = tag;
+      btn.setAttribute("aria-pressed", "false");
+      btn.addEventListener("click", () => {
+        const key = tag.toLowerCase();
+        if (state.activeTags.has(key)) {
+          state.activeTags.delete(key);
+        } else {
+          state.activeTags.add(key);
+        }
+        renderList();
+        updateFilterUI();
+      });
+      filterFrag.appendChild(btn);
+    });
+    tagsWrap.replaceChildren(filterFrag);
+  } else if (tagsWrap) {
+    tagsWrap.replaceChildren();
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (!state.activeTags.size) return;
+      state.activeTags.clear();
+      renderList();
+      updateFilterUI();
+    });
+  }
+
+  function filterPosts() {
+    if (!state.activeTags.size) return posts;
+    const selected = Array.from(state.activeTags);
+    return posts.filter(entry => {
+      const entryTags = (entry.tags || []).map(tag => String(tag).toLowerCase());
+      return selected.every(tag => entryTags.includes(tag));
+    });
+  }
+
+  function renderList() {
+    const filtered = filterPosts();
+    if (!filtered.length) {
+      const message = document.createElement("p");
+      message.textContent = state.activeTags.size
+        ? "No posts match the selected tags yet."
+        : "No posts yet.";
+      root.replaceChildren(message);
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    filtered.forEach(entry => {
+      frag.appendChild(createBlogCard(entry));
+    });
+    root.replaceChildren(frag);
+  }
+
+  function updateFilterUI() {
+    if (tagsWrap) {
+      tagsWrap.querySelectorAll("button[data-tag]").forEach(btn => {
+        const tag = (btn.dataset.tag || "").toLowerCase();
+        const isActive = state.activeTags.has(tag);
+        btn.setAttribute("aria-pressed", String(isActive));
+        btn.classList.toggle("is-active", isActive);
+      });
+    }
+    if (clearBtn) {
+      const hasActive = state.activeTags.size > 0;
+      clearBtn.hidden = !hasActive;
+      clearBtn.disabled = !hasActive;
+    }
+  }
+
+  renderList();
+  updateFilterUI();
 }
 
 function updateMetaTags(entry, canonicalUrl) {
@@ -205,12 +397,19 @@ export async function renderBlogPost() {
     root.textContent = "Missing ?id";
     return;
   }
-  const res = await fetch(`/data/blog/${encodeURIComponent(id)}.json?v=${VERSION}`, { cache: "force-cache" });
-  if (!res.ok) {
+  let post;
+  try {
+    post = await loadPost(id);
+  } catch (err) {
     root.textContent = "Post not found.";
     return;
   }
-  const entry = await res.json();
+
+  const entry = { ...post };
+  const computedReadingTime = estimateReadingTime(entry.body);
+  if (computedReadingTime) {
+    entry.reading_time = computedReadingTime;
+  }
 
   const frag = document.createDocumentFragment();
 
