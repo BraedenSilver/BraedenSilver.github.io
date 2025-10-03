@@ -1,4 +1,4 @@
-// Minimal blog renderer: manifest + per-post JSON
+// Section-aware entry renderer for blog, projects, and research
 const VERSION = (function () {
   const lm = (document.lastModified || "").trim();
   if (lm) return lm.replace(/\D/g, "").slice(0, 12);
@@ -8,8 +8,53 @@ const VERSION = (function () {
   return `${d.getFullYear()}${mm}${dd}`;
 })();
 
-let _manifest;
-const postCache = new Map();
+const SECTION_CONFIG = {
+  blog: {
+    label: "Blog",
+    manifest: "/data/blog.index.json",
+    dataDir: "/data/blog",
+    indexPath: "/pages/blog/index.html",
+    detailPath: "/pages/blog/post.html",
+    emptyMessage: "No posts yet.",
+    noneMatchMessage: "No posts match the selected tags yet.",
+    fallbackDescription: "Notes from the lab bench.",
+    schemaType: "BlogPosting",
+    ogType: "article"
+  },
+  projects: {
+    label: "Projects",
+    manifest: "/data/projects.index.json",
+    dataDir: "/data/projects",
+    indexPath: "/pages/projects/index.html",
+    detailPath: "/pages/projects/entry.html",
+    emptyMessage: "No projects yet.",
+    noneMatchMessage: "No projects match the selected tags yet.",
+    fallbackDescription: "Hands-on builds and experiments.",
+    schemaType: "CreativeWork",
+    ogType: "article"
+  },
+  research: {
+    label: "Research",
+    manifest: "/data/research.index.json",
+    dataDir: "/data/research",
+    indexPath: "/pages/research/index.html",
+    detailPath: "/pages/research/entry.html",
+    emptyMessage: "No research yet.",
+    noneMatchMessage: "No research entries match the selected tags yet.",
+    fallbackDescription: "Longer-form investigations and papers.",
+    schemaType: "ScholarlyArticle",
+    ogType: "article"
+  }
+};
+
+function getSectionConfig(section) {
+  const config = SECTION_CONFIG[section];
+  if (!config) throw new Error(`Unknown section: ${section}`);
+  return config;
+}
+
+const manifestCache = new Map();
+const entryCache = new Map();
 
 const AVERAGE_READING_SPEED_WPM = 200;
 
@@ -24,29 +69,39 @@ function estimateReadingTime(text) {
   return `${rounded} min read`;
 }
 
-async function loadManifest() {
-  if (_manifest) return _manifest;
-  const res = await fetch(`/data/blog.index.json?v=${VERSION}`, { cache: "force-cache" });
-  if (!res.ok) throw new Error("Failed to load blog manifest");
+async function loadManifest(section) {
+  const config = getSectionConfig(section);
+  if (manifestCache.has(section)) return manifestCache.get(section);
+  const res = await fetch(`${config.manifest}?v=${VERSION}`, { cache: "force-cache" });
+  if (!res.ok) throw new Error(`Failed to load ${section} manifest`);
   const data = await res.json();
-  data.entries = (data.entries || []).filter(e => e && e.id && e.title);
-  _manifest = data;
-  return _manifest;
+  const manifest = {
+    entries: (data.entries || []).filter(entry => entry && entry.id && entry.title)
+  };
+  if (Array.isArray(data.tags)) {
+    manifest.tags = data.tags
+      .map(tag => (typeof tag === "string" ? tag.trim() : ""))
+      .filter(tag => tag);
+  }
+  manifestCache.set(section, manifest);
+  return manifest;
 }
 
-async function loadPost(id) {
-  if (!id) throw new Error("Missing post id");
-  if (postCache.has(id)) return postCache.get(id);
-  const request = fetch(`/data/blog/${encodeURIComponent(id)}.json?v=${VERSION}`, { cache: "force-cache" })
+async function loadEntry(section, id) {
+  if (!id) throw new Error("Missing entry id");
+  const key = `${section}:${id}`;
+  if (entryCache.has(key)) return entryCache.get(key);
+  const config = getSectionConfig(section);
+  const request = fetch(`${config.dataDir}/${encodeURIComponent(id)}.json?v=${VERSION}`, { cache: "force-cache" })
     .then(res => {
-      if (!res.ok) throw new Error(`Failed to load post: ${id}`);
+      if (!res.ok) throw new Error(`Failed to load ${section} entry: ${id}`);
       return res.json();
     })
     .catch(err => {
-      postCache.delete(id);
+      entryCache.delete(key);
       throw err;
     });
-  postCache.set(id, request);
+  entryCache.set(key, request);
   return request;
 }
 
@@ -69,29 +124,15 @@ function formatDate(d) {
   }
 }
 
-function createParagraphFragment(text) {
-  const fragment = document.createDocumentFragment();
-  if (!text) return fragment;
-
-  const paragraphs = String(text).split(/\n\s*\n/g);
-  paragraphs.forEach(raw => {
-    const trimmed = raw.trim();
-    if (!trimmed) return;
-    const p = document.createElement("p");
-    p.textContent = trimmed.replace(/\s*\n\s*/g, " ");
-    fragment.appendChild(p);
-  });
-
-  return fragment;
-}
-
 function createTagList(tags) {
   if (!tags || !tags.length) return null;
   const ul = document.createElement("ul");
   ul.className = "blog-tags";
   tags.forEach(tag => {
+    const clean = String(tag || "").trim();
+    if (!clean) return;
     const li = document.createElement("li");
-    li.textContent = tag;
+    li.textContent = clean;
     ul.appendChild(li);
   });
   return ul;
@@ -122,29 +163,32 @@ function createLinkList(links) {
   return wrap;
 }
 
-function qs(name, search = window.location.search) {
-  const params = new URLSearchParams(search);
-  return params.get(name);
+function normalizeEntrySummary(entry) {
+  if (!entry) return entry;
+  if (!entry.summary && entry.excerpt) {
+    entry.summary = entry.excerpt;
+  }
+  return entry;
 }
 
-function createBlogCard(entry) {
-  const href = `/pages/blog/post.html?id=${encodeURIComponent(entry.id)}`;
+function createEntryCard(section, entry) {
+  const config = getSectionConfig(section);
+  const href = `${config.detailPath}?id=${encodeURIComponent(entry.id)}`;
   const card = document.createElement("a");
   card.className = "blog-card";
   card.href = href;
-  const safeId = String(entry.id || "post").replace(/[^a-zA-Z0-9_-]/g, "-");
-  const headingId = `blog-card-${safeId}-title`;
+  const safeId = String(entry.id || "entry").replace(/[^a-zA-Z0-9_-]/g, "-");
+  const headingId = `${section}-card-${safeId}-title`;
   card.setAttribute("aria-labelledby", headingId);
 
   const h2 = document.createElement("h2");
   h2.id = headingId;
   h2.textContent = entry.title;
+  card.appendChild(h2);
 
   const metaBits = [];
   if (entry.date) metaBits.push(formatDate(entry.date));
   if (entry.reading_time) metaBits.push(entry.reading_time);
-
-  card.appendChild(h2);
   if (metaBits.length) {
     const meta = document.createElement("p");
     meta.className = "blog-meta";
@@ -165,46 +209,305 @@ function createBlogCard(entry) {
   return card;
 }
 
-export async function renderBlogIndex() {
-  const root = document.getElementById("blog-list");
-  if (!root) return;
-  const { entries } = await loadManifest();
-  const sortedEntries = entries.slice().sort((a, b) => parseISO(b.date) - parseISO(a.date));
-  const posts = await Promise.all(sortedEntries.map(async entry => {
-    const enriched = { ...entry };
-    try {
-      const post = await loadPost(entry.id);
-      if (post) {
-        const readingTime = estimateReadingTime(post.body);
-        if (readingTime) enriched.reading_time = readingTime;
-        if (!enriched.summary && post.summary) enriched.summary = post.summary;
-        if (Array.isArray(post.tags) && post.tags.length) {
-          enriched.tags = post.tags;
-        }
-      }
-    } catch (err) {
-      // Ignore post load failures; fall back to manifest data.
-    }
-    return enriched;
-  }));
-  const filterWrap = document.getElementById("blog-filter");
-  const tagsWrap = document.getElementById("blog-filter-tags");
-  const clearBtn = document.getElementById("blog-filter-clear");
-
-  if (!posts.length) {
-    root.textContent = "No posts yet.";
-    if (filterWrap) filterWrap.hidden = true;
-    return;
+function normalizeBlock(block) {
+  if (!block) return null;
+  if (typeof block === "string") {
+    const text = block.trim();
+    if (!text) return null;
+    return { type: "paragraph", text };
   }
+  if (typeof block !== "object") return null;
+  const type = String(block.type || "paragraph").toLowerCase();
+  if (type === "paragraph") {
+    const text = typeof block.text === "string" ? block.text.trim() : "";
+    const html = typeof block.html === "string" ? block.html : "";
+    if (!text && !html.trim()) return null;
+    return { type: "paragraph", text, html };
+  }
+  if (type === "image") {
+    const src = typeof block.src === "string" ? block.src.trim() : "";
+    if (!src) return null;
+    return {
+      type: "image",
+      src,
+      alt: typeof block.alt === "string" ? block.alt : "",
+      caption: typeof block.caption === "string" ? block.caption : ""
+    };
+  }
+  if (type === "heading") {
+    const text = typeof block.text === "string" ? block.text.trim() : "";
+    if (!text) return null;
+    let level = Number(block.level);
+    if (!Number.isFinite(level)) level = 2;
+    level = Math.min(6, Math.max(2, Math.round(level)));
+    return { type: "heading", text, level };
+  }
+  if (type === "html") {
+    const html = typeof block.html === "string" ? block.html : "";
+    if (!html.trim()) return null;
+    return { type: "html", html };
+  }
+  return null;
+}
+
+function createBodyBlocks(body) {
+  if (!body) return [];
+  if (Array.isArray(body)) {
+    return body.map(normalizeBlock).filter(Boolean);
+  }
+  if (typeof body === "object") {
+    const single = normalizeBlock(body);
+    return single ? [single] : [];
+  }
+  const text = String(body);
+  const paragraphs = text.split(/\n\s*\n/g)
+    .map(chunk => chunk.replace(/\s*\n\s*/g, " ").trim())
+    .filter(Boolean)
+    .map(chunk => ({ type: "paragraph", text: chunk }));
+  return paragraphs;
+}
+
+function bodyToPlainText(body) {
+  const blocks = createBodyBlocks(body);
+  if (!blocks.length) {
+    return typeof body === "string" ? body : "";
+  }
+  const parts = [];
+  const scratch = document.createElement("div");
+  blocks.forEach(block => {
+    if (!block) return;
+    if (block.type === "paragraph" || block.type === "heading") {
+      if (block.text) {
+        parts.push(block.text);
+      } else if (block.html) {
+        scratch.innerHTML = block.html;
+        const text = scratch.textContent || "";
+        if (text.trim()) parts.push(text.trim());
+        scratch.textContent = "";
+      }
+    } else if (block.type === "html") {
+      scratch.innerHTML = block.html;
+      const text = scratch.textContent || "";
+      if (text.trim()) parts.push(text.trim());
+      scratch.textContent = "";
+    }
+  });
+  return parts.join(" ").replace(/\s+/g, " ").trim();
+}
+
+function renderBody(blocks) {
+  if (!blocks.length) return null;
+  const container = document.createElement("div");
+  container.className = "prose";
+  blocks.forEach(block => {
+    if (!block) return;
+    let node = null;
+    switch (block.type) {
+      case "paragraph": {
+        const p = document.createElement("p");
+        if (block.html) {
+          p.innerHTML = block.html;
+        } else {
+          p.textContent = block.text;
+        }
+        node = p;
+        break;
+      }
+      case "heading": {
+        const level = block.level || 2;
+        const tag = `h${Math.min(6, Math.max(2, level))}`;
+        const heading = document.createElement(tag);
+        heading.textContent = block.text;
+        node = heading;
+        break;
+      }
+      case "image": {
+        const figure = document.createElement("figure");
+        const img = document.createElement("img");
+        img.src = block.src;
+        img.alt = block.alt || "";
+        img.loading = "lazy";
+        img.decoding = "async";
+        figure.appendChild(img);
+        if (block.caption) {
+          const caption = document.createElement("figcaption");
+          caption.textContent = block.caption;
+          figure.appendChild(caption);
+        }
+        node = figure;
+        break;
+      }
+      case "html": {
+        const div = document.createElement("div");
+        div.className = "prose-html";
+        div.innerHTML = block.html;
+        node = div;
+        break;
+      }
+      default:
+        break;
+    }
+    if (node) container.appendChild(node);
+  });
+  if (!container.childNodes.length) return null;
+  return container;
+}
+
+function blocksToPlainText(blocks) {
+  if (!blocks || !blocks.length) return "";
+  const scratch = document.createElement("div");
+  for (const block of blocks) {
+    if (!block) continue;
+    if (block.type === "paragraph") {
+      if (block.text) return block.text;
+      if (block.html) {
+        scratch.innerHTML = block.html;
+        const text = scratch.textContent || "";
+        scratch.textContent = "";
+        if (text.trim()) return text.trim();
+      }
+    } else if (block.type === "heading" && block.text) {
+      return block.text;
+    } else if (block.type === "html") {
+      scratch.innerHTML = block.html;
+      const text = scratch.textContent || "";
+      scratch.textContent = "";
+      if (text.trim()) return text.trim();
+    }
+  }
+  return "";
+}
+
+function updateMetaTags(entry, canonicalUrl, config, blocks) {
+  const fallbackDesc = config.fallbackDescription || "Notes from the lab bench.";
+  let desc = entry.summary || entry.excerpt || "";
+  if (!desc && blocks && blocks.length) {
+    desc = blocksToPlainText(blocks) || "";
+  }
+  if (!desc) desc = fallbackDesc;
+
+  function setMeta(name, value, isProperty = true) {
+    const attr = isProperty ? "property" : "name";
+    let el = document.querySelector(`meta[${attr}="${name}"]`);
+    if (!el) {
+      el = document.createElement("meta");
+      el.setAttribute(attr, name);
+      document.head.appendChild(el);
+    }
+    el.setAttribute("content", value);
+  }
+
+  const docTitle = `${entry.title} — ${config.label} — Braeden Silver`;
+  document.title = docTitle;
+
+  let metaDesc = document.querySelector('meta[name="description"]');
+  if (!metaDesc) {
+    metaDesc = document.createElement("meta");
+    metaDesc.name = "description";
+    document.head.appendChild(metaDesc);
+  }
+  metaDesc.content = desc;
+
+  setMeta("og:title", docTitle);
+  setMeta("og:description", desc);
+  setMeta("og:url", canonicalUrl);
+  setMeta("og:type", config.ogType || "article");
+
+  if (entry.hero) {
+    setMeta("og:image", entry.hero);
+    setMeta("twitter:card", "summary_large_image", false);
+    setMeta("twitter:image", entry.hero, false);
+  } else {
+    setMeta("og:image", "/assets/footer.gif");
+    setMeta("twitter:card", "summary", false);
+    setMeta("twitter:image", "/assets/footer.gif", false);
+  }
+  setMeta("twitter:title", docTitle, false);
+  setMeta("twitter:description", desc, false);
+
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.appendChild(canonical);
+  }
+  canonical.href = canonicalUrl;
+
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": config.schemaType || "Article",
+    "headline": entry.title,
+    "description": desc,
+    "author": {
+      "@type": "Person",
+      "name": "Braeden Silver"
+    },
+    "datePublished": entry.date || new Date().toISOString().slice(0, 10),
+    "keywords": entry.tags || [],
+    "url": canonicalUrl
+  };
+  if (entry.hero) {
+    ld.image = entry.hero;
+  }
+  const ldScript = document.createElement("script");
+  ldScript.type = "application/ld+json";
+  ldScript.textContent = JSON.stringify(ld);
+  document.head.appendChild(ldScript);
+}
+
+function qs(name, search = window.location.search) {
+  const params = new URLSearchParams(search);
+  return params.get(name);
+}
+
+async function renderSectionIndex(section, options = {}) {
+  const config = getSectionConfig(section);
+  const root = document.getElementById(options.rootId || "blog-list");
+  if (!root) return;
+  const filterWrap = options.filterContainerId ? document.getElementById(options.filterContainerId) : null;
+  const tagsWrap = options.filterTagsId ? document.getElementById(options.filterTagsId) : null;
+  const clearBtn = options.clearButtonId ? document.getElementById(options.clearButtonId) : null;
+
+  const { entries: manifestEntries = [], tags: manifestTags = [] } = await loadManifest(section);
+  const entries = Array.isArray(manifestEntries) ? manifestEntries : [];
+  const defaultTags = Array.isArray(manifestTags) ? manifestTags : [];
 
   const state = { activeTags: new Set() };
 
+  const sortedEntries = entries.slice().sort((a, b) => parseISO(b.date) - parseISO(a.date));
+  const enrichedEntries = await Promise.all(sortedEntries.map(async entry => {
+    const enriched = normalizeEntrySummary({ ...entry });
+    try {
+      const detail = await loadEntry(section, entry.id);
+      if (detail) {
+        normalizeEntrySummary(detail);
+        if (detail.summary) enriched.summary = detail.summary;
+        if (detail.tags && detail.tags.length) enriched.tags = detail.tags;
+        if (detail.hero) enriched.hero = detail.hero;
+        if (detail.date && !enriched.date) enriched.date = detail.date;
+        const readingTime = estimateReadingTime(bodyToPlainText(detail.body || detail.html));
+        if (readingTime) enriched.reading_time = readingTime;
+      }
+    } catch (err) {
+      // Ignore entry load errors; fall back to manifest data.
+    }
+    if (!enriched.summary && entry.summary) {
+      enriched.summary = entry.summary;
+    }
+    return enriched;
+  }));
+
   const tagSet = new Set();
-  posts.forEach(entry => {
+  defaultTags.forEach(tag => {
+    if (!tag) return;
+    const clean = String(tag).trim();
+    if (clean) tagSet.add(clean);
+  });
+  enrichedEntries.forEach(entry => {
     (entry.tags || []).forEach(tag => {
       if (!tag) return;
-      const cleanTag = String(tag).trim();
-      if (cleanTag) tagSet.add(cleanTag);
+      const clean = String(tag).trim();
+      if (clean) tagSet.add(clean);
     });
   });
   const allTags = Array.from(tagSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
@@ -213,30 +516,32 @@ export async function renderBlogIndex() {
     filterWrap.hidden = allTags.length === 0;
   }
 
-  if (tagsWrap && allTags.length) {
-    const filterFrag = document.createDocumentFragment();
-    allTags.forEach(tag => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "blog-filter-tag";
-      btn.textContent = tag;
-      btn.dataset.tag = tag;
-      btn.setAttribute("aria-pressed", "false");
-      btn.addEventListener("click", () => {
-        const key = tag.toLowerCase();
-        if (state.activeTags.has(key)) {
-          state.activeTags.delete(key);
-        } else {
-          state.activeTags.add(key);
-        }
-        renderList();
-        updateFilterUI();
+  if (tagsWrap) {
+    if (allTags.length) {
+      const frag = document.createDocumentFragment();
+      allTags.forEach(tag => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "blog-filter-tag";
+        btn.textContent = tag;
+        btn.dataset.tag = tag;
+        btn.setAttribute("aria-pressed", "false");
+        btn.addEventListener("click", () => {
+          const key = tag.toLowerCase();
+          if (state.activeTags.has(key)) {
+            state.activeTags.delete(key);
+          } else {
+            state.activeTags.add(key);
+          }
+          renderList();
+          updateFilterUI();
+        });
+        frag.appendChild(btn);
       });
-      filterFrag.appendChild(btn);
-    });
-    tagsWrap.replaceChildren(filterFrag);
-  } else if (tagsWrap) {
-    tagsWrap.replaceChildren();
+      tagsWrap.replaceChildren(frag);
+    } else {
+      tagsWrap.replaceChildren();
+    }
   }
 
   if (clearBtn) {
@@ -248,28 +553,28 @@ export async function renderBlogIndex() {
     });
   }
 
-  function filterPosts() {
-    if (!state.activeTags.size) return posts;
+  function filterEntries() {
+    if (!state.activeTags.size) return enrichedEntries;
     const selected = Array.from(state.activeTags);
-    return posts.filter(entry => {
+    return enrichedEntries.filter(entry => {
       const entryTags = (entry.tags || []).map(tag => String(tag).toLowerCase());
       return selected.every(tag => entryTags.includes(tag));
     });
   }
 
   function renderList() {
-    const filtered = filterPosts();
+    const filtered = filterEntries();
     if (!filtered.length) {
       const message = document.createElement("p");
       message.textContent = state.activeTags.size
-        ? "No posts match the selected tags yet."
-        : "No posts yet.";
+        ? config.noneMatchMessage
+        : config.emptyMessage;
       root.replaceChildren(message);
       return;
     }
     const frag = document.createDocumentFragment();
     filtered.forEach(entry => {
-      frag.appendChild(createBlogCard(entry));
+      frag.appendChild(createEntryCard(section, entry));
     });
     root.replaceChildren(frag);
   }
@@ -294,106 +599,38 @@ export async function renderBlogIndex() {
   updateFilterUI();
 }
 
-function updateMetaTags(entry, canonicalUrl) {
-  const fallbackDesc = "Notes from the lab bench.";
-  const desc = entry.summary || (entry.body ? entry.body.split("\n")[0] : fallbackDesc);
-
-  function setMeta(name, value, isProperty = true) {
-    const attr = isProperty ? "property" : "name";
-    let el = document.querySelector(`meta[${attr}="${name}"]`);
-    if (!el) {
-      el = document.createElement("meta");
-      el.setAttribute(attr, name);
-      document.head.appendChild(el);
-    }
-    el.setAttribute("content", value);
-  }
-
-  const docTitle = `${entry.title} — Blog — Braeden Silver`;
-  document.title = docTitle;
-
-  let metaDesc = document.querySelector('meta[name="description"]');
-  if (!metaDesc) {
-    metaDesc = document.createElement("meta");
-    metaDesc.name = "description";
-    document.head.appendChild(metaDesc);
-  }
-  metaDesc.content = desc;
-
-  setMeta("og:title", docTitle);
-  setMeta("og:description", desc);
-  setMeta("og:url", canonicalUrl);
-  if (entry.hero) {
-    setMeta("og:image", entry.hero);
-    setMeta("twitter:card", "summary_large_image", false);
-    setMeta("twitter:image", entry.hero, false);
-  } else {
-    setMeta("og:image", "/assets/footer.gif");
-    setMeta("twitter:card", "summary", false);
-    setMeta("twitter:image", "/assets/footer.gif", false);
-  }
-  setMeta("twitter:title", docTitle, false);
-  setMeta("twitter:description", desc, false);
-  setMeta("og:type", "article");
-
-  let canonical = document.querySelector('link[rel="canonical"]');
-  if (!canonical) {
-    canonical = document.createElement("link");
-    canonical.rel = "canonical";
-    document.head.appendChild(canonical);
-  }
-  canonical.href = canonicalUrl;
-
-  const ld = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": entry.title,
-    "description": desc,
-    "author": {
-      "@type": "Person",
-      "name": "Braeden Silver"
-    },
-    "datePublished": entry.date || new Date().toISOString().slice(0, 10),
-    "keywords": entry.tags || [],
-    "url": canonicalUrl
-  };
-  const ldScript = document.createElement("script");
-  ldScript.type = "application/ld+json";
-  ldScript.textContent = JSON.stringify(ld);
-  document.head.appendChild(ldScript);
-}
-
-export async function renderBlogPost() {
-  const root = document.getElementById("blog-post");
+async function renderSectionEntry(section, options = {}) {
+  const config = getSectionConfig(section);
+  const root = document.getElementById(options.rootId || "blog-post");
   if (!root) return;
-  const id = qs("id");
+  const id = options.id || qs("id");
   if (!id) {
     root.textContent = "Missing ?id";
     return;
   }
-  let post;
+  let entry;
   try {
-    post = await loadPost(id);
+    entry = await loadEntry(section, id);
   } catch (err) {
-    root.textContent = "Post not found.";
+    root.textContent = "Entry not found.";
     return;
   }
 
-  const entry = { ...post };
-  const computedReadingTime = estimateReadingTime(entry.body);
-  if (computedReadingTime) {
-    entry.reading_time = computedReadingTime;
+  const working = normalizeEntrySummary({ ...entry });
+  const readingTime = estimateReadingTime(bodyToPlainText(entry.body || entry.html));
+  if (readingTime) {
+    working.reading_time = readingTime;
   }
 
   const frag = document.createDocumentFragment();
 
   const h1 = document.createElement("h1");
-  h1.textContent = entry.title;
+  h1.textContent = working.title;
   frag.appendChild(h1);
 
   const metaBits = [];
-  if (entry.date) metaBits.push(formatDate(entry.date));
-  if (entry.reading_time) metaBits.push(entry.reading_time);
+  if (working.date) metaBits.push(formatDate(working.date));
+  if (working.reading_time) metaBits.push(working.reading_time);
   if (metaBits.length) {
     const meta = document.createElement("p");
     meta.className = "blog-meta";
@@ -401,30 +638,32 @@ export async function renderBlogPost() {
     frag.appendChild(meta);
   }
 
-  if (entry.hero) {
+  if (working.hero) {
     const figure = document.createElement("figure");
     figure.className = "blog-hero";
     const img = document.createElement("img");
-    img.src = entry.hero;
-    const heroAlt = typeof entry.hero_alt === "string" ? entry.hero_alt : (typeof entry.heroAlt === "string" ? entry.heroAlt : "");
+    img.src = working.hero;
+    const heroAlt = typeof working.hero_alt === "string"
+      ? working.hero_alt
+      : (typeof working.heroAlt === "string" ? working.heroAlt : "");
     img.alt = heroAlt;
     img.loading = "lazy";
     img.decoding = "async";
     figure.appendChild(img);
+    const caption = working.hero_caption || working.heroCaption;
+    if (typeof caption === "string" && caption.trim()) {
+      const figcaption = document.createElement("figcaption");
+      figcaption.textContent = caption.trim();
+      figure.appendChild(figcaption);
+    }
     frag.appendChild(figure);
   }
 
-  if (entry.body) {
-    const body = document.createElement("div");
-    body.className = "blog-body";
-    const fragment = createParagraphFragment(entry.body);
-    if (fragment.childNodes.length) {
-      body.appendChild(fragment);
-      frag.appendChild(body);
-    }
-  }
+  const blocks = createBodyBlocks(working.body);
+  const body = renderBody(blocks);
+  if (body) frag.appendChild(body);
 
-  const tags = createTagList(entry.tags);
+  const tags = createTagList(working.tags);
   if (tags) {
     const label = document.createElement("p");
     label.className = "blog-tags-label";
@@ -433,14 +672,63 @@ export async function renderBlogPost() {
     frag.appendChild(tags);
   }
 
-  const links = createLinkList(entry.links);
+  const links = createLinkList(working.links);
   if (links) frag.appendChild(links);
 
   root.replaceChildren(frag);
 
   const canonicalUrl = location.href.split("#")[0];
-  updateMetaTags(entry, canonicalUrl);
+  updateMetaTags(working, canonicalUrl, config, blocks);
 
-  const backLink = document.getElementById("blog-back");
-  if (backLink) backLink.href = "/pages/blog/index.html";
+  const backLinkId = options.backLinkId || "blog-back";
+  const backLink = document.getElementById(backLinkId);
+  if (backLink) backLink.href = config.indexPath;
+}
+
+export async function renderBlogIndex() {
+  return renderSectionIndex("blog", {
+    rootId: "blog-list",
+    filterContainerId: "blog-filter",
+    filterTagsId: "blog-filter-tags",
+    clearButtonId: "blog-filter-clear"
+  });
+}
+
+export async function renderBlogPost() {
+  return renderSectionEntry("blog", {
+    rootId: "blog-post",
+    backLinkId: "blog-back"
+  });
+}
+
+export async function renderProjectsIndex() {
+  return renderSectionIndex("projects", {
+    rootId: "projects-list",
+    filterContainerId: "projects-filter",
+    filterTagsId: "projects-filter-tags",
+    clearButtonId: "projects-filter-clear"
+  });
+}
+
+export async function renderProjectEntry() {
+  return renderSectionEntry("projects", {
+    rootId: "project-entry",
+    backLinkId: "project-back"
+  });
+}
+
+export async function renderResearchIndex() {
+  return renderSectionIndex("research", {
+    rootId: "research-list",
+    filterContainerId: "research-filter",
+    filterTagsId: "research-filter-tags",
+    clearButtonId: "research-filter-clear"
+  });
+}
+
+export async function renderResearchEntry() {
+  return renderSectionEntry("research", {
+    rootId: "research-entry",
+    backLinkId: "research-back"
+  });
 }

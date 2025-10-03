@@ -38,6 +38,30 @@ async function include(id, file) {
   }
 }
 
+function highlightCurrentNav() {
+  const section = document.body?.dataset?.section;
+  if (!section) return;
+  const links = document.querySelectorAll('#site-header nav a[data-section]');
+  links.forEach(link => {
+    const isMatch = link.dataset.section === section;
+    link.classList.toggle('is-active', isMatch);
+    if (isMatch) {
+      link.setAttribute('aria-current', 'page');
+    } else {
+      link.removeAttribute('aria-current');
+    }
+  });
+
+  const footerLinks = document.querySelectorAll('#site-footer a[data-section]');
+  footerLinks.forEach(link => {
+    if (link.dataset.section === section) {
+      link.setAttribute('aria-current', 'page');
+    } else {
+      link.removeAttribute('aria-current');
+    }
+  });
+}
+
 function prefersReducedMotion() {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
     return false;
@@ -371,6 +395,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (document.getElementById("site-header")) tasks.push(include("site-header", "/partials/header.html"));
   if (document.getElementById("site-footer")) tasks.push(include("site-footer", "/partials/footer.html"));
   await Promise.all(tasks);
+
+  highlightCurrentNav();
 
   initAsciiLogoScaler();
   initAnnouncementBanner();
