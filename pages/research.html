@@ -36,7 +36,7 @@
             <pre id="ascii-logo">
 ██████╗ ██████╗  █████╗ ███████╗██████╗ ███████╗███╗   ██╗███████╗██╗██╗     ██╗   ██╗███████╗██████╗     ██████╗ ██████╗ ███╗ ███╗
 ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║██╔════╝██║██║     ██║   ██║██╔════╝██╔══██╗   ██╔════╝██╔═══██╗████╗████║
-██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║███████╗██║██║     ██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔████╔██║
+██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║███████╗██║██║     ██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔███╔██║
 ██╔══██╗██╔══██╗██╔══██║██╔══╝  ██║  ██║██╔══╝  ██║╚██╗██║╚════██║██║██║     ╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║     ██║   ██║██║╚██╔╝██║
 ██████╔╝██║  ██║██║  ██║███████╗██████╔╝███████╗██║ ╚████║███████║██║███████╗ ╚████╔╝ ███████╗██║  ██║██╗╚██████╗╚██████╔╝██║ ╚═╝ ██║
 ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝
@@ -64,6 +64,14 @@
         <a href="/pages/contact.html">Contact</a>
       </nav>
     </header>
+    <div class="announcement-banner" data-text="New: the blog section is live. Happy October, Happy Halloween!">
+      <div class="announcement-marquee" role="status" aria-live="polite">
+        <div class="announcement-message">
+          <span>New: the blog section is live. Happy October, Happy Halloween!</span>
+        </div>
+      </div>
+      <button type="button" class="announcement-close" aria-label="Dismiss announcement">&times;</button>
+    </div>
     <hr>
   </noscript>
 </div>
@@ -91,7 +99,7 @@
   <noscript>
     <footer>
       <div class="footer-bar">
-        <p class="last-updated">Last updated: <span>See Git history</span></p>
+        <p class="last-updated">Last updated: <span id="last-updated">See Git history</span></p>
 
         <div class="kilroy-peek footer-eyes" aria-hidden="true">
           <div class="head">
