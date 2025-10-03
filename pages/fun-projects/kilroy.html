@@ -16,6 +16,7 @@
   <meta name="twitter:title" content="Kilroy Was Here — Braeden Silver">
   <meta name="twitter:description" content="Playful Kilroy Was Here page with interactive googly eyes by Braeden Silver">
   <meta name="twitter:image" content="/assets/footer.gif">
+  <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body class="kilroy-page">
 
@@ -32,68 +33,6 @@
   </div>
   <p class="kilroy-desc">“Kilroy Was Here” is a playful doodle whose eyes follow your cursor. <a href="https://github.com/BraedenSilver/BraedenSilver.github.io/blob/main/pages/fun-projects/kilroy.html">View source on GitHub</a>.</p>
 </main>
-
-<style>
-body { margin: 0; }
-body.kilroy-page .kilroy-peek { display: none; }
-
-main { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center; }
-
-.kilroy-full {
-  position: relative;
-  width: 320px;
-  height: 320px;
-}
-
-.kilroy-full .head {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 5px solid #000;
-  border-radius: 50%;
-  background: #fff;
-}
-
-.kilroy-full.footer-eyes .eye {
-  position: absolute;
-  --eye-size: 75px;
-  --eye-border: 5px;
-  width: var(--eye-size);
-  height: var(--eye-size);
-  border: var(--eye-border) solid #000;
-  border-radius: 50%;
-  background: #fff;
-  overflow: hidden;
-  transition: all 150ms ease;
-}
-
-.kilroy-full.footer-eyes .eye.left  {
-  left: 64px;
-  --eye-top: 101px;
-  top: var(--eye-top);
-}
-.kilroy-full.footer-eyes .eye.right {
-  right: 64px;
-  --eye-top: 101px;
-  top: var(--eye-top);
-}
-
-.kilroy-full.footer-eyes .pupil {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #000;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  transition: transform 60ms linear;
-}
-
-@media (prefers-reduced-motion: reduce) { .kilroy-full.footer-eyes .pupil { transition: none; } }
-</style>
 
 <div id="site-footer"></div>
 <script src="/js/site.js" defer></script>

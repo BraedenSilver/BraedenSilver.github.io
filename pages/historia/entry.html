@@ -15,6 +15,7 @@
   <meta name="twitter:title" content="Historia Entry — Braeden Silver">
   <meta name="twitter:description" content="Detailed dinosaur entry in the Historia Dinosauralis encyclopedia">
   <meta name="twitter:image" content="/assets/footer.gif">
+  <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
 <!-- Header and footer are injected by js/site.js -->
@@ -34,10 +35,5 @@
   renderHistoriaEntry().catch(()=>{ document.getElementById("historia-entry").textContent="Failed to load entry."; });
 </script>
 
-<!-- Optional tiny animation just for Sources dropdown -->
-<style>
-  details#sources > ol { overflow: hidden; transition: max-height 200ms ease; max-height: 0; }
-  details#sources[open] > ol { max-height: 2000px; }
-</style>
 </body>
 </html>
