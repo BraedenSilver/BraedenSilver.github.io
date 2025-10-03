@@ -1,34 +1,27 @@
 # Contributing to BraedenSilver.github.io
 
-First off, thank you for wanting to enhance the site. The goal is to keep the vibe fierce, honest, and fast. Follow these guidelines so we can ship with confidence.
+Thank you for your interest in improving this site. The goal is to keep the content accurate and the codebase easy to maintain. Please follow the guidelines below when proposing changes.
 
-## 🔧 Ground Rules
-- Be respectful and keep feedback constructive.
-- Do not copy/paste content from the site elsewhere without respecting the [Anonymized Remix License](LICENSE).
-- Never misrepresent yourself as Braeden Silver or claim ownership of their identity.
+## Expectations
+- Maintain a respectful and professional tone in issues and pull requests.
+- Follow the licensing terms in [`LICENSE`](LICENSE) when reusing content.
+- Do not represent yourself as Braeden Silver or imply endorsement.
 
-## 🛠 Development Workflow
-1. **Fork** the repo and create your feature branch from `main`.
-2. **Install** dependencies if you need build tooling. This site is static, so a local server (Python, Node `serve`, etc.) is usually enough.
-3. **Build & test** your changes locally. Run through the affected pages to ensure there are no regressions.
-4. **Commit** using clear messages that explain the why, not just the what.
-5. **Open a pull request** using the provided template. Link any relevant issues.
+## Development Workflow
+1. **Fork the repository** and create a feature branch from `main`.
+2. **Develop locally** using any static file server (for example, `python3 -m http.server 8000`).
+3. **Test your changes** by reviewing the affected pages in a browser.
+4. **Commit clearly** with messages that describe the motivation for the change.
+5. **Open a pull request** using the provided template and link to related issues when applicable.
 
-## ✅ Content & Code Standards
-- Keep HTML semantic, CSS organized, and JavaScript lean.
-- Match existing formatting and naming conventions within folders.
-- For blog entries, use the JSON structure documented in the [README](README.md).
-- Include screenshots or GIFs for visual changes when possible.
+## Code and Content Standards
+- Use semantic HTML, organized CSS, and concise JavaScript.
+- Match existing formatting and file organization within each directory.
+- For blog updates, follow the JSON structure described in the [README](README.md).
+- Include screenshots or other documentation for visual changes when possible.
 
-## 🧾 Pull Requests
-Every PR should:
-- Have a descriptive title.
-- Explain the motivation, the changes made, and any follow-up work.
-- Reference related issues using GitHub keywords (`Closes #123`).
-- Pass any checks or linters you introduce.
+## Issues
+- Use the templates in [`.github/ISSUE_TEMPLATE`](.github/ISSUE_TEMPLATE) for bug reports or feature requests.
+- Provide reproduction steps, expected behavior, and any relevant screenshots.
 
-## 🗳 Issues
-- Use the templates in [`.github/ISSUE_TEMPLATE`](.github/ISSUE_TEMPLATE) when filing bugs or feature requests.
-- Provide reproduction steps, screenshots, and expected vs actual behavior.
-
-Thanks for keeping the forge burning hot! 🔥
+We appreciate your contributions and collaboration.

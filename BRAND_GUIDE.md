@@ -1,15 +1,15 @@
-# Brand & Attribution Guardrails
+# Brand & Attribution Guidelines
 
-These rules protect the identity of Braeden Silver while still letting you remix the work.
+These guidelines explain how to reference Braeden Silver and the braedensilver.com project when reusing code or content from this repository.
 
-## Be Honest About Origin
-- Do not claim or imply that your derivative is the official braedensilver.com site.
-- Do not use Braeden Silver’s name, likeness, or personal contact details in ways that could confuse people about who created or operates your derivative.
+## Attribution
+- Clearly state that your work is based on material from braedensilver.com.
+- Distinguish your derivative project from the original site so visitors understand who maintains each version.
 
-## Attribution Choices
-- Code and content released under CC BY 4.0 require attribution that clearly distinguishes your work from the original.
+## Use of Name and Likeness
+- Do not imply endorsement or authorship by Braeden Silver unless you have written permission.
+- Avoid reusing personal imagery or signatures without approval.
 
 ## Visual Identity
-- Feel free to remix colors, layouts, and imagery, but avoid copying personal photography or signatures unless you have explicit permission.
-
-When in doubt, reach out via an issue or the contact links on the live site before shipping.
+- You are encouraged to adapt colors, layouts, or typography to suit your project.
+- When in doubt about specific assets, contact the maintainer through the repository issue tracker.
