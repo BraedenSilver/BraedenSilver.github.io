@@ -1,0 +1,387 @@
+html {
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #fff;
+  color: #000;
+  padding-bottom: calc(5rem + 24px);
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+}
+
+main {
+  max-width: 800px;
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.ascii-header {
+  text-align: left;
+  position: relative;
+}
+
+.ascii-header h1 {
+  margin: 0;
+}
+
+.site-logo {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: min(95vw, 1100px);
+  text-decoration: none;
+  color: inherit;
+  line-height: 1;
+}
+
+.site-logo:hover,
+.site-logo:focus {
+  color: inherit;
+}
+
+.logo-ascii,
+.logo-mobile {
+  display: block;
+}
+
+.logo-ascii pre,
+.logo-mobile pre {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  white-space: pre;
+  line-height: 1;
+  display: inline-block;
+}
+
+.logo-ascii pre {
+  font-size: 15px;
+  transform-origin: left center;
+}
+
+.logo-mobile {
+  display: none;
+}
+
+.logo-mobile pre {
+  font-size: clamp(12px, 6vw, 18px);
+  transform-origin: left center;
+}
+
+.logo-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ascii-header nav {
+  margin-top: 0.75rem;
+}
+
+.ascii-header nav a {
+  color: inherit;
+}
+
+@media (max-width: 900px) {
+  .logo-ascii {
+    display: none;
+  }
+
+  .logo-mobile {
+    display: block;
+  }
+
+  .logo-mobile pre {
+    display: block;
+    max-width: min(90vw, 360px);
+  }
+
+  .logo-text {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    clip: auto;
+    clip-path: none;
+    white-space: normal;
+    display: block;
+    font-weight: 700;
+    font-size: clamp(1.75rem, 8vw, 3rem);
+    text-align: left;
+  }
+}
+
+.quick-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quick-links li {
+  position: relative;
+  padding-left: 30px;
+  margin: 6px 0;
+}
+
+.quick-links li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  background: url('/assets/arrowright.gif') no-repeat center/24px 24px;
+}
+
+.project-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.project-entry .arrow {
+  width: 48px;
+  height: auto;
+}
+
+.contact-links {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-links li {
+  margin: 4px 0;
+}
+
+.footer-bar {
+  position: fixed;
+  z-index: 1000;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 0.5rem 1rem;
+  border-top: 2px solid #000;
+  overflow: visible;
+}
+
+.last-updated {
+  margin: 0;
+}
+
+.kilroy-peek {
+  position: absolute;
+  bottom: -30px;
+  right: 1rem;
+  width: 160px;
+  height: 120px;
+  overflow: hidden;
+}
+
+.kilroy-peek .head {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  border: 2px solid #000;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.footer-eyes .eye {
+  --eye-size: 28px;
+  --eye-border: 2px;
+  width: var(--eye-size);
+  height: var(--eye-size);
+  border-radius: 50%;
+  background: #fff;
+  border: var(--eye-border) solid #000;
+  position: absolute;
+  overflow: hidden;
+  transition: all 150ms ease;
+}
+
+.footer-eyes .eye.left {
+  left: 24px;
+  --eye-top: 38px;
+  top: var(--eye-top);
+}
+
+.footer-eyes .eye.right {
+  right: 24px;
+  --eye-top: 38px;
+  top: var(--eye-top);
+}
+
+.footer-eyes .pupil {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #000;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 60ms linear;
+}
+
+.footer-eyes .eye.wink {
+  height: 0;
+  top: calc(var(--eye-top) + var(--eye-size) / 2 - var(--eye-border) / 2);
+  border: none;
+  border-top: var(--eye-border) solid #000;
+  border-radius: 0;
+}
+
+.footer-eyes .eye.wink .pupil {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-eyes .pupil,
+  .kilroy-full.footer-eyes .pupil {
+    transition: none;
+  }
+}
+
+body.kilroy-page .kilroy-peek {
+  display: none;
+}
+
+body.kilroy-page main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.kilroy-full {
+  position: relative;
+  width: 320px;
+  height: 320px;
+}
+
+.kilroy-full .head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 5px solid #000;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.kilroy-full.footer-eyes .eye {
+  position: absolute;
+  --eye-size: 75px;
+  --eye-border: 5px;
+  width: var(--eye-size);
+  height: var(--eye-size);
+  border: var(--eye-border) solid #000;
+  border-radius: 50%;
+  background: #fff;
+  overflow: hidden;
+  transition: all 150ms ease;
+}
+
+.kilroy-full.footer-eyes .eye.left {
+  left: 64px;
+  --eye-top: 101px;
+  top: var(--eye-top);
+}
+
+.kilroy-full.footer-eyes .eye.right {
+  right: 64px;
+  --eye-top: 101px;
+  top: var(--eye-top);
+}
+
+.kilroy-full.footer-eyes .pupil {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #000;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 60ms linear;
+}
+
+.click-spark {
+  position: fixed;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: spark-fade 600ms ease-out forwards;
+}
+
+@keyframes spark-fade {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.cursor-enabled,
+.cursor-enabled body,
+.cursor-enabled a,
+.cursor-enabled button {
+  cursor: none;
+}
+
+.cursor-enabled #custom-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  background: url('/assets/cursor/default.png') no-repeat center/24px 24px;
+  z-index: 10000;
+}
+
+.cursor-enabled #custom-cursor.pointer {
+  background-image: url('/assets/cursor/pointer.png');
+}
+
+details#sources > ol {
+  overflow: hidden;
+  transition: max-height 200ms ease;
+  max-height: 0;
+}
+
+details#sources[open] > ol {
+  max-height: 2000px;
+}

@@ -24,6 +24,51 @@ async function include(id, file) {
 }
 
 /**
+ * Scale the wide ASCII logo so it fits within its container.
+ */
+function initAsciiLogoScaler() {
+  const wrap = document.querySelector('.logo-ascii');
+  const pre = wrap ? wrap.querySelector('pre') : null;
+  if (!wrap || !pre) return;
+
+  const applyScale = () => {
+    if (!document.body.contains(pre)) return;
+    const styles = window.getComputedStyle(wrap);
+    if (styles.display === 'none' || wrap.clientWidth === 0) {
+      pre.style.transform = '';
+      pre.style.height = '';
+      return;
+    }
+
+    pre.style.transform = 'scale(1)';
+    pre.style.height = 'auto';
+
+    const contentWidth = pre.scrollWidth;
+    const available = wrap.clientWidth;
+    if (!contentWidth || !available) return;
+
+    const scale = Math.min(1, available / contentWidth);
+    pre.style.transform = `scale(${scale})`;
+    pre.style.height = pre.getBoundingClientRect().height + 'px';
+  };
+
+  const requestScale = () => window.requestAnimationFrame(applyScale);
+
+  requestScale();
+  window.addEventListener('resize', requestScale);
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(requestScale).catch(() => {});
+  }
+
+  if ('ResizeObserver' in window) {
+    const observer = new ResizeObserver(() => requestScale());
+    observer.observe(wrap);
+    // Preserve a reference so the observer isn't garbage-collected prematurely.
+    wrap.__asciiResizeObserver = observer;
+  }
+}
+
+/**
  * Stamp the page's last-modified date in the footer using only static data.
  * Attempts to read the "Last-Modified" HTTP header for the current page and
  * falls back to `document.lastModified` if that header isn't available.
@@ -69,23 +114,6 @@ function handleCitationBlock() {
  * Spawn a colorful spark where the user clicks.
  */
 function initClickEffect() {
-  const style = document.createElement("style");
-  style.textContent = `
-    .click-spark {
-      position: fixed;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      pointer-events: none;
-      animation: spark-fade 600ms ease-out forwards;
-    }
-    @keyframes spark-fade {
-      from { transform: scale(1); opacity: 1; }
-      to { transform: scale(2); opacity: 0; }
-    }
-  `;
-  document.head.appendChild(style);
-
   document.addEventListener("click", (e) => {
     const s = document.createElement("span");
     s.className = "click-spark";
@@ -101,28 +129,17 @@ function initClickEffect() {
  * Hide the native cursor and replace it with a smaller custom one.
  */
 function initCustomCursor() {
-  const style = document.createElement("style");
-  style.textContent = `
-    html, body, a, button { cursor: none; }
-    #custom-cursor {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 24px;
-      height: 24px;
-      pointer-events: none;
-      background: url('/assets/cursor/default.png') no-repeat center/24px 24px;
-      z-index: 10000;
-    }
-    #custom-cursor.pointer {
-      background-image: url('/assets/cursor/pointer.png');
-    }
-  `;
-  document.head.appendChild(style);
+  const html = document.documentElement;
+  if (!html) return;
 
-  const cursor = document.createElement('div');
-  cursor.id = 'custom-cursor';
-  document.body.appendChild(cursor);
+  let cursor = document.getElementById('custom-cursor');
+  if (!cursor) {
+    cursor = document.createElement('div');
+    cursor.id = 'custom-cursor';
+    document.body.appendChild(cursor);
+  }
+
+  html.classList.add('cursor-enabled');
 
   document.addEventListener('pointermove', e => {
     cursor.style.left = (e.clientX - 3) + 'px';
@@ -142,6 +159,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (document.getElementById("site-header")) tasks.push(include("site-header", "/partials/header.html"));
   if (document.getElementById("site-footer")) tasks.push(include("site-footer", "/partials/footer.html"));
   await Promise.all(tasks);
+
+  initAsciiLogoScaler();
 
   await updateLastUpdated();
   handleCitationBlock();
