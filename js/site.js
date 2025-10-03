@@ -200,7 +200,6 @@ function initKonamiCode() {
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-labelledby', 'konami-title');
-    overlay.setAttribute('aria-describedby', 'konami-description konami-subtext');
 
     const panel = document.createElement('div');
     panel.className = 'konami-panel';
@@ -208,11 +207,7 @@ function initKonamiCode() {
 
     const title = document.createElement('h2');
     title.id = 'konami-title';
-    title.textContent = 'You unlocked a live Talking Heads moment!';
-
-    const message = document.createElement('p');
-    message.id = 'konami-description';
-    message.textContent = 'Enjoy “Once in a Lifetime” by Talking Heads. Volume up, existential dancing optional.';
+    title.textContent = 'Secret Video Unlocked';
 
     const videoWrap = document.createElement('div');
     videoWrap.className = 'konami-video';
@@ -226,20 +221,14 @@ function initKonamiCode() {
     video.referrerPolicy = 'strict-origin-when-cross-origin';
     videoWrap.appendChild(video);
 
-    const subtext = document.createElement('p');
-    subtext.id = 'konami-subtext';
-    subtext.textContent = 'Press escape or click outside the video to close the concert and get back to work.';
-
     const close = document.createElement('button');
     close.type = 'button';
     close.className = 'konami-close';
-    close.textContent = 'Close the show';
+    close.textContent = 'Exit video';
     close.addEventListener('click', removeOverlay);
 
     panel.appendChild(title);
-    panel.appendChild(message);
     panel.appendChild(videoWrap);
-    panel.appendChild(subtext);
     panel.appendChild(close);
 
     overlay.appendChild(panel);
