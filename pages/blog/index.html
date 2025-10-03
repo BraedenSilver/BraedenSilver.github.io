@@ -23,6 +23,13 @@
   <main>
     <h1>Blog</h1>
     <p class="blog-intro">I post quick write-ups when a project teaches me something worth remembering. Expect notes on firmware, lab gear, and whatever mechanical contraptions are cluttering my desk.</p>
+    <section class="blog-controls" aria-label="Filter blog posts">
+      <div class="blog-filter" id="blog-filter" hidden>
+        <h2 class="blog-filter-title">Find posts by tag</h2>
+        <div class="blog-filter-tags" id="blog-filter-tags"></div>
+        <button type="button" class="blog-filter-clear" id="blog-filter-clear" hidden>Clear selected tags</button>
+      </div>
+    </section>
     <div id="blog-list" class="blog-list"><p>Loading posts…</p></div>
   </main>
   <div id="site-footer"></div>
