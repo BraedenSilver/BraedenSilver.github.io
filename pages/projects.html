@@ -21,42 +21,101 @@
 <body>
 
 <!-- Header and footer are injected by js/site.js -->
-<div id="site-header"></div>
+<div id="site-header">
+  <noscript>
+    <div class="noscript-banner" role="status">
+      JavaScript is disabled. Enable it and clear your cache to load the fully interactive version of this site.
+    </div>
+    <header class="ascii-header">
+      <h1>
+        <a href="/" class="site-logo" aria-label="Braeden Silver — Home">
+          <span class="logo-ascii" aria-hidden="true">
+            <pre id="ascii-logo">
+██████╗ ██████╗  █████╗ ███████╗██████╗ ███████╗███╗   ██╗███████╗██╗██╗     ██╗   ██╗███████╗██████╗     ██████╗ ██████╗ ███╗ ███╗
+██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║██╔════╝██║██║     ██║   ██║██╔════╝██╔══██╗   ██╔════╝██╔═══██╗████╗████║
+██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║███████╗██║██║     ██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔████╔██║
+██╔══██╗██╔══██╗██╔══██║██╔══╝  ██║  ██║██╔══╝  ██║╚██╗██║╚════██║██║██║     ╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║     ██║   ██║██║╚██╔╝██║
+██████╔╝██║  ██║██║  ██║███████╗██████╔╝███████╗██║ ╚████║███████║██║███████╗ ╚████╔╝ ███████╗██║  ██║██╗╚██████╗╚██████╔╝██║ ╚═╝ ██║
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝
+            </pre>
+          </span>
+          <span class="logo-mobile" aria-hidden="true">
+            <pre>
+██████╗ ███████╗
+██╔══██╗██╔════╝
+██████╔╝███████╗
+██╔══██╗╚════██║
+██████╔╝███████║
+╚═════╝ ╚══════╝
+            </pre>
+          </span>
+          <span class="logo-text">Braeden Silver</span>
+        </a>
+      </h1>
+
+      <nav>
+        <a href="/index.html">Home</a> ·
+        <a href="/pages/projects.html">Projects</a> ·
+        <a href="/pages/research.html">Research</a> ·
+        <a href="/pages/blog/index.html">Blog</a> ·
+        <a href="/pages/contact.html">Contact</a>
+      </nav>
+    </header>
+    <hr>
+  </noscript>
+</div>
 
 <main>
   <h1>Projects</h1>
   <p>Personal builds I do for fun or obligation. Use the sort button to toggle.</p>
-  <button id="sort-toggle">Show Fun Projects</button>
+  <button type="button" id="sort-toggle">Show Fun Projects</button>
 
   <div class="project-entry" data-tag="fun">
-    <img src="/assets/arrowright.gif" alt="<<" class="arrow">
+    <img src="/assets/arrowright.gif" alt="" class="arrow" aria-hidden="true">
     <span>
       <strong>Scrap-Pile Bench Supply</strong> —
       <a href="/pages/blog/post.html?id=bench-supply-notes">turning salvaged parts into a dependable lab supply, documented on the blog.</a>.
     </span>
-    <img src="/assets/arrowleft.gif" alt=">>" class="arrow">
+    <img src="/assets/arrowleft.gif" alt="" class="arrow" aria-hidden="true">
   </div>
 
   <div class="project-entry" data-tag="fun">
-    <img src="/assets/arrowright.gif" alt="<<" class="arrow">
+    <img src="/assets/arrowright.gif" alt="" class="arrow" aria-hidden="true">
     <span>
       <strong>Kilroy Was Here</strong> —
       <a href="/pages/fun-projects/kilroy.html">a full-page version of the googly-eyed Kilroy.</a>.
     </span>
-    <img src="/assets/arrowleft.gif" alt=">>" class="arrow">
+    <img src="/assets/arrowleft.gif" alt="" class="arrow" aria-hidden="true">
   </div>
 
   <div class="project-entry" data-tag="unfun">
-    <img src="/assets/arrowright.gif" alt="<<" class="arrow">
+    <img src="/assets/arrowright.gif" alt="" class="arrow" aria-hidden="true">
     <span>
       <strong>Website Philosophy</strong> —
       <a href="/pages/unfun-projects/philosophy.html">why this site is so barebones</a>.
     </span>
-    <img src="/assets/arrowleft.gif" alt=">>" class="arrow">
+    <img src="/assets/arrowleft.gif" alt="" class="arrow" aria-hidden="true">
   </div>
 </main>
 
-<div id="site-footer"></div>
+<div id="site-footer">
+  <noscript>
+    <footer>
+      <div class="footer-bar">
+        <p class="last-updated">Last updated: <span>See Git history</span></p>
+
+        <div class="kilroy-peek footer-eyes" aria-hidden="true">
+          <div class="head">
+            <div class="eye left"><div class="pupil"></div></div>
+            <div class="eye right"><div class="pupil"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="footer-note">This site runs on static HTML, JSON, and curiosity. Share anything you like with a link back.</p>
+    </footer>
+  </noscript>
+</div>
 <script src="/js/site.js" defer></script>
 <script>
 (function () {

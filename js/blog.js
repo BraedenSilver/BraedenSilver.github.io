@@ -60,8 +60,6 @@ const DATE_FMT = (typeof Intl !== "undefined" && Intl.DateTimeFormat)
   ? new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" })
   : null;
 
-const CARD_INTERACTIVE_SELECTOR = "a, button, input, textarea, select, summary, [role=\"button\"]";
-
 function formatDate(d) {
   if (!d) return "";
   try {
@@ -71,9 +69,20 @@ function formatDate(d) {
   }
 }
 
-function paraHTML(text) {
-  if (!text) return "";
-  return text.trim().split(/\n\s*\n/g).map(p => `<p>${p}</p>`).join("");
+function createParagraphFragment(text) {
+  const fragment = document.createDocumentFragment();
+  if (!text) return fragment;
+
+  const paragraphs = String(text).split(/\n\s*\n/g);
+  paragraphs.forEach(raw => {
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    const p = document.createElement("p");
+    p.textContent = trimmed.replace(/\s*\n\s*/g, " ");
+    fragment.appendChild(p);
+  });
+
+  return fragment;
 }
 
 function createTagList(tags) {
@@ -119,76 +128,41 @@ function qs(name, search = window.location.search) {
 }
 
 function createBlogCard(entry) {
-  const article = document.createElement("article");
-  article.className = "blog-card";
-  article.tabIndex = 0;
-  article.setAttribute("role", "link");
-  article.setAttribute("aria-label", entry.title);
-
   const href = `/pages/blog/post.html?id=${encodeURIComponent(entry.id)}`;
-  const navigate = () => {
-    window.location.assign(href);
-  };
-
-  const openInNewTab = () => {
-    const newWindow = window.open(href, "_blank", "noopener");
-    if (newWindow) newWindow.opener = null;
-  };
-
-  article.addEventListener("click", event => {
-    if (event.defaultPrevented) return;
-    const interactive = event.target.closest(CARD_INTERACTIVE_SELECTOR);
-    if (interactive) return;
-    if (event.metaKey || event.ctrlKey || event.shiftKey) {
-      openInNewTab();
-      return;
-    }
-    navigate();
-  });
-
-  article.addEventListener("auxclick", event => {
-    if (event.button !== 1) return;
-    const interactive = event.target.closest(CARD_INTERACTIVE_SELECTOR);
-    if (interactive) return;
-    openInNewTab();
-  });
-
-  article.addEventListener("keydown", event => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      navigate();
-    }
-  });
+  const card = document.createElement("a");
+  card.className = "blog-card";
+  card.href = href;
+  const safeId = String(entry.id || "post").replace(/[^a-zA-Z0-9_-]/g, "-");
+  const headingId = `blog-card-${safeId}-title`;
+  card.setAttribute("aria-labelledby", headingId);
 
   const h2 = document.createElement("h2");
-  const a = document.createElement("a");
-  a.href = href;
-  a.textContent = entry.title;
-  h2.appendChild(a);
+  h2.id = headingId;
+  h2.textContent = entry.title;
 
   const metaBits = [];
   if (entry.date) metaBits.push(formatDate(entry.date));
   if (entry.reading_time) metaBits.push(entry.reading_time);
 
-  article.appendChild(h2);
+  card.appendChild(h2);
   if (metaBits.length) {
     const meta = document.createElement("p");
     meta.className = "blog-meta";
     meta.textContent = metaBits.join(" · ");
-    article.appendChild(meta);
+    card.appendChild(meta);
   }
 
   if (entry.summary) {
     const summary = document.createElement("p");
     summary.className = "blog-summary";
     summary.textContent = entry.summary;
-    article.appendChild(summary);
+    card.appendChild(summary);
   }
 
   const tags = createTagList(entry.tags);
-  if (tags) article.appendChild(tags);
+  if (tags) card.appendChild(tags);
 
-  return article;
+  return card;
 }
 
 export async function renderBlogIndex() {
@@ -432,7 +406,10 @@ export async function renderBlogPost() {
     figure.className = "blog-hero";
     const img = document.createElement("img");
     img.src = entry.hero;
-    img.alt = entry.title;
+    const heroAlt = typeof entry.hero_alt === "string" ? entry.hero_alt : (typeof entry.heroAlt === "string" ? entry.heroAlt : "");
+    img.alt = heroAlt;
+    img.loading = "lazy";
+    img.decoding = "async";
     figure.appendChild(img);
     frag.appendChild(figure);
   }
@@ -440,8 +417,11 @@ export async function renderBlogPost() {
   if (entry.body) {
     const body = document.createElement("div");
     body.className = "blog-body";
-    body.innerHTML = paraHTML(entry.body);
-    frag.appendChild(body);
+    const fragment = createParagraphFragment(entry.body);
+    if (fragment.childNodes.length) {
+      body.appendChild(fragment);
+      frag.appendChild(body);
+    }
   }
 
   const tags = createTagList(entry.tags);
