@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Blog — Braeden Silver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A quietly updated log of things I build, fix, and learn.">
+  <meta name="keywords" content="Braeden Silver, blog, engineering notes, lab notebook">
+  <meta name="author" content="Braeden Silver">
+  <meta property="og:title" content="Blog — Braeden Silver">
+  <meta property="og:description" content="A quietly updated log of things I build, fix, and learn.">
+  <meta property="og:url" content="https://braedensilver.com/pages/blog/index.html">
+  <meta property="og:image" content="/assets/footer.gif">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Blog — Braeden Silver">
+  <meta name="twitter:description" content="A quietly updated log of things I build, fix, and learn.">
+  <meta name="twitter:image" content="/assets/footer.gif">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <h1>Blog</h1>
+    <p class="blog-intro">I post quick write-ups when a project teaches me something worth remembering. Expect notes on firmware, lab gear, and whatever mechanical contraptions are cluttering my desk.</p>
+    <div id="blog-list" class="blog-list"><p>Loading posts…</p></div>
+  </main>
+  <div id="site-footer"></div>
+  <script src="/js/site.js" defer></script>
+  <script type="module">
+    import { renderBlogIndex } from "/js/blog.js";
+    renderBlogIndex().catch(() => {
+      const root = document.getElementById("blog-list");
+      if (root) root.textContent = "Failed to load posts.";
+    });
+  </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 // site.js — handles header/footer includes, "last updated" stamps,
-// citation blocks for the Historia section, and small UI effects.
+// and small UI effects used throughout the site.
 
 /**
  * Fetch an HTML partial and inject it into the element with the given ID.
@@ -93,22 +93,6 @@ async function updateLastUpdated() {
   t.textContent = new Date(document.lastModified).toLocaleDateString(undefined, opts);
 }
 
-
-/**
- * Ensure the citation block only appears on Historia pages.
- */
-function handleCitationBlock() {
-  const isHistoria = location.pathname.startsWith("/pages/historia/");
-  const citeBlock = document.getElementById("citation-block");
-  if (!isHistoria && citeBlock) {
-    // Remove the APA citation + disclaimer outside Historia
-    citeBlock.remove();
-  } else if (isHistoria) {
-    // Fill the citation URL on Historia pages
-    const citeUrlSpan = document.getElementById("cite-url");
-    if (citeUrlSpan) citeUrlSpan.textContent = window.location.href;
-  }
-}
 
 /**
  * Spawn a colorful spark where the user clicks.
@@ -208,7 +192,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   initAnnouncementBanner();
 
   await updateLastUpdated();
-  handleCitationBlock();
   if (window.matchMedia('(pointer: fine)').matches) {
     initClickEffect();
     initCustomCursor();

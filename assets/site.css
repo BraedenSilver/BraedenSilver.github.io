@@ -452,3 +452,144 @@ details#sources > ol {
 details#sources[open] > ol {
   max-height: 2000px;
 }
+
+.blog-intro {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.blog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.blog-card {
+  border: 2px solid #000;
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 6px 6px 0 #000;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-card:hover,
+.blog-card:focus-within {
+  transform: translate(-2px, -2px);
+  box-shadow: 10px 10px 0 #000;
+}
+
+.blog-card h2 {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+}
+
+.blog-card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.blog-card h2 a:hover,
+.blog-card h2 a:focus {
+  text-decoration: underline;
+}
+
+.blog-meta {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.blog-summary {
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+}
+
+.blog-tags,
+.blog-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.blog-links ul {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.blog-links ul li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.blog-tags li {
+  background: #000;
+  color: #fff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.blog-body {
+  line-height: 1.7;
+  margin: 1.5rem 0;
+}
+
+.blog-body p {
+  margin: 0 0 1rem;
+}
+
+.blog-hero {
+  margin: 1.5rem 0;
+}
+
+.blog-hero img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 2px solid #000;
+}
+
+.blog-tags-label {
+  margin: 1rem 0 0.4rem;
+  font-weight: 600;
+}
+
+.blog-links {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 2px solid #000;
+  border-radius: 12px;
+  background: #f7f7f7;
+}
+
+.blog-links h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.blog-links a {
+  color: inherit;
+}
+
+.blog-links ul li::before {
+  content: "→";
+}
+
+.blog-back {
+  margin-top: 2rem;
+}
+
+.footer-note {
+  margin: 1.5rem 0 0;
+  font-size: 0.9rem;
+  color: #333;
+}
