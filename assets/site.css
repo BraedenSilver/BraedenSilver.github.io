@@ -269,6 +269,7 @@ main {
   margin: 0;
   display: grid;
   gap: 12px;
+  justify-items: start;
 }
 
 .quick-links li {
@@ -320,6 +321,23 @@ main {
 
 .quick-link {
   margin: 0;
+}
+
+.quick-links .quick-link {
+  padding: 0.5rem 0.75rem;
+  gap: 6px;
+  border-radius: 10px;
+  width: 280px;
+  max-width: 100%;
+  margin: 0;
+}
+
+.quick-links .quick-link .arrow {
+  width: 32px;
+}
+
+.quick-links .quick-link .quick-link-label {
+  font-size: 0.95rem;
 }
 
 .quick-link-label {
