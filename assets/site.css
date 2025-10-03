@@ -352,6 +352,17 @@ main {
   flex: 0 1 auto;
 }
 
+.contact-illustration {
+  margin: 1.5rem auto;
+  display: flex;
+  justify-content: center;
+}
+
+.contact-illustration img {
+  max-width: min(320px, 100%);
+  height: auto;
+}
+
 .contact-links {
   list-style: none;
   padding: 0;
@@ -739,6 +750,17 @@ details#sources[open] > ol {
   margin-top: 2rem;
 }
 
+.blog-mascot {
+  margin: 2.5rem 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.blog-mascot img {
+  max-width: min(360px, 100%);
+  height: auto;
+}
+
 .blog-card {
   display: block;
   border: 2px solid #000;
@@ -750,6 +772,10 @@ details#sources[open] > ol {
   cursor: pointer;
   color: inherit;
   text-decoration: none;
+}
+
+.blog-card .blog-tags {
+  margin-top: 1rem;
 }
 
 .blog-card:hover,
