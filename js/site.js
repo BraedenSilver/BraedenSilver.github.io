@@ -10,17 +10,39 @@ async function include(id, file) {
 
   // Try both relative and absolute paths so pages work from subdirectories.
   const candidates = [file, "/" + file.replace(/^\//, "")];
+  const parser = typeof DOMParser !== "undefined" ? new DOMParser() : null;
   for (const url of candidates) {
     try {
       const r = await fetch(url);
       if (r.ok) {
-        el.innerHTML = await r.text();
+        if (!parser) {
+          el.textContent = await r.text();
+          break;
+        }
+        const html = await r.text();
+        const doc = parser.parseFromString(html, "text/html");
+        const fragment = document.createDocumentFragment();
+        if (doc && doc.body) {
+          Array.from(doc.body.childNodes).forEach(node => {
+            fragment.appendChild(node.cloneNode(true));
+          });
+          el.replaceChildren(fragment);
+        } else {
+          el.textContent = html;
+        }
         break;
       }
     } catch {
       /* ignore network errors and try next */
     }
   }
+}
+
+function prefersReducedMotion() {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return false;
+  }
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 /**
@@ -98,6 +120,7 @@ async function updateLastUpdated() {
  * Spawn a colorful spark where the user clicks.
  */
 function initClickEffect() {
+  if (prefersReducedMotion()) return;
   document.addEventListener("click", (e) => {
     const s = document.createElement("span");
     s.className = "click-spark";
@@ -137,6 +160,152 @@ function initCustomCursor() {
 }
 
 
+function initKonamiCode() {
+  const sequence = [
+    'arrowup',
+    'arrowup',
+    'arrowdown',
+    'arrowdown',
+    'arrowleft',
+    'arrowright',
+    'arrowleft',
+    'arrowright',
+    'b',
+    'a',
+  ];
+
+  const buffer = [];
+  let previousFocus = null;
+
+  const removeOverlay = () => {
+    const overlay = document.getElementById('konami-overlay');
+    if (!overlay) return;
+    overlay.remove();
+    document.body.classList.remove('konami-active');
+    if (previousFocus && typeof previousFocus.focus === 'function') {
+      previousFocus.focus();
+    }
+    previousFocus = null;
+    buffer.length = 0;
+  };
+
+  const spawnOverlay = () => {
+    if (document.getElementById('konami-overlay')) return;
+
+    previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'konami-overlay';
+    overlay.className = 'konami-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'konami-title');
+    overlay.setAttribute('aria-describedby', 'konami-description konami-subtext');
+
+    const panel = document.createElement('div');
+    panel.className = 'konami-panel';
+    panel.addEventListener('click', event => event.stopPropagation());
+
+    const title = document.createElement('h2');
+    title.id = 'konami-title';
+    title.textContent = 'You unlocked unlimited snacks!';
+
+    const snacks = [
+      'Word on the street is that developers who know the Konami code deserve a pizza party.',
+      'Legend says every Konami master gets infinite breadsticks (while supplies last).',
+      'Rumour mill confirms: Konami champions get the last slice and don’t have to share.',
+      'The secret pantry opens! Grab nachos, ramen, and whatever else fuels your commits.',
+    ];
+
+    const message = document.createElement('p');
+    message.id = 'konami-description';
+    message.textContent = snacks[Math.floor(Math.random() * snacks.length)];
+
+    const ascii = document.createElement('pre');
+    ascii.className = 'konami-ascii';
+    ascii.setAttribute('aria-hidden', 'true');
+    ascii.textContent = [
+      '       _',
+      '     _|=|__________',
+      '    /              \\',
+      '   /  P I Z Z A !!  \\',
+      '   |   _     _   _  |',
+      '   |  | |   | | | | |',
+      '   |  |_|   |_| |_| |',
+      '   |   ___  ___  ___|',
+      '   |  |___||___||___|',
+      '   |_________________|',
+    ].join('\n');
+
+    const subtext = document.createElement('p');
+    subtext.id = 'konami-subtext';
+    subtext.textContent = 'Grab a slice, then press escape or click anywhere outside the box to sneak back out.';
+
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'konami-close';
+    close.textContent = 'Back to work';
+    close.addEventListener('click', removeOverlay);
+
+    panel.appendChild(title);
+    panel.appendChild(message);
+    panel.appendChild(ascii);
+    panel.appendChild(subtext);
+    panel.appendChild(close);
+
+    overlay.appendChild(panel);
+    overlay.addEventListener('keydown', event => {
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        close.focus();
+      }
+    });
+    overlay.addEventListener('focusin', event => {
+      if (event.target !== close) {
+        close.focus();
+      }
+    });
+    overlay.addEventListener('click', removeOverlay);
+
+    document.body.appendChild(overlay);
+    document.body.classList.add('konami-active');
+    buffer.length = 0;
+
+    requestAnimationFrame(() => {
+      close.focus();
+    });
+  };
+
+  document.addEventListener('keydown', event => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+    const target = event.target;
+    if (
+      target instanceof HTMLElement &&
+      (target.isContentEditable || ['INPUT', 'TEXTAREA'].includes(target.tagName) || target.getAttribute('role') === 'textbox')
+    ) {
+      return;
+    }
+
+    if (event.key === 'Escape' && document.body.classList.contains('konami-active')) {
+      event.preventDefault();
+      removeOverlay();
+      return;
+    }
+
+    const key = event.key.length === 1 ? event.key.toLowerCase() : event.key.toLowerCase();
+    buffer.push(key);
+    if (buffer.length > sequence.length) {
+      buffer.shift();
+    }
+
+    if (buffer.length === sequence.length && sequence.every((expected, index) => buffer[index] === expected)) {
+      spawnOverlay();
+    }
+  });
+}
+
+
 /**
  * Initialize the scrolling announcement banner below the header.
  */
@@ -170,7 +339,7 @@ function initAnnouncementBanner() {
     return;
   }
 
-  track.innerHTML = '';
+  track.replaceChildren();
   const repeatAttr = parseInt(banner.dataset.repeat || '', 10);
   const repeatCount = Number.isFinite(repeatAttr) && repeatAttr > 1 ? repeatAttr : 3;
 
@@ -212,10 +381,13 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   initAsciiLogoScaler();
   initAnnouncementBanner();
+  initKonamiCode();
 
   await updateLastUpdated();
   if (window.matchMedia('(pointer: fine)').matches) {
-    initClickEffect();
+    if (!prefersReducedMotion()) {
+      initClickEffect();
+    }
     initCustomCursor();
   }
 

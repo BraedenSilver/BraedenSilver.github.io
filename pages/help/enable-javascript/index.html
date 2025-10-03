@@ -2,31 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Blog — Braeden Silver</title>
+  <title>Enable JavaScript — Braeden Silver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A quietly updated log of things I build, fix, and learn.">
-  <meta name="keywords" content="Braeden Silver, blog, engineering notes, lab notebook">
+  <meta name="description" content="Step-by-step instructions for enabling JavaScript and clearing your browser cache.">
+  <meta name="keywords" content="enable JavaScript, clear cache, browser help, Braeden Silver">
   <meta name="author" content="Braeden Silver">
-  <meta property="og:title" content="Blog — Braeden Silver">
-  <meta property="og:description" content="A quietly updated log of things I build, fix, and learn.">
-  <meta property="og:url" content="https://braedensilver.com/pages/blog/index.html">
+  <meta property="og:title" content="Enable JavaScript — Braeden Silver">
+  <meta property="og:description" content="Step-by-step instructions for enabling JavaScript and clearing your browser cache.">
+  <meta property="og:url" content="https://braedensilver.com/help/enable-javascript/">
   <meta property="og:image" content="/assets/footer.gif">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Braeden Silver">
   <meta property="og:image:alt" content="Animated illustration of Elly the dog beside a toolbox.">
   <meta name="twitter:image:alt" content="Animated illustration of Elly the dog beside a toolbox.">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Blog — Braeden Silver">
-  <meta name="twitter:description" content="A quietly updated log of things I build, fix, and learn.">
+  <meta name="twitter:title" content="Enable JavaScript — Braeden Silver">
+  <meta name="twitter:description" content="Step-by-step instructions for enabling JavaScript and clearing your browser cache.">
   <meta name="twitter:image" content="/assets/footer.gif">
   <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
   <div id="site-header">
     <noscript>
-      <div class="noscript-banner" role="status">
-        JavaScript is disabled. Enable it, clear your cache, and then reload for the full experience. Need help? Read the <a href="/help/enable-javascript/" rel="help">step-by-step guide to turning on JavaScript</a>.
-      </div>
       <header class="ascii-header">
         <div class="site-branding">
           <a href="/" class="site-logo" aria-label="Braeden Silver — Home">
@@ -34,7 +31,7 @@
               <pre id="ascii-logo">
 ██████╗ ██████╗  █████╗ ███████╗██████╗ ███████╗███╗   ██╗███████╗██╗██╗     ██╗   ██╗███████╗██████╗     ██████╗ ██████╗ ███╗ ███╗
 ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║██╔════╝██║██║     ██║   ██║██╔════╝██╔══██╗   ██╔════╝██╔═══██╗████╗████║
-██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║███████╗██║██║     ██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔████╔██║
+██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║███████╗██║██║     ██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔███╔██║
 ██╔══██╗██╔══██╗██╔══██║██╔══╝  ██║  ██║██╔══╝  ██║╚██╗██║╚════██║██║██║     ╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║     ██║   ██║██║╚██╔╝██║
 ██████╔╝██║  ██║██║  ██║███████╗██████╔╝███████╗██║ ╚████║███████║██║███████╗ ╚████╔╝ ███████╗██║  ██║██╗╚██████╗╚██████╔╝██║ ╚═╝ ██║
 ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝
@@ -65,31 +62,51 @@
       <hr>
     </noscript>
   </div>
+
   <main>
-    <h1>Blog</h1>
-    <p class="blog-intro">I post quick write-ups when a project teaches me something worth remembering. Expect notes on firmware, lab gear, and whatever mechanical contraptions are cluttering my desk.</p>
-    <section class="blog-controls" aria-label="Filter blog posts">
-      <div class="blog-filter" id="blog-filter" hidden>
-        <h2 class="blog-filter-title">Find posts by tag</h2>
-        <div class="blog-filter-tags" id="blog-filter-tags"></div>
-        <button type="button" class="blog-filter-clear" id="blog-filter-clear" hidden>Clear selected tags</button>
-      </div>
-      <noscript>
-        <p class="blog-filter-note">Filtering posts by tag requires JavaScript. Browse the list below to read everything.</p>
-      </noscript>
+    <h1>Enable JavaScript & Clear Your Cache</h1>
+    <p>Follow the steps below to turn on JavaScript in your browser, then refresh this page. After you enable JavaScript, clear your cache so the newest version of each page loads.</p>
+
+    <section aria-labelledby="chrome">
+      <h2 id="chrome">Google Chrome</h2>
+      <ol>
+        <li>Open the Chrome menu and choose <strong>Settings</strong>.</li>
+        <li>Select <strong>Privacy and security</strong> → <strong>Site Settings</strong>.</li>
+        <li>Under <strong>Content</strong>, open <strong>JavaScript</strong> and switch it to <strong>Sites can use JavaScript</strong>.</li>
+        <li>Return to <strong>Privacy and security</strong> and choose <strong>Clear browsing data</strong>. Clear cached images and files.</li>
+        <li>Reload this page.</li>
+      </ol>
     </section>
-    <div id="blog-list" class="blog-list">
-      <a class="blog-card" href="/pages/blog/post.html?id=starting-the-blog" aria-labelledby="blog-card-starting-the-blog-title">
-        <h2 id="blog-card-starting-the-blog-title">Why I'm Starting This Blog</h2>
-        <p class="blog-meta">Oct 3, 2025</p>
-        <p class="blog-summary">Setting an intention to share daily notes on projects, lessons, and curiosities across engineering, art, and play.</p>
-        <ul class="blog-tags">
-          <li>hello</li>
-          <li>goals</li>
-        </ul>
-      </a>
-    </div>
+
+    <section aria-labelledby="firefox">
+      <h2 id="firefox">Mozilla Firefox</h2>
+      <ol>
+        <li>Type <code>about:config</code> in the address bar and press Enter.</li>
+        <li>Accept the warning if prompted.</li>
+        <li>Search for <code>javascript.enabled</code> and set it to <strong>true</strong>.</li>
+        <li>Open the Firefox menu → <strong>Settings</strong> → <strong>Privacy &amp; Security</strong>, then scroll to <strong>Cookies and Site Data</strong> and click <strong>Clear Data…</strong> to remove cached content.</li>
+        <li>Reload this page.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="safari">
+      <h2 id="safari">Safari (macOS)</h2>
+      <ol>
+        <li>Open <strong>Safari</strong> → <strong>Settings</strong>.</li>
+        <li>Go to the <strong>Advanced</strong> tab and ensure <strong>Show features for web developers</strong> is enabled if needed.</li>
+        <li>In the <strong>Advanced</strong> tab, confirm that <strong>Enable JavaScript</strong> is checked.</li>
+        <li>Back in the main menu, choose <strong>Safari</strong> → <strong>Clear History…</strong> and clear cached files.</li>
+        <li>Reload this page.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="support">
+      <h2 id="support">Need More Help?</h2>
+      <p>If you're using a different browser, search its support center for “enable JavaScript” and “clear cache.” Once you're done, revisit the page you were trying to open.</p>
+      <p><a href="/">Return to the homepage</a></p>
+    </section>
   </main>
+
   <div id="site-footer">
     <noscript>
       <footer>
@@ -109,12 +126,5 @@
     </noscript>
   </div>
   <script src="/js/site.js" defer></script>
-  <script type="module">
-    import { renderBlogIndex } from "/js/blog.js";
-    renderBlogIndex().catch(() => {
-      const root = document.getElementById("blog-list");
-      if (root) root.textContent = "Failed to load posts.";
-    });
-  </script>
 </body>
 </html>
