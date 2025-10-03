@@ -21,13 +21,55 @@
 <body>
 
 <!-- Header and footer are injected by js/site.js -->
-<div id="site-header"></div>
+<div id="site-header">
+  <noscript>
+    <div class="noscript-banner" role="status">
+      JavaScript is disabled. Enable it and clear your cache to load the fully interactive version of this site.
+    </div>
+    <header class="ascii-header">
+      <h1>
+        <a href="/" class="site-logo" aria-label="Braeden Silver — Home">
+          <span class="logo-ascii" aria-hidden="true">
+            <pre id="ascii-logo">
+██████╗ ██████╗  █████╗ ███████╗██████╗ ███████╗███╗   ██╗███████╗██╗██╗     ██╗   ██╗███████╗██████╗     ██████╗ ██████╗ ███╗ ███╗
+██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║██╔════╝██║██║     ██║   ██║██╔════╝██╔══██╗   ██╔════╝██╔═══██╗████╗████║
+██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║███████╗██║██║     ██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔████╔██║
+██╔══██╗██╔══██╗██╔══██║██╔══╝  ██║  ██║██╔══╝  ██║╚██╗██║╚════██║██║██║     ╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║     ██║   ██║██║╚██╔╝██║
+██████╔╝██║  ██║██║  ██║███████╗██████╔╝███████╗██║ ╚████║███████║██║███████╗ ╚████╔╝ ███████╗██║  ██║██╗╚██████╗╚██████╔╝██║ ╚═╝ ██║
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝
+            </pre>
+          </span>
+          <span class="logo-mobile" aria-hidden="true">
+            <pre>
+██████╗ ███████╗
+██╔══██╗██╔════╝
+██████╔╝███████╗
+██╔══██╗╚════██║
+██████╔╝███████║
+╚═════╝ ╚══════╝
+            </pre>
+          </span>
+          <span class="logo-text">Braeden Silver</span>
+        </a>
+      </h1>
+
+      <nav>
+        <a href="/index.html">Home</a> ·
+        <a href="/pages/projects.html">Projects</a> ·
+        <a href="/pages/research.html">Research</a> ·
+        <a href="/pages/blog/index.html">Blog</a> ·
+        <a href="/pages/contact.html">Contact</a>
+      </nav>
+    </header>
+    <hr>
+  </noscript>
+</div>
 
 <main>
   <h1>Contact</h1>
 
   <div style="margin-bottom: 1em;">
-    <img src="/assets/elly.gif" alt="Elly delivering a letter">
+    <img src="/assets/elly.gif" alt="Elly delivering a letter" loading="lazy" decoding="async">
   </div>
 
   <p>Have feedback or just want to say hi? Reach out:</p>
@@ -40,11 +82,28 @@
   </ul>
 
   <p>Or scan this QR code to open the site on your phone:</p>
-  <img src="https://api.qrserver.com/v1/create-qr-code/?data=https%3A%2F%2Fbraedensilver.com&size=200x200" alt="QR code linking to braedensilver.com" width="200" height="200">
+  <img src="/assets/qr-braedensilver.svg" alt="QR code linking to braedensilver.com" width="200" height="200" loading="lazy" decoding="async">
 </main>
 
 
-<div id="site-footer"></div>
+<div id="site-footer">
+  <noscript>
+    <footer>
+      <div class="footer-bar">
+        <p class="last-updated">Last updated: <span>See Git history</span></p>
+
+        <div class="kilroy-peek footer-eyes" aria-hidden="true">
+          <div class="head">
+            <div class="eye left"><div class="pupil"></div></div>
+            <div class="eye right"><div class="pupil"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="footer-note">This site runs on static HTML, JSON, and curiosity. Share anything you like with a link back.</p>
+    </footer>
+  </noscript>
+</div>
 <script src="/js/site.js" defer></script>
 
 <!-- Build the email without exposing it in HTML -->
