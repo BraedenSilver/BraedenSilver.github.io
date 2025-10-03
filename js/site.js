@@ -153,6 +153,50 @@ function initCustomCursor() {
 }
 
 
+/**
+ * Initialize the scrolling announcement banner below the header.
+ */
+function initAnnouncementBanner() {
+  const banner = document.querySelector('.announcement-banner');
+  if (!banner) return;
+
+  const track = banner.querySelector('.announcement-message');
+  if (!track) return;
+
+  const text = (banner.dataset.text || '').trim();
+  if (!text) {
+    banner.remove();
+    return;
+  }
+
+  track.innerHTML = '';
+  const repeatAttr = parseInt(banner.dataset.repeat || '', 10);
+  const repeatCount = Number.isFinite(repeatAttr) && repeatAttr > 1 ? repeatAttr : 3;
+
+  for (let i = 0; i < repeatCount; i += 1) {
+    const span = document.createElement('span');
+    span.textContent = text;
+    if (i > 0) {
+      span.setAttribute('aria-hidden', 'true');
+    }
+    track.appendChild(span);
+  }
+
+  // Restart the animation so it begins after the DOM is ready.
+  track.style.animation = 'none';
+  // eslint-disable-next-line no-unused-expressions
+  track.offsetHeight;
+  track.style.animation = '';
+
+  const close = banner.querySelector('.announcement-close');
+  if (close) {
+    close.addEventListener('click', () => {
+      banner.remove();
+    });
+  }
+}
+
+
 
 window.addEventListener("DOMContentLoaded", async () => {
   const tasks = [];
@@ -161,6 +205,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   await Promise.all(tasks);
 
   initAsciiLogoScaler();
+  initAnnouncementBanner();
 
   await updateLastUpdated();
   handleCitationBlock();
