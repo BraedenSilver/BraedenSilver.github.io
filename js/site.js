@@ -64,9 +64,6 @@ function readStoredTheme() {
 function getPreferredTheme() {
   const stored = readStoredTheme();
   if (stored) return stored;
-  if (systemDarkQuery?.matches) {
-    return Theme.DARK;
-  }
   return Theme.LIGHT;
 }
 
@@ -128,7 +125,7 @@ if (typeof window !== "undefined") {
       applyTheme(event.newValue, { persist: false });
     } else if (event.newValue === null) {
       hasExplicitThemePreference = false;
-      applyTheme(systemDarkQuery?.matches ? Theme.DARK : Theme.LIGHT, { persist: false });
+      applyTheme(Theme.LIGHT, { persist: false });
     }
     updateThemeToggleButton();
   });
