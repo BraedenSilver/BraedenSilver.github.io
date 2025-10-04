@@ -7,6 +7,7 @@ const SITE_CONTENT = Object.freeze({
     { href: "/pages/projects/index.html", section: "projects", label: "Projects" },
     { href: "/pages/research/index.html", section: "research", label: "Research" },
     { href: "/pages/blog/index.html", section: "blog", label: "Blog" },
+    { href: "/pages/guest-book.html", section: "guest-book", label: "Guest Book" },
     { href: "/pages/contact.html", section: "contact", label: "Contact" },
   ],
   announcementText: "Total Site Overhaul, Happy Oktoberfest and Happy Halloween!",
