@@ -1,39 +1,65 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Blog Post — Braeden Silver</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Blog post on Braeden Silver's personal site.">
-  <meta property="og:title" content="Blog Post — Braeden Silver">
-  <meta property="og:description" content="Blog post on Braeden Silver's personal site.">
-  <meta property="og:image" content="/assets/dino-mail.gif">
-  <link rel="stylesheet" href="/assets/site.css">
-</head>
-<body data-section="blog" data-content-render="blog:entry">
-  <div id="site-header">
-  <noscript>
-    <div class="noscript-banner" role="alert">
-      This website needs JavaScript to work, what are you doing by having it turned off!!!
+  <head>
+    <meta charset="utf-8" />
+    <title>Blog Post — Braeden Silver</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Blog post on Braeden Silver's personal site."
+    />
+    <meta property="og:title" content="Blog Post — Braeden Silver" />
+    <meta
+      property="og:description"
+      content="Blog post on Braeden Silver's personal site."
+    />
+    <meta property="og:image" content="/assets/dino-mail.gif" />
+    <link rel="stylesheet" href="/assets/site.css" />
+  </head>
+  <body data-section="blog" data-content-render="blog:entry">
+    <!-- ===== Shared layout containers (populated by js/site.js) ===== -->
+    <div id="site-header">
+      <noscript>
+        <div class="noscript-banner" role="alert">
+          This website needs JavaScript to work, what are you doing by having it
+          turned off!!!
+        </div>
+      </noscript>
     </div>
-  </noscript>
-</div>
-  <main>
-    <nav class="page-back" aria-label="Back navigation">
-      <a class="project-entry back-link" id="blog-back" href="/pages/blog/index.html" data-history-back aria-label="Go back to the previous page">
-        <span class="back-link-icon" aria-hidden="true">←</span>
-        <span class="back-link-label">Go back to the previous page</span>
-      </a>
-    </nav>
-    <article id="blog-post"><p>If posts don't load automatically, JavaScript is disabled. Head back to the <a href="/pages/blog/index.html">blog index</a> to browse the static archive.</p></article>
-  </main>
-  <div id="site-footer">
-  <noscript>
-    <div class="noscript-banner" role="alert">
-      This website needs JavaScript to work, what are you doing by having it turned off!!!
+
+    <!-- ===== Primary page content ===== -->
+    <main>
+      <nav class="page-back" aria-label="Back navigation">
+        <a
+          class="project-entry back-link"
+          id="blog-back"
+          href="/pages/blog/index.html"
+          data-history-back
+          aria-label="Go back to the previous page"
+        >
+          <span class="back-link-icon" aria-hidden="true">←</span>
+          <span class="back-link-label">Go back to the previous page</span>
+        </a>
+      </nav>
+      <article id="blog-post">
+        <p>
+          If posts don't load automatically, JavaScript is disabled. Head back
+          to the
+          <a href="/pages/blog/index.html">blog index</a> to browse the static
+          archive.
+        </p>
+      </article>
+    </main>
+
+    <!-- Footer container is also populated by js/site.js -->
+    <div id="site-footer">
+      <noscript>
+        <div class="noscript-banner" role="alert">
+          This website needs JavaScript to work, what are you doing by having it
+          turned off!!!
+        </div>
+      </noscript>
     </div>
-  </noscript>
-</div>
-  <script src="/js/site.js" defer></script>
-</body>
+    <script src="/js/site.js" defer></script>
+  </body>
 </html>

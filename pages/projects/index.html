@@ -1,54 +1,95 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Projects — Braeden Silver</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Personal builds and experiments by Braeden Silver.">
-  <meta property="og:title" content="Projects — Braeden Silver">
-  <meta property="og:description" content="Personal builds and experiments by Braeden Silver.">
-  <meta property="og:image" content="/assets/dino-mail.gif">
-  <link rel="stylesheet" href="/assets/site.css">
-</head>
-<body data-section="projects" data-content-render="projects:index">
-  <div id="site-header">
-  <noscript>
-    <div class="noscript-banner" role="alert">
-      This website needs JavaScript to work, what are you doing by having it turned off!!!
-    </div>
-  </noscript>
-</div>
-  <main>
-  <nav class="page-back" aria-label="Back navigation">
-    <a class="project-entry back-link" href="/index.html" data-history-back aria-label="Go back to the previous page">
-      <span class="back-link-icon" aria-hidden="true">←</span>
-      <span class="back-link-label">Go back to the previous page</span>
-    </a>
-  </nav>
-    <h1>Projects</h1>
-    <p class="page-intro">I log the builds, prototypes, and playful detours that teach me something along the way. Browse by tag to jump to a specific theme.</p>
-    <section class="blog-controls" aria-label="Filter projects">
-      <div class="blog-filter" id="projects-filter" hidden>
-        <h2 class="blog-filter-title">Find projects by tag</h2>
-        <div class="blog-filter-tags" id="projects-filter-tags"></div>
-        <button type="button" class="blog-filter-clear" id="projects-filter-clear" hidden>Clear selected tags</button>
-      </div>
+  <head>
+    <meta charset="utf-8" />
+    <title>Projects — Braeden Silver</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Personal builds and experiments by Braeden Silver."
+    />
+    <meta property="og:title" content="Projects — Braeden Silver" />
+    <meta
+      property="og:description"
+      content="Personal builds and experiments by Braeden Silver."
+    />
+    <meta property="og:image" content="/assets/dino-mail.gif" />
+    <link rel="stylesheet" href="/assets/site.css" />
+  </head>
+  <body data-section="projects" data-content-render="projects:index">
+    <!-- ===== Shared layout containers (populated by js/site.js) ===== -->
+    <div id="site-header">
       <noscript>
-        <p class="blog-filter-note">Filtering projects by tag requires JavaScript. Browse the list below to read everything.</p>
+        <div class="noscript-banner" role="alert">
+          This website needs JavaScript to work, what are you doing by having it
+          turned off!!!
+        </div>
       </noscript>
-    </section>
-    <div id="projects-list" class="blog-list"></div>
-    <figure class="blog-mascot">
-      <img src="/assets/elly.gif" alt="Elly the elephant delivering a letter" loading="lazy" decoding="async">
-    </figure>
-  </main>
-  <div id="site-footer">
-  <noscript>
-    <div class="noscript-banner" role="alert">
-      This website needs JavaScript to work, what are you doing by having it turned off!!!
     </div>
-  </noscript>
-</div>
-  <script src="/js/site.js" defer></script>
-</body>
+
+    <!-- ===== Primary page content ===== -->
+    <main>
+      <nav class="page-back" aria-label="Back navigation">
+        <a
+          class="project-entry back-link"
+          href="/index.html"
+          data-history-back
+          aria-label="Go back to the previous page"
+        >
+          <span class="back-link-icon" aria-hidden="true">←</span>
+          <span class="back-link-label">Go back to the previous page</span>
+        </a>
+      </nav>
+      <h1>Projects</h1>
+      <p class="page-intro">
+        I log the builds, prototypes, and playful detours that teach me
+        something along the way. Browse by tag to jump to a specific theme.
+      </p>
+
+      <!-- Filter UI is hydrated by js/blog.js when JavaScript is available -->
+      <section class="blog-controls" aria-label="Filter projects">
+        <div class="blog-filter" id="projects-filter" hidden>
+          <h2 class="blog-filter-title">Find projects by tag</h2>
+          <div class="blog-filter-tags" id="projects-filter-tags"></div>
+          <button
+            type="button"
+            class="blog-filter-clear"
+            id="projects-filter-clear"
+            hidden
+          >
+            Clear selected tags
+          </button>
+        </div>
+        <noscript>
+          <p class="blog-filter-note">
+            Filtering projects by tag requires JavaScript. Browse the list below
+            to read everything.
+          </p>
+        </noscript>
+      </section>
+
+      <!-- Project cards render into this container -->
+      <div id="projects-list" class="blog-list"></div>
+
+      <figure class="blog-mascot">
+        <img
+          src="/assets/elly.gif"
+          alt="Elly the elephant delivering a letter"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+    </main>
+
+    <!-- Footer container is also populated by js/site.js -->
+    <div id="site-footer">
+      <noscript>
+        <div class="noscript-banner" role="alert">
+          This website needs JavaScript to work, what are you doing by having it
+          turned off!!!
+        </div>
+      </noscript>
+    </div>
+    <script src="/js/site.js" defer></script>
+  </body>
 </html>
