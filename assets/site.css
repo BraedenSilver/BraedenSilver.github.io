@@ -2,6 +2,44 @@ html {
   box-sizing: border-box;
 }
 
+:root {
+  color-scheme: light;
+  --color-bg: #fff;
+  --color-text: #000;
+  --color-border: #000;
+  --color-surface: #fff;
+  --color-highlight-bg: #fffbcc;
+  --color-focus: #005fcc;
+  --color-strong-bg: #000;
+  --color-strong-text: #fff;
+  --color-shadow: var(--color-border);
+  --color-muted-text: #444;
+  --color-subtle-text: #333;
+  --color-error-text: #a80000;
+  --color-panel-muted: #f7f7f7;
+  --color-blog-filter-bg: #f6f5ff;
+  --color-project-filter-bg: #ffe9d6;
+}
+
+html.theme-dark {
+  color-scheme: dark;
+  --color-bg: #0f172a;
+  --color-text: #f1f5f9;
+  --color-border: #f1f5f9;
+  --color-surface: #111c2d;
+  --color-highlight-bg: #2e3a52;
+  --color-focus: #7aa2ff;
+  --color-strong-bg: #f1f5f9;
+  --color-strong-text: #0f172a;
+  --color-shadow: rgba(241, 245, 249, 0.85);
+  --color-muted-text: #cbd5f5;
+  --color-subtle-text: #b5c7f6;
+  --color-error-text: #ff8a8a;
+  --color-panel-muted: #1a2538;
+  --color-blog-filter-bg: #1e2539;
+  --color-project-filter-bg: #2b1f13;
+}
+
 *, *::before, *::after {
   box-sizing: inherit;
 }
@@ -10,8 +48,8 @@ body {
   margin: 0;
   padding: 20px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #fff;
-  color: #000;
+  background: var(--color-bg);
+  color: var(--color-text);
   /*
    * Reserve generous space for the fixed footer so page content (like the
    * Elly gif and quick links) can scroll fully into view on small screens.
@@ -22,7 +60,7 @@ body {
 }
 
 :where(a, button, [role="button"]):focus-visible {
-  outline: 3px solid #005fcc;
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 
@@ -33,8 +71,8 @@ body {
 .noscript-banner {
   margin: 1rem 0 1.5rem;
   padding: 0.75rem 1rem;
-  border: 2px dashed #000;
-  background: #fffbcc;
+  border: 2px dashed var(--color-border);
+  background: var(--color-highlight-bg);
   font-weight: 600;
   border-radius: 12px;
 }
@@ -116,12 +154,78 @@ main {
   border: 0;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.header-actions nav {
+  margin-top: 0;
+  flex: 1 1 auto;
+}
+
 .ascii-header nav {
   margin-top: 0.75rem;
 }
 
 .ascii-header nav a {
   color: inherit;
+}
+
+.theme-toggle {
+  appearance: none;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 4px 4px 0 var(--color-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 var(--color-shadow);
+}
+
+.theme-toggle__icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.theme-toggle__icon--sun {
+  display: none;
+}
+
+html.theme-dark .theme-toggle__icon--sun {
+  display: inline;
+}
+
+html.theme-dark .theme-toggle__icon--moon {
+  display: none;
 }
 
 .ascii-header nav a.is-active,
@@ -133,8 +237,8 @@ main {
 .announcement-banner {
   margin-top: 1rem;
   margin-bottom: 1rem;
-  border: 2px solid #000;
-  background: #fff;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -145,8 +249,8 @@ main {
 
 .announcement-close {
   appearance: none;
-  border: 2px solid #000;
-  background: #fff;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
   font-size: 1rem;
   line-height: 1;
   padding: 0.1rem 0.4rem 0.2rem;
@@ -158,8 +262,8 @@ main {
 
 .announcement-close:hover,
 .announcement-close:focus-visible {
-  background: #000;
-  color: #fff;
+  background: var(--color-strong-bg);
+  color: var(--color-strong-text);
 }
 
 .announcement-marquee {
@@ -210,7 +314,7 @@ main {
   .blog-card:focus-visible {
     transition: none !important;
     transform: none !important;
-    box-shadow: 6px 6px 0 #000;
+    box-shadow: 6px 6px 0 var(--color-shadow);
   }
 
   :is(.project-entry, .quick-link),
@@ -218,7 +322,7 @@ main {
   :is(.project-entry, .quick-link):focus-visible {
     transition: none !important;
     transform: none !important;
-    box-shadow: 5px 5px 0 #000;
+    box-shadow: 5px 5px 0 var(--color-shadow);
   }
 
   .blog-filter-tag,
@@ -289,10 +393,10 @@ main {
   gap: 8px;
   margin: 10px 0;
   padding: 0.75rem 1rem;
-  border: 2px solid #000;
+  border: 2px solid var(--color-border);
   border-radius: 12px;
-  background: #fff;
-  box-shadow: 5px 5px 0 #000;
+  background: var(--color-surface);
+  box-shadow: 5px 5px 0 var(--color-shadow);
   text-decoration: none;
   color: inherit;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -323,7 +427,7 @@ main {
 :is(.project-entry, .quick-link):hover,
 :is(.project-entry, .quick-link):focus-visible {
   transform: translate(-2px, -2px);
-  box-shadow: 8px 8px 0 #000;
+  box-shadow: 8px 8px 0 var(--color-shadow);
 }
 
 .quick-link {
@@ -407,7 +511,7 @@ main {
 .contact-qr figcaption {
   margin-top: 0.75rem;
   font-size: 0.95rem;
-  color: #444;
+  color: var(--color-muted-text);
 }
 
 .contact-links {
@@ -428,10 +532,10 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
+  background: var(--color-surface);
   padding: 0.5rem 1rem;
   padding-right: 180px;
-  border-top: 2px solid #000;
+  border-top: 2px solid var(--color-border);
   overflow: visible;
 }
 
@@ -449,8 +553,8 @@ main {
 
 .footer-share {
   appearance: none;
-  border: 2px solid #000;
-  background: #fff;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
   color: inherit;
   font: inherit;
   padding: 0.35rem 0.8rem 0.4rem;
@@ -461,8 +565,8 @@ main {
 
 .footer-share:hover,
 .footer-share:focus-visible {
-  background: #000;
-  color: #fff;
+  background: var(--color-strong-bg);
+  color: var(--color-strong-text);
 }
 
 .footer-share:active {
@@ -472,11 +576,11 @@ main {
 .footer-share-feedback {
   min-width: 0;
   font-size: 0.85rem;
-  color: #333;
+  color: var(--color-subtle-text);
 }
 
 .footer-share-feedback.is-error {
-  color: #a80000;
+  color: var(--color-error-text);
   font-weight: 600;
 }
 
@@ -495,9 +599,9 @@ main {
   right: 0;
   width: 120px;
   height: 120px;
-  border: 2px solid #000;
+  border: 2px solid var(--color-border);
   border-radius: 50%;
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .footer-eyes .eye {
@@ -506,8 +610,8 @@ main {
   width: var(--eye-size);
   height: var(--eye-size);
   border-radius: 50%;
-  background: #fff;
-  border: var(--eye-border) solid #000;
+  background: var(--color-surface);
+  border: var(--eye-border) solid var(--color-border);
   position: absolute;
   overflow: hidden;
   transition: all 150ms ease;
@@ -529,7 +633,7 @@ main {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #000;
+  background: var(--color-strong-bg);
   position: absolute;
   left: 50%;
   top: 50%;
@@ -541,7 +645,7 @@ main {
   height: 0;
   top: calc(var(--eye-top) + var(--eye-size) / 2 - var(--eye-border) / 2);
   border: none;
-  border-top: var(--eye-border) solid #000;
+  border-top: var(--eye-border) solid var(--color-border);
   border-radius: 0;
 }
 
@@ -574,9 +678,9 @@ body.kilroy-page main {
   left: 0;
   width: 100%;
   height: 100%;
-  border: 5px solid #000;
+  border: 5px solid var(--color-border);
   border-radius: 50%;
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .kilroy-full.footer-eyes .eye {
@@ -585,9 +689,9 @@ body.kilroy-page main {
   --eye-border: 5px;
   width: var(--eye-size);
   height: var(--eye-size);
-  border: var(--eye-border) solid #000;
+  border: var(--eye-border) solid var(--color-border);
   border-radius: 50%;
-  background: #fff;
+  background: var(--color-surface);
   overflow: hidden;
   transition: all 150ms ease;
 }
@@ -608,7 +712,7 @@ body.kilroy-page main {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #000;
+  background: var(--color-strong-bg);
   position: absolute;
   left: 50%;
   top: 50%;
@@ -680,7 +784,7 @@ body.konami-active {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #000;
+  background: var(--color-strong-bg);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
@@ -760,15 +864,15 @@ details#sources[open] > ol {
 }
 
 .blog-filter {
-  border: 2px solid #000;
+  border: 2px solid var(--color-border);
   border-radius: 12px;
   padding: 1rem 1.25rem;
-  background: #f6f5ff;
-  box-shadow: 4px 4px 0 #000;
+  background: var(--color-blog-filter-bg);
+  box-shadow: 4px 4px 0 var(--color-shadow);
 }
 
 .projects-page .blog-filter {
-  background: #ffe9d6;
+  background: var(--color-project-filter-bg);
 }
 
 .blog-filter-title {
@@ -786,44 +890,44 @@ details#sources[open] > ol {
 }
 
 .blog-filter-tag {
-  border: 2px solid #000;
-  background: #fff;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
   border-radius: 999px;
   padding: 0.35rem 0.85rem;
   font-size: 0.85rem;
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
-  box-shadow: 2px 2px 0 #000;
+  box-shadow: 2px 2px 0 var(--color-shadow);
 }
 
 .blog-filter-tag:hover,
 .blog-filter-tag:focus-visible {
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 #000;
+  box-shadow: 3px 3px 0 var(--color-shadow);
 }
 
 .blog-filter-tag.is-active {
-  background: #000;
-  color: #fff;
+  background: var(--color-strong-bg);
+  color: var(--color-strong-text);
 }
 
 .blog-filter-clear {
   margin-top: 0.75rem;
-  border: 2px solid #000;
-  background: #fff;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
   border-radius: 999px;
   padding: 0.35rem 0.9rem;
   font-size: 0.85rem;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 2px 2px 0 #000;
+  box-shadow: 2px 2px 0 var(--color-shadow);
 }
 
 .blog-filter-clear:hover,
 .blog-filter-clear:focus-visible {
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 #000;
+  box-shadow: 3px 3px 0 var(--color-shadow);
 }
 
 .blog-filter-note {
@@ -852,11 +956,11 @@ details#sources[open] > ol {
 
 .blog-card {
   display: block;
-  border: 2px solid #000;
+  border: 2px solid var(--color-border);
   padding: 1.25rem;
   border-radius: 12px;
-  background: #fff;
-  box-shadow: 6px 6px 0 #000;
+  background: var(--color-surface);
+  box-shadow: 6px 6px 0 var(--color-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   color: inherit;
@@ -870,7 +974,7 @@ details#sources[open] > ol {
 .blog-card:hover,
 .blog-card:focus-visible {
   transform: translate(-2px, -2px);
-  box-shadow: 10px 10px 0 #000;
+  box-shadow: 10px 10px 0 var(--color-shadow);
 }
 
 .blog-card:focus-visible {
@@ -892,7 +996,7 @@ details#sources[open] > ol {
 .blog-meta {
   margin: 0 0 0.6rem;
   font-size: 0.95rem;
-  color: #444;
+  color: var(--color-muted-text);
 }
 
 .blog-summary {
@@ -923,8 +1027,8 @@ details#sources[open] > ol {
 }
 
 .blog-tags li {
-  background: #000;
-  color: #fff;
+  background: var(--color-strong-bg);
+  color: var(--color-strong-text);
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   font-size: 0.85rem;
@@ -961,14 +1065,14 @@ details#sources[open] > ol {
   width: 100%;
   height: auto;
   border-radius: 12px;
-  border: 2px solid #000;
+  border: 2px solid var(--color-border);
   display: block;
 }
 
 .prose figure figcaption {
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #444;
+  color: var(--color-muted-text);
   text-align: center;
 }
 
@@ -980,13 +1084,13 @@ details#sources[open] > ol {
   width: 100%;
   height: auto;
   border-radius: 12px;
-  border: 2px solid #000;
+  border: 2px solid var(--color-border);
 }
 
 .blog-hero figcaption {
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #444;
+  color: var(--color-muted-text);
   text-align: center;
 }
 
@@ -998,9 +1102,9 @@ details#sources[open] > ol {
 .blog-links {
   margin-top: 1.5rem;
   padding: 1rem;
-  border: 2px solid #000;
+  border: 2px solid var(--color-border);
   border-radius: 12px;
-  background: #f7f7f7;
+  background: var(--color-panel-muted);
 }
 
 .blog-links h2 {
@@ -1023,7 +1127,7 @@ details#sources[open] > ol {
 .footer-note {
   margin: 1.5rem 0 0;
   font-size: 0.9rem;
-  color: #333;
+  color: var(--color-subtle-text);
 }
 
 .footer-note a[aria-current="page"] {
