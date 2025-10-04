@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <title>Guest Book — Braeden Silver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Sign Braeden Silver's guest book with your name and a 16×16 calling card.">
+  <meta name="description" content="Leave a quick hello for Braeden Silver and see the newest guest book signatures first.">
   <meta property="og:title" content="Guest Book — Braeden Silver">
-  <meta property="og:description" content="Sign Braeden Silver's guest book with your name and a 16×16 calling card.">
+  <meta property="og:description" content="Leave a quick hello for Braeden Silver and see the newest guest book signatures first.">
   <meta property="og:image" content="https://braedensilver.com/favicon.ico">
   <link rel="stylesheet" href="/assets/site.css">
 </head>
@@ -29,32 +29,19 @@
   </nav>
 
   <h1>Guest Book</h1>
-  <p class="guestbook-intro">Inspired by the old-school web, this page is a collection of every friendly face that drops by. Add your name and a 16×16 pixel masterpiece so future visitors know you stopped in.</p>
+  <p class="guestbook-intro">Say hello, share what you're working on, or drop a fun fact. Fresh signatures float to the top while the archives stay below for a stroll down memory lane.</p>
 
   <div class="guestbook-layout">
-    <section aria-labelledby="guestbook-instructions-title" class="guestbook-instructions" data-collapsible>
-      <div class="guestbook-instructions__header">
-        <h2 id="guestbook-instructions-title" class="guestbook-instructions__title">How to sign your name</h2>
-        <button type="button" class="guestbook-instructions__toggle" aria-expanded="false" aria-controls="guestbook-instructions-content">
-          Show instructions
-        </button>
-      </div>
-      <div id="guestbook-instructions-content" class="guestbook-instructions__content">
-        <ol>
-          <li>Fork this repository and convert your 16×16 image into a Base64 data URI (for example, run <code>base64 -w 0 my-icon.png</code> and prefix the result with <code>data:image/png;base64,</code>). Skip this step and set <code>"image": "default"</code> if you’d rather use the shared starburst.</li>
-          <li>Edit <code>data/guestbook.json</code> and add your entry object with your name, optional message, link, the Base64 data URI, and a short alt description for the image. Keep the note under 360 characters and the alt text under 120 so every tile stays readable.</li>
-          <li>Open a pull request. The site automatically sanitises your submission so only clean text and safe image paths make it onto the page.</li>
-        </ol>
-        <p class="guestbook-guidelines">We keep things family-friendly and accessible: no hate speech, slurs, flashing imagery, or spam. Entries that don’t follow the rules will be closed without being merged.</p>
-      </div>
-    </section>
-
     <section aria-labelledby="guestbook-signatures" class="guestbook-signatures">
       <h2 id="guestbook-signatures">Signatures</h2>
       <div id="guestbook-root" class="guestbook-root">
         <p class="guestbook-status">Loading guest book…</p>
       </div>
     </section>
+
+    <aside class="guestbook-guide">
+      <p class="guestbook-guide__copy">Want to add your name? <a href="https://github.com/BraedenSilver/BraedenSilver.github.io#sign-the-guest-book" rel="noopener noreferrer">Follow the GitHub instructions.</a></p>
+    </aside>
   </div>
 </main>
 

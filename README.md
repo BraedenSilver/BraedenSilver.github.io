@@ -16,7 +16,7 @@ This repository powers the static site at [braedensilver.com](https://braedensil
      "imageDescription": "Alt text that describes the icon"
    }
    ```
-   *Only `name` and `image` are required. Use `"default"` for `image` if you want the shared starburst instead. Keep messages under 360 characters and write alt text that screen readers can understand.*
+   *Only `name` and `image` are required. Use `"default"` for `image` if you want the color-shifting shared icon instead. Keep messages under 360 characters and write alt text that screen readers can understand.*
 4. **Open a pull request**. Once merged, the site deploys automatically and your signature appears on [/pages/guestbook.html](https://braedensilver.com/pages/guestbook.html).
 
 Need help checking your Base64 output or want more icon tips? Read [`assets/guestbook/README.md`](assets/guestbook/README.md).
