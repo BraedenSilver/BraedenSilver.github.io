@@ -12,7 +12,13 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #fff;
   color: #000;
-  padding-bottom: calc(5rem + 24px);
+  /*
+   * Reserve generous space for the fixed footer so page content (like the
+   * Elly gif and quick links) can scroll fully into view on small screens.
+   * The max() keeps the previous desktop spacing while guaranteeing extra
+   * room on shorter viewports.
+   */
+  padding-bottom: max(calc(5rem + 24px), 40vh);
 }
 
 :where(a, button, [role="button"]):focus-visible {
@@ -36,6 +42,7 @@ body {
 @media (max-width: 600px) {
   body {
     padding: 10px;
+    padding-bottom: max(calc(5rem + 24px), 40vh);
   }
 }
 
