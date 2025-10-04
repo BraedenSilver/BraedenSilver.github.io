@@ -38,6 +38,102 @@ async function include(id, file) {
   }
 }
 
+const THEME_STORAGE_KEY = "bs-theme";
+const Theme = Object.freeze({ LIGHT: "light", DARK: "dark" });
+
+const systemDarkQuery = typeof window !== "undefined" && typeof window.matchMedia === "function"
+  ? window.matchMedia("(prefers-color-scheme: dark)")
+  : null;
+
+let hasExplicitThemePreference = false;
+
+function readStoredTheme() {
+  if (typeof window === "undefined") return null;
+  try {
+    const value = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (value === Theme.DARK || value === Theme.LIGHT) {
+      hasExplicitThemePreference = true;
+      return value;
+    }
+  } catch {
+    /* ignore storage errors */
+  }
+  return null;
+}
+
+function getPreferredTheme() {
+  const stored = readStoredTheme();
+  if (stored) return stored;
+  if (systemDarkQuery?.matches) {
+    return Theme.DARK;
+  }
+  return Theme.LIGHT;
+}
+
+let currentTheme = getPreferredTheme();
+
+function applyTheme(theme, { persist = true } = {}) {
+  const root = document.documentElement;
+  if (!root) return;
+  const nextTheme = theme === Theme.DARK ? Theme.DARK : Theme.LIGHT;
+  currentTheme = nextTheme;
+  root.classList.toggle("theme-dark", nextTheme === Theme.DARK);
+  root.classList.toggle("theme-light", nextTheme === Theme.LIGHT);
+  root.dataset.theme = nextTheme;
+
+  if (!persist) {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+  } catch {
+    /* ignore storage errors */
+  }
+  hasExplicitThemePreference = true;
+}
+
+function updateThemeToggleButton(theme = currentTheme) {
+  const toggle = document.querySelector("[data-theme-toggle]");
+  if (!toggle) return;
+  const isDark = theme === Theme.DARK;
+  toggle.setAttribute("aria-label", isDark ? "Activate light mode" : "Activate dark mode");
+  toggle.setAttribute("aria-pressed", String(isDark));
+}
+
+applyTheme(currentTheme, { persist: false });
+
+if (systemDarkQuery) {
+  const handleSystemThemeChange = (event) => {
+    if (hasExplicitThemePreference) {
+      return;
+    }
+    applyTheme(event.matches ? Theme.DARK : Theme.LIGHT, { persist: false });
+    updateThemeToggleButton();
+  };
+
+  if (typeof systemDarkQuery.addEventListener === "function") {
+    systemDarkQuery.addEventListener("change", handleSystemThemeChange);
+  } else if (typeof systemDarkQuery.addListener === "function") {
+    systemDarkQuery.addListener(handleSystemThemeChange);
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (event) => {
+    if (event.key !== THEME_STORAGE_KEY) return;
+
+    if (event.newValue === Theme.DARK || event.newValue === Theme.LIGHT) {
+      hasExplicitThemePreference = true;
+      applyTheme(event.newValue, { persist: false });
+    } else if (event.newValue === null) {
+      hasExplicitThemePreference = false;
+      applyTheme(systemDarkQuery?.matches ? Theme.DARK : Theme.LIGHT, { persist: false });
+    }
+    updateThemeToggleButton();
+  });
+}
+
 function highlightCurrentNav() {
   const section = document.body?.dataset?.section;
   if (!section) return;
@@ -157,6 +253,19 @@ function initClickEffect() {
 }
 
 const CUSTOM_CURSOR_ENABLED = false;
+
+function initThemeToggle() {
+  const toggle = document.querySelector("[data-theme-toggle]");
+  if (!toggle) return;
+
+  updateThemeToggleButton();
+
+  toggle.addEventListener("click", () => {
+    const nextTheme = currentTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
+    applyTheme(nextTheme);
+    updateThemeToggleButton(nextTheme);
+  });
+}
 
 /**
  * Hide the native cursor and replace it with a smaller custom one.
@@ -482,6 +591,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   initAsciiLogoScaler();
   initAnnouncementBanner();
+  initThemeToggle();
   initKonamiCode();
   initHistoryBackLinks();
   initShareLink();
