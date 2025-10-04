@@ -192,10 +192,15 @@ function applyTheme(theme, { persist = true } = {}) {
   const root = document.documentElement;
   if (!root) return;
   const nextTheme = theme === Theme.DARK ? Theme.DARK : Theme.LIGHT;
+  const previousTheme = currentTheme;
   currentTheme = nextTheme;
   root.classList.toggle("theme-dark", nextTheme === Theme.DARK);
   root.classList.toggle("theme-light", nextTheme === Theme.LIGHT);
   root.dataset.theme = nextTheme;
+
+  if (previousTheme !== nextTheme) {
+    document.dispatchEvent(new CustomEvent("bs:themechange", { detail: { theme: nextTheme } }));
+  }
 
   if (!persist) {
     return;

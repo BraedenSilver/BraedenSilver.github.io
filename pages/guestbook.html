@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <title>Guest Book — Braeden Silver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Leave a quick hello for Braeden Silver and see the newest guest book signatures first.">
+  <meta name="description" content="Leave a note for Braeden Silver and join the guest book conversation powered by GitHub Discussions.">
   <meta property="og:title" content="Guest Book — Braeden Silver">
-  <meta property="og:description" content="Leave a quick hello for Braeden Silver and see the newest guest book signatures first.">
+  <meta property="og:description" content="Leave a note for Braeden Silver and join the guest book conversation powered by GitHub Discussions.">
   <meta property="og:image" content="https://braedensilver.com/favicon.ico">
   <link rel="stylesheet" href="/assets/site.css">
 </head>
@@ -29,20 +29,25 @@
   </nav>
 
   <h1>Guest Book</h1>
-  <p class="guestbook-intro">Say hello, share what you're working on, or drop a fun fact. Fresh signatures float to the top while the archives stay below for a stroll down memory lane.</p>
+  <p class="guestbook-intro">Say hello, share what you are building, or leave encouragement for future visitors. Notes now live inside a single GitHub Discussion so the conversation stays tidy and easy to moderate.</p>
 
-  <div class="guestbook-layout">
-    <section aria-labelledby="guestbook-signatures" class="guestbook-signatures">
-      <h2 id="guestbook-signatures">Signatures</h2>
-      <div id="guestbook-root" class="guestbook-root">
-        <p class="guestbook-status">Loading guest book…</p>
+  <section class="guestbook-discussion" aria-labelledby="guestbook-conversation">
+    <div class="guestbook-discussion__card">
+      <header class="guestbook-discussion__header">
+        <h2 id="guestbook-conversation">Community messages</h2>
+        <p>Use your GitHub account to add a reply. Everything appears instantly here and in the linked discussion.</p>
+      </header>
+      <div class="guestbook-discussion__body" data-giscus-wrapper>
+        <p class="guestbook-discussion__status" data-giscus-status hidden>Loading discussion…</p>
+        <p class="guestbook-discussion__filter" data-giscus-filter hidden>
+          A recent post tripped the language filters, so the embedded discussion is hidden. You can still read or report the conversation directly on <a data-discussion-link href="https://github.com/BraedenSilver/BraedenSilver.github.io/discussions" rel="noopener noreferrer" target="_blank">GitHub Discussions</a>.
+        </p>
       </div>
-    </section>
-
-    <aside class="guestbook-guide">
-      <p class="guestbook-guide__copy">Want to add your name? <a href="https://github.com/BraedenSilver/BraedenSilver.github.io#sign-the-guest-book" rel="noopener noreferrer">Follow the GitHub instructions.</a></p>
-    </aside>
-  </div>
+      <footer class="guestbook-discussion__footer">
+        <p>If the embed is giving you trouble, open the thread in <a data-discussion-link href="https://github.com/BraedenSilver/BraedenSilver.github.io/discussions" rel="noopener noreferrer" target="_blank">GitHub Discussions</a>.</p>
+      </footer>
+    </div>
+  </section>
 </main>
 
 <div id="site-footer">
@@ -53,8 +58,21 @@
   </noscript>
 </div>
 
+<script type="application/json" id="guestbook-config">
+{
+  "repo": "BraedenSilver/BraedenSilver.github.io",
+  "repoId": "REPLACE_WITH_REPO_ID",
+  "category": "Guestbook",
+  "categoryId": "REPLACE_WITH_CATEGORY_ID",
+  "discussionTerm": "Guest Book",
+  "discussionUrl": "https://github.com/BraedenSilver/BraedenSilver.github.io/discussions",
+  "theme": {
+    "light": "/assets/giscus-theme-light.css",
+    "dark": "/assets/giscus-theme-dark.css"
+  }
+}
+</script>
 <script src="/js/site.js" defer></script>
-<script src="/js/guestbook.js" defer></script>
-<script src="/js/guestbook-page.js" defer></script>
+<script src="/js/guestbook-giscus.js" defer></script>
 </body>
 </html>

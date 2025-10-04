@@ -1,0 +1,107 @@
+:root {
+  color-scheme: dark;
+  --color-fg-default: #f8f8f2;
+  --color-fg-muted: #c3c2b5;
+  --color-fg-subtle: #a59f85;
+  --color-canvas-default: #32332a;
+  --color-canvas-subtle: #3a3b30;
+  --color-border-default: #f8f8f2;
+  --color-border-muted: rgba(248, 248, 242, 0.3);
+  --color-neutral-muted: rgba(248, 248, 242, 0.25);
+  --color-neutral-subtle: rgba(248, 248, 242, 0.18);
+  --color-accent-fg: #66d9ef;
+  --color-accent-emphasis: #a6e22e;
+  --color-accent-muted: rgba(102, 217, 239, 0.28);
+  --color-accent-subtle: rgba(166, 226, 46, 0.18);
+  --color-success-fg: #a6e22e;
+  --color-attention-fg: #e6db74;
+  --color-severe-fg: #fd971f;
+  --color-danger-fg: #f92672;
+  --color-done-fg: #ae81ff;
+  --color-sponsors-fg: #f92672;
+  --color-shadow-small: 4px 4px 0 rgba(0, 0, 0, 0.6);
+  --color-shadow-medium: 8px 8px 0 rgba(0, 0, 0, 0.65);
+  --color-shadow-large: 12px 12px 0 rgba(0, 0, 0, 0.7);
+  --color-btn-text: #f8f8f2;
+  --color-btn-bg: #3a3b30;
+  --color-btn-border: #f8f8f2;
+  --color-btn-hover-bg: #4a4b3f;
+  --color-btn-hover-border: #f8f8f2;
+  --color-btn-active-bg: #565744;
+  --color-btn-selected-bg: #565744;
+  --color-btn-focus-border: #66d9ef;
+  --color-btn-focus-shadow: 0 0 0 3px rgba(102, 217, 239, 0.35);
+  --color-btn-primary-text: #1b1c17;
+  --color-btn-primary-bg: #a6e22e;
+  --color-btn-primary-border: #f8f8f2;
+  --color-btn-primary-hover-bg: #c0f060;
+  --color-btn-primary-hover-border: #f8f8f2;
+  --color-btn-primary-selected-bg: #95d41c;
+  --color-btn-primary-selected-border: #f8f8f2;
+  --color-btn-primary-disabled-text: rgba(27, 28, 23, 0.75);
+  --color-btn-primary-disabled-bg: #5c5d47;
+  --color-btn-primary-disabled-border: #f8f8f2;
+  --color-prettylights-syntax-comment: #75715e;
+  --color-prettylights-syntax-constant: #66d9ef;
+  --color-prettylights-syntax-entity: #a6e22e;
+  --color-prettylights-syntax-storage-modifier-import: #a59f85;
+  --color-prettylights-syntax-entity-tag: #f92672;
+  --color-prettylights-syntax-keyword: #f92672;
+  --color-prettylights-syntax-string: #e6db74;
+  --color-prettylights-syntax-variable: #fd971f;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #f92672;
+  --color-prettylights-syntax-invalid-illegal-text: #272822;
+  --color-prettylights-syntax-invalid-illegal-bg: #f92672;
+  --color-prettylights-syntax-carriage-return-text: #272822;
+  --color-prettylights-syntax-carriage-return-bg: #f92672;
+  --color-prettylights-syntax-string-regexp: #a6e22e;
+  --color-prettylights-syntax-markup-list: #e6db74;
+  --color-prettylights-syntax-markup-heading: #66d9ef;
+  --color-prettylights-syntax-markup-italic: #f8f8f2;
+  --color-prettylights-syntax-markup-bold: #f8f8f2;
+  --color-prettylights-syntax-markup-deleted-text: #f92672;
+  --color-prettylights-syntax-markup-deleted-bg: rgba(249, 38, 114, 0.2);
+  --color-prettylights-syntax-markup-inserted-text: #a6e22e;
+  --color-prettylights-syntax-markup-inserted-bg: rgba(166, 226, 46, 0.2);
+  --color-prettylights-syntax-markup-changed-text: #fd971f;
+  --color-prettylights-syntax-markup-changed-bg: rgba(253, 151, 31, 0.2);
+  --color-prettylights-syntax-markup-ignored-text: #a6e22e;
+  --color-prettylights-syntax-markup-ignored-bg: rgba(102, 217, 239, 0.2);
+  --color-prettylights-syntax-meta-diff-range: #ae81ff;
+  --color-prettylights-syntax-brackethighlighter-angle: #f8f8f2;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #c3c2b5;
+  --color-prettylights-syntax-constant-other-reference-link: #66d9ef;
+  --color-fg-accent: #66d9ef;
+  --color-fg-on-emphasis: #1b1c17;
+  --color-link-fg: #66d9ef;
+  --color-link-decoration: underline;
+  --color-link-hover-decoration: underline;
+  --color-border-accent-emphasis: #f8f8f2;
+  --color-border-danger: #f92672;
+}
+
+a {
+  color: var(--color-link-fg);
+}
+
+a:hover,
+a:focus {
+  text-decoration-thickness: 2px;
+}
+
+a:focus-visible {
+  outline: 3px solid var(--color-btn-focus-border);
+  outline-offset: 2px;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--color-canvas-default);
+  color: var(--color-fg-default);
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
