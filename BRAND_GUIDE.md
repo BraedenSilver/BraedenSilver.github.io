@@ -10,7 +10,7 @@ This guide captures the look-and-feel for braedensilver.com now that the communi
 ## Imagery and embeds
 - The guest book now runs through a single GitHub Discussion. Encourage people to upload tasteful avatars through GitHub rather than storing them in the repo.
 - giscus loads inside a card on `/pages/guestbook.html`. Keep the layout roomy and the copy short so the embed feels native to the rest of the site.
-- The iframe themes live in `assets/giscus-theme-light.css` and `assets/giscus-theme-dark.css`. Mirror any brand color tweaks in both files.
+- The embed now uses giscus's default theme. If you decide to customize it again, update both `assets/giscus-theme-light.css` and `assets/giscus-theme-dark.css` so light and dark modes stay in sync.
 
 ## Layout and navigation
 - Every page loads the shared header/footer via `js/site.js`. If you add a new section, wire it into `SITE_CONTENT.navItems` and mirror the change in `partials/header.html` for the no-JavaScript fallback.
