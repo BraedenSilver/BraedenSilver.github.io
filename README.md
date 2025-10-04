@@ -17,8 +17,9 @@ If you fork this project or need to update the giscus settings:
 1. Enable **GitHub Discussions** on the repository and create a category (for example, “Guestbook”).
 2. Visit [giscus.app](https://giscus.app) and copy the generated repository, discussion category, and ID values.
 3. Update the JSON block with `id="guestbook-config"` in [`pages/guestbook.html`](pages/guestbook.html).
-   - The embed now fetches missing `repoId` and `categoryId` values directly from the GitHub API. Add them to the config anyway to avoid extra API calls and rate limits.
-4. (Optional) Tweak the light and dark iframe themes in [`assets/giscus-theme-light.css`](assets/giscus-theme-light.css) and [`assets/giscus-theme-dark.css`](assets/giscus-theme-dark.css) to match your brand colors.
+   - Provide a `discussionUrl` that points at the guest book thread. The script uses that URL to resolve the repository slug, discussion number, category name, and GraphQL IDs automatically.
+   - If you already know the `repoId` or `categoryId`, add them anyway to skip the lookup and save an API call.
+4. (Optional) If you want to restyle the iframe, provide `theme.light` and `theme.dark` paths in the config and edit [`assets/giscus-theme-light.css`](assets/giscus-theme-light.css) and [`assets/giscus-theme-dark.css`](assets/giscus-theme-dark.css). Leaving `theme` out uses giscus's default appearance.
 
 ## House rules
 

@@ -41,7 +41,7 @@
 
   const isValidString = (value) => typeof value === "string" && value.trim() && !/REPLACE_WITH/i.test(value);
 
-  const requiredKeys = ["repo", "category", "discussionTerm", "discussionUrl"];
+  const requiredKeys = ["discussionUrl"];
   const missingKeys = requiredKeys.filter((key) => !isValidString(config[key]));
 
   if (missingKeys.length > 0) {
@@ -52,8 +52,57 @@
     return;
   }
 
-  const repo = config.repo.trim();
-  const category = config.category.trim();
+  const repo = isValidString(config.repo) ? config.repo.trim() : "";
+
+  function parseDiscussionUrl(url) {
+    if (!isValidString(url)) return null;
+    try {
+      const parsed = new URL(url);
+      if (!/github\.com$/i.test(parsed.hostname)) {
+        return null;
+      }
+      const segments = parsed.pathname.split("/").filter(Boolean);
+      if (segments.length < 4 || segments[2].toLowerCase() !== "discussions") {
+        return null;
+      }
+      const number = Number.parseInt(segments[3], 10);
+      if (!Number.isFinite(number) || number <= 0) {
+        return null;
+      }
+      return {
+        owner: segments[0],
+        repo: segments[1],
+        number,
+      };
+    } catch (error) {
+      console.error("Failed to parse discussion URL", error);
+      return null;
+    }
+  }
+
+  if (isValidString(config.discussionUrl)) {
+    config.discussionUrl = config.discussionUrl.trim();
+  }
+
+  const discussionMeta = parseDiscussionUrl(config.discussionUrl);
+  if (!discussionMeta) {
+    showStatus("The guest book discussion link looks invalid. Double-check the URL in the page source.", {
+      isError: true,
+    });
+    return;
+  }
+
+  config.discussionNumber = Number.isFinite(config.discussionNumber)
+    ? config.discussionNumber
+    : discussionMeta.number;
+
+  if (isValidString(config.category)) {
+    config.category = config.category.trim();
+  }
+
+  if (isValidString(config.discussionTerm)) {
+    config.discussionTerm = config.discussionTerm.trim();
+  }
 
   function normalizeRepo(value) {
     return value
@@ -68,7 +117,8 @@
       .join("/");
   }
 
-  const repoSlug = normalizeRepo(repo);
+  const repoSlug = normalizeRepo(repo || `${discussionMeta.owner}/${discussionMeta.repo}`);
+  config.repo = repoSlug;
 
   async function resolveRepoId() {
     if (isValidString(config.repoId)) {
@@ -109,9 +159,94 @@
     }
   }
 
+  let discussionMetadataPromise = null;
+
+  async function fetchDiscussionMetadata() {
+    if (!discussionMeta?.number) {
+      return null;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+
+    try {
+      const response = await fetch(
+        `https://api.github.com/repos/${repoSlug}/discussions/${discussionMeta.number}`,
+        {
+          headers: {
+            Accept: "application/vnd.github+json",
+          },
+          signal: controller.signal,
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const categoryName = data?.category?.name;
+      const categoryNodeId = data?.category?.node_id || data?.category?.id;
+      const discussionTitle = data?.title;
+
+      if (!isValidString(config.category) && isValidString(categoryName)) {
+        config.category = categoryName.trim();
+      }
+
+      if (!isValidString(config.categoryId) && isValidString(categoryNodeId)) {
+        config.categoryId = categoryNodeId.trim();
+      }
+
+      if (!isValidString(config.discussionTerm) && isValidString(discussionTitle)) {
+        config.discussionTerm = discussionTitle.trim();
+      }
+
+      config.discussionNumber = discussionMeta.number;
+
+      return data;
+    } catch (error) {
+      console.error("Failed to load discussion metadata", error);
+      showStatus(
+        "We couldn't read the guest book discussion on GitHub. Open the thread on GitHub Discussions while we investigate.",
+        { isError: true },
+      );
+      throw error;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  function resolveDiscussionMetadata() {
+    if (!discussionMetadataPromise) {
+      discussionMetadataPromise = fetchDiscussionMetadata();
+    }
+    return discussionMetadataPromise;
+  }
+
   async function resolveCategoryId() {
     if (isValidString(config.categoryId)) {
       return config.categoryId.trim();
+    }
+
+    if (!isValidString(config.category)) {
+      await resolveDiscussionMetadata();
+      if (isValidString(config.categoryId)) {
+        return config.categoryId.trim();
+      }
+    }
+
+    const currentCategory = isValidString(config.category) ? config.category.trim() : "";
+
+    if (currentCategory) {
+      config.category = currentCategory;
+    }
+
+    if (!currentCategory) {
+      showStatus(
+        "We couldn't find the discussion category on GitHub. Open the guest book on GitHub Discussions while we investigate.",
+        { isError: true },
+      );
+      throw new Error("Missing discussion category");
     }
 
     showStatus("Checking discussion category…");
@@ -137,7 +272,11 @@
           return false;
         }
         const name = typeof item.name === "string" ? item.name.trim() : "";
-        return name.toLowerCase() === category.toLowerCase();
+        if (name && name.toLowerCase() === currentCategory.toLowerCase()) {
+          return true;
+        }
+        const slug = typeof item.slug === "string" ? item.slug.trim() : "";
+        return slug && slug.toLowerCase() === currentCategory.toLowerCase();
       });
 
       const nodeId = match?.node_id || match?.id;
@@ -158,31 +297,58 @@
   }
 
   try {
-    await Promise.all([resolveRepoId(), resolveCategoryId()]);
+    await Promise.all([resolveRepoId(), resolveCategoryId(), resolveDiscussionMetadata()]);
   } catch (error) {
     console.error("Guest book initialization halted", error);
     return;
   }
 
-  const themes = {
-    light: config.theme?.light || "/assets/giscus-theme-light.css",
-    dark: config.theme?.dark || "/assets/giscus-theme-dark.css",
-  };
-
   const lang = typeof config.lang === "string" && config.lang.trim() ? config.lang : "en";
 
   const toAbsoluteUrl = (value) => {
+    if (!isValidString(value)) {
+      return "";
+    }
+
+    const trimmed = value.trim();
+
     try {
-      return new URL(value, window.location.origin).href;
+      return new URL(trimmed, window.location.origin).href;
     } catch {
-      return value;
+      return trimmed;
     }
   };
 
-  const absoluteThemes = {
-    light: toAbsoluteUrl(themes.light),
-    dark: toAbsoluteUrl(themes.dark),
-  };
+  function resolveThemeConfig(themeSetting) {
+    if (typeof themeSetting === "string" && isValidString(themeSetting)) {
+      return {
+        mode: "preset",
+        initial: themeSetting.trim(),
+      };
+    }
+
+    const light = toAbsoluteUrl(themeSetting?.light);
+    const dark = toAbsoluteUrl(themeSetting?.dark);
+
+    if (!light && !dark) {
+      return {
+        mode: "preset",
+        initial: "preferred_color_scheme",
+      };
+    }
+
+    const lightUrl = light || dark;
+    const darkUrl = dark || lightUrl;
+
+    return {
+      mode: "custom",
+      initial: lightUrl,
+      light: lightUrl,
+      dark: darkUrl,
+    };
+  }
+
+  const themeConfig = resolveThemeConfig(config.theme);
 
   showStatus("Loading discussion…");
 
@@ -192,16 +358,32 @@
   giscusScript.async = true;
   giscusScript.dataset.repo = config.repo;
   giscusScript.dataset.repoId = config.repoId;
-  giscusScript.dataset.category = config.category;
-  giscusScript.dataset.categoryId = config.categoryId;
+  if (isValidString(config.category)) {
+    giscusScript.dataset.category = config.category;
+  }
+
+  if (isValidString(config.categoryId)) {
+    giscusScript.dataset.categoryId = config.categoryId;
+  }
+
+  const discussionNumber = Number.isFinite(config.discussionNumber)
+    ? config.discussionNumber
+    : discussionMeta?.number;
+
+  const fallbackTerm = Number.isFinite(discussionNumber) && discussionNumber > 0
+    ? String(discussionNumber)
+    : "Guest Book";
+
   giscusScript.dataset.mapping = "specific";
-  giscusScript.dataset.term = config.discussionTerm;
+  giscusScript.dataset.term = isValidString(config.discussionTerm)
+    ? config.discussionTerm
+    : fallbackTerm;
   giscusScript.dataset.strict = "1";
   giscusScript.dataset.reactionsEnabled = "1";
   giscusScript.dataset.emitMetadata = "0";
   giscusScript.dataset.inputPosition = "top";
   giscusScript.dataset.lang = lang;
-  giscusScript.dataset.theme = absoluteThemes.light;
+  giscusScript.dataset.theme = themeConfig.initial;
   if (config.features?.lazyLoad) {
     giscusScript.dataset.loading = "lazy";
   }
@@ -214,7 +396,7 @@
 
   const state = {
     frame: null,
-    themeUrl: null,
+    themeUrl: themeConfig.mode === "custom" ? themeConfig.initial : null,
     pendingThemeUrl: null,
     filterTriggered: false,
   };
@@ -318,8 +500,12 @@
   }
 
   function applyTheme(themeKey) {
+    if (themeConfig.mode !== "custom") {
+      return;
+    }
+
     const key = themeKey === "dark" ? "dark" : "light";
-    const url = absoluteThemes[key];
+    const url = key === "dark" ? themeConfig.dark : themeConfig.light;
     if (!url) {
       return;
     }
@@ -349,6 +535,10 @@
   }
 
   function applyPendingTheme() {
+    if (themeConfig.mode !== "custom") {
+      return;
+    }
+
     if (!state.pendingThemeUrl) {
       const initial = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
       applyTheme(initial);
