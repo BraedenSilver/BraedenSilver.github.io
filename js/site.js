@@ -1,40 +1,158 @@
-// site.js — handles header/footer includes, "last updated" stamps,
+// site.js — handles shared layout injection, "last updated" stamps,
 // and small UI effects used throughout the site.
 
-/**
- * Fetch an HTML partial and inject it into the element with the given ID.
- */
-async function include(id, file) {
-  const el = document.getElementById(id);
-  if (!el) return;
+const SITE_CONTENT = Object.freeze({
+  navItems: [
+    { href: "/index.html", section: "home", label: "Home" },
+    { href: "/pages/projects/index.html", section: "projects", label: "Projects" },
+    { href: "/pages/research/index.html", section: "research", label: "Research" },
+    { href: "/pages/blog/index.html", section: "blog", label: "Blog" },
+    { href: "/pages/contact.html", section: "contact", label: "Contact" },
+  ],
+  announcementText: "Total Site Overhaul, Happy Oktoberfest and Happy Halloween!",
+  announcementRepeat: 3,
+});
 
-  // Try both relative and absolute paths so pages work from subdirectories.
-  const candidates = [file, "/" + file.replace(/^\//, "")];
-  const parser = typeof DOMParser !== "undefined" ? new DOMParser() : null;
-  for (const url of candidates) {
+const ASCII_LOGO_WIDE = String.raw`██████╗ ██████╗  █████╗ ███████╗██████╗ ███████╗███╗   ██╗███████╗██╗██╗     ██╗   ██╗███████╗██████╗     ██████╗ ██████╗ ███╗ ███╗
+██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║██╔════╝██║██║     ██║   ██║██╔════╝██╔══██╗   ██╔════╝██╔═══██╗████╗████║
+██████╔╝██████╔╝███████║█████╗  ██║  ██║█████╗  ██╔██╗ ██║███████╗██║██║     ██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔████╔██║
+██╔══██╗██╔══██╗██╔══██║██╔══╝  ██║  ██║██╔══╝  ██║╚██╗██║╚════██║██║██║     ╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║     ██║   ██║██║╚██╔╝██║
+██████╔╝██║  ██║██║  ██║███████╗██████╔╝███████╗██║ ╚████║███████║██║███████╗ ╚████╔╝ ███████╗██║  ██║██╗╚██████╗╚██████╔╝██║ ╚═╝ ██║
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝`;
+
+const ASCII_LOGO_COMPACT = String.raw`██████╗ ███████╗
+██╔══██╗██╔════╝
+██████╔╝███████╗
+██╔══██╗╚════██║
+██████╔╝███████║
+╚═════╝ ╚══════╝`;
+
+const MODULE_IMPORTERS = Object.freeze({
+  blog: () => import("/js/blog.js"),
+});
+
+const moduleCache = new Map();
+
+function loadModule(name) {
+  if (!MODULE_IMPORTERS[name]) {
+    return Promise.reject(new Error(`Unknown module: ${name}`));
+  }
+  if (!moduleCache.has(name)) {
     try {
-      const r = await fetch(url);
-      if (r.ok) {
-        if (!parser) {
-          el.textContent = await r.text();
-          break;
-        }
-        const html = await r.text();
-        const doc = parser.parseFromString(html, "text/html");
-        const fragment = document.createDocumentFragment();
-        if (doc && doc.body) {
-          Array.from(doc.body.childNodes).forEach(node => {
-            fragment.appendChild(node.cloneNode(true));
-          });
-          el.replaceChildren(fragment);
-        } else {
-          el.textContent = html;
-        }
-        break;
-      }
-    } catch {
-      /* ignore network errors and try next */
+      moduleCache.set(name, Promise.resolve(MODULE_IMPORTERS[name]()));
+    } catch (error) {
+      moduleCache.delete(name);
+      return Promise.reject(error);
     }
+  }
+  return moduleCache.get(name);
+}
+
+function setContentFallback(rootId, message) {
+  if (!rootId || !message) return;
+  const root = document.getElementById(rootId);
+  if (!root) return;
+  root.textContent = message;
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, match => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[match]);
+}
+
+function renderNavLinks() {
+  return SITE_CONTENT.navItems
+    .map(item => `<a href="${item.href}" data-section="${item.section}">${escapeHtml(item.label)}</a>`)
+    .join(" · ");
+}
+
+function renderAnnouncementBanner() {
+  const text = (SITE_CONTENT.announcementText || "").trim();
+  if (!text) {
+    return "";
+  }
+
+  const repeat = Number.isFinite(SITE_CONTENT.announcementRepeat) && SITE_CONTENT.announcementRepeat > 0
+    ? SITE_CONTENT.announcementRepeat
+    : 3;
+
+  return `
+<div class="announcement-banner" data-text="${escapeHtml(text)}" data-repeat="${repeat}">
+  <div class="announcement-marquee" role="status" aria-live="polite">
+    <div class="announcement-message">
+      <span>${escapeHtml(text)}</span>
+    </div>
+  </div>
+  <button type="button" class="announcement-close" aria-label="Dismiss announcement">&times;</button>
+</div>`;
+}
+
+function renderHeader() {
+  return `
+<header class="ascii-header">
+  <div class="site-branding">
+    <a href="/" class="site-logo" aria-label="Braeden Silver — Home">
+      <span class="logo-ascii" aria-hidden="true">
+        <pre id="ascii-logo">${ASCII_LOGO_WIDE}</pre>
+      </span>
+      <span class="logo-mobile" aria-hidden="true">
+        <pre>${ASCII_LOGO_COMPACT}</pre>
+      </span>
+      <span class="logo-text">Braeden Silver</span>
+    </a>
+  </div>
+
+  <div class="header-actions">
+    <nav>
+      ${renderNavLinks()}
+    </nav>
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Activate dark mode" aria-pressed="false">
+      <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
+      <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
+      <span class="visually-hidden">Toggle theme</span>
+    </button>
+  </div>
+</header>
+${renderAnnouncementBanner()}
+<hr>`;
+}
+
+function renderFooter() {
+  return `
+<footer>
+  <div class="footer-bar">
+    <div class="footer-meta">
+      <p class="last-updated">Last updated: <span id="last-updated">See Git history</span></p>
+      <button type="button" class="footer-share" data-share-button>
+        Copy page link
+      </button>
+      <span class="footer-share-feedback" data-share-feedback aria-live="polite"></span>
+    </div>
+
+    <div class="kilroy-peek footer-eyes" aria-hidden="true">
+      <div class="head">
+        <div class="eye left"><div class="pupil"></div></div>
+        <div class="eye right"><div class="pupil"></div></div>
+      </div>
+    </div>
+  </div>
+</footer>`;
+}
+
+function injectSharedLayout() {
+  const headerHost = document.getElementById("site-header");
+  if (headerHost) {
+    headerHost.innerHTML = renderHeader();
+  }
+
+  const footerHost = document.getElementById("site-footer");
+  if (footerHost) {
+    footerHost.innerHTML = renderFooter();
   }
 }
 
@@ -578,12 +696,113 @@ function initShareLink() {
 
 
 
-window.addEventListener("DOMContentLoaded", async () => {
-  const tasks = [];
-  if (document.getElementById("site-header")) tasks.push(include("site-header", "/partials/header.html"));
-  if (document.getElementById("site-footer")) tasks.push(include("site-footer", "/partials/footer.html"));
-  await Promise.all(tasks);
+const CONTENT_RENDERERS = Object.freeze({
+  "blog:index": {
+    run: () => loadModule("blog").then(mod => {
+      if (typeof mod.renderBlogIndex !== 'function') {
+        throw new Error('renderBlogIndex is not available');
+      }
+      return mod.renderBlogIndex();
+    }),
+    onError: () => setContentFallback("blog-list", "Failed to load posts."),
+  },
+  "blog:entry": {
+    run: () => loadModule("blog").then(mod => {
+      if (typeof mod.renderBlogPost !== 'function') {
+        throw new Error('renderBlogPost is not available');
+      }
+      return mod.renderBlogPost();
+    }),
+    onError: () => setContentFallback("blog-post", "Failed to load post."),
+  },
+  "projects:index": {
+    run: () => loadModule("blog").then(mod => {
+      if (typeof mod.renderProjectsIndex !== 'function') {
+        throw new Error('renderProjectsIndex is not available');
+      }
+      return mod.renderProjectsIndex();
+    }),
+    onError: () => setContentFallback("projects-list", "Failed to load projects."),
+  },
+  "projects:entry": {
+    run: () => loadModule("blog").then(mod => {
+      if (typeof mod.renderProjectEntry !== 'function') {
+        throw new Error('renderProjectEntry is not available');
+      }
+      return mod.renderProjectEntry();
+    }),
+    onError: () => setContentFallback("project-entry", "Failed to load project."),
+  },
+  "research:index": {
+    run: () => loadModule("blog").then(mod => {
+      if (typeof mod.renderResearchIndex !== 'function') {
+        throw new Error('renderResearchIndex is not available');
+      }
+      return mod.renderResearchIndex();
+    }),
+    onError: () => setContentFallback("research-list", "Failed to load research entries."),
+  },
+  "research:entry": {
+    run: () => loadModule("blog").then(mod => {
+      if (typeof mod.renderResearchEntry !== 'function') {
+        throw new Error('renderResearchEntry is not available');
+      }
+      return mod.renderResearchEntry();
+    }),
+    onError: () => setContentFallback("research-entry", "Failed to load research entry."),
+  },
+});
 
+function parseRenderTokens(value) {
+  if (!value) return [];
+  return String(value)
+    .split(/[\s,]+/)
+    .map(token => token.trim())
+    .filter(Boolean);
+}
+
+function collectContentRenderers() {
+  const tokens = new Set();
+  const body = document.body;
+  if (body?.dataset?.contentRender) {
+    parseRenderTokens(body.dataset.contentRender).forEach(token => tokens.add(token));
+  }
+  document.querySelectorAll('[data-content-render]').forEach(el => {
+    if (el === body) return;
+    const value = el.dataset.contentRender;
+    parseRenderTokens(value).forEach(token => tokens.add(token));
+  });
+  return Array.from(tokens);
+}
+
+async function initContentRenderers() {
+  const keys = collectContentRenderers();
+  if (!keys.length) return;
+  for (const key of keys) {
+    const entry = CONTENT_RENDERERS[key];
+    if (!entry || typeof entry.run !== 'function') {
+      console.warn('No renderer configured for', key);
+      continue;
+    }
+    try {
+      const result = await entry.run();
+      if (result === undefined) {
+        // noop — renderer handled DOM updates
+      }
+    } catch (error) {
+      console.error('Renderer failed', key, error);
+      try {
+        entry.onError?.(error);
+      } catch (fallbackError) {
+        console.error('Failed to apply fallback for', key, fallbackError);
+      }
+    }
+  }
+}
+
+
+window.addEventListener("DOMContentLoaded", async () => {
+  injectSharedLayout();
   highlightCurrentNav();
 
   initAsciiLogoScaler();
@@ -593,7 +812,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   initHistoryBackLinks();
   initShareLink();
 
-  await updateLastUpdated();
+  await Promise.all([
+    initContentRenderers(),
+    updateLastUpdated(),
+  ]);
   if (window.matchMedia('(pointer: fine)').matches) {
     if (!prefersReducedMotion()) {
       initClickEffect();
