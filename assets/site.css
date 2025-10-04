@@ -377,14 +377,30 @@ main {
 }
 
 .contact-illustration {
-  margin: 1.5rem auto;
-  display: flex;
-  justify-content: center;
+  margin: 1.5rem 0;
 }
 
 .contact-illustration img {
   max-width: min(320px, 100%);
   height: auto;
+  display: block;
+}
+
+.contact-qr {
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.contact-qr img {
+  max-width: min(280px, 100%);
+  height: auto;
+  display: block;
+}
+
+.contact-qr figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  color: #444;
 }
 
 .contact-links {
