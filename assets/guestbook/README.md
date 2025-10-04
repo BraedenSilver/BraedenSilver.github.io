@@ -1,10 +1,12 @@
 # Guest book icon storage
 
-GitHub’s editor for this project can’t accept binary files, so every guest book avatar lives as a Base64 data URI inside `data/guestbook.json`. If you want to prepare your own art:
+Drop any shared guest book artwork in this folder. Each entry in `data/guestbook.json` can either embed a Base64 data URI or reference one of these files with a path like `/assets/guestbook/your-icon.png`.
+
+To prepare a new icon:
 
 1. Draw or export a **16×16** PNG, GIF, JPG, or WebP.
-2. Convert it to Base64. On macOS/Linux run `base64 -w 0 my-icon.png` (or `base64 my-icon.png` if your version doesn’t support `-w`). On Windows PowerShell use `[Convert]::ToBase64String([IO.File]::ReadAllBytes("my-icon.png"))`.
-3. Prefix the output with `data:image/png;base64,` (swap `png` for the format you used) and paste it into the `image` field of your guest book entry.
-4. If you’d rather not supply art, set `"image": "default"` to use the built-in icon that randomises its colours on every load.
+2. Either convert it to Base64 (run `base64 -w 0 my-icon.png` on macOS/Linux or `[Convert]::ToBase64String([IO.File]::ReadAllBytes("my-icon.png"))` in Windows PowerShell) or save the file directly in this directory.
+3. Update `data/guestbook.json` with your details. If you saved a file here, reference it with its `/assets/guestbook/...` path. If you used Base64, paste the string into the `image` field.
+4. Skip the `image` field or set it to `"default"` if you want the shared crest stored at `/assets/guestbook/default.svg`.
 
-Feel free to drop scratch files or conversion notes in this folder while you work — it exists so the directory is always present when you fork the repo — but don’t commit binary assets.
+You can also use this directory for temporary working files while preparing your art.

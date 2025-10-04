@@ -5,7 +5,7 @@ This repository powers the static site at [braedensilver.com](https://braedensil
 ## Sign the guest book
 
 1. **Fork** this repository.
-2. **Prepare your icon**: export a 16×16 image (PNG, GIF, JPG, or WebP under ~10&nbsp;KB) and convert it to a Base64 string. On macOS/Linux you can run `base64 your-icon.png` (or `base64 -w 0 your-icon.png` to avoid line wraps). Keep the output handy — we embed it directly in the JSON file so no binary files need to be committed.
+2. **Prepare your icon**: export a 16×16 image (PNG, GIF, JPG, or WebP under ~10&nbsp;KB). You can either convert it to a Base64 string (run `base64 -w 0 your-icon.png` on macOS/Linux or `[Convert]::ToBase64String([IO.File]::ReadAllBytes("my-icon.png"))` in Windows PowerShell) or commit the file to `assets/guestbook/`.
 3. **Append your entry** in `data/guestbook.json`:
    ```json
    {
@@ -16,14 +16,10 @@ This repository powers the static site at [braedensilver.com](https://braedensil
      "imageDescription": "Alt text that describes the icon"
    }
    ```
-   *Only `name` and `image` are required. Use `"default"` for `image` if you want the color-shifting shared icon instead. Keep messages under 360 characters and write alt text that screen readers can understand.*
+   *Only `name` and `image` are required. If you uploaded a file, reference it like `"/assets/guestbook/your-icon.png"`. Use `"default"` (or simply omit the field) to display the shared crest stored at `/assets/guestbook/default.svg`. Keep messages under 360 characters and write alt text that screen readers can understand.*
 4. **Open a pull request**. Once merged, the site deploys automatically and your signature appears on [/pages/guestbook.html](https://braedensilver.com/pages/guestbook.html).
 
 Need help checking your Base64 output or want more icon tips? Read [`assets/guestbook/README.md`](assets/guestbook/README.md).
-
-## Safety filters
-
-The guest book is rendered client-side by `js/guestbook.js`, which strips control characters, rejects oversize data URIs, ignores entries with missing data, and only allows embedded `data:image/*;base64` icons or the shared default. Links are limited to `http`/`https` URLs and open in a new tab with `rel="nofollow"`. If you try to sneak in scripts or remote resources, they simply will not render.
 
 ## House rules
 

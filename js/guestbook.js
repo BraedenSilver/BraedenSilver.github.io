@@ -9,46 +9,16 @@
     dataUrl: "/data/guestbook.json",
     allowedProtocols: ["http:", "https:"],
     allowedImageMediaTypes: ["image/png", "image/gif", "image/jpeg", "image/webp"],
-    defaultImageTemplate:
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" shape-rendering="crispEdges"><rect x="0" y="0" width="16" height="2" fill="{{DARK}}" /><rect x="0" y="2" width="4" height="1" fill="{{DARK}}" /><rect x="4" y="2" width="8" height="2" fill="{{LIGHT}}" /><rect x="12" y="2" width="4" height="1" fill="{{DARK}}" /><rect x="0" y="3" width="3" height="13" fill="{{DARK}}" /><rect x="3" y="3" width="1" height="5" fill="{{LIGHT}}" /><rect x="12" y="3" width="1" height="5" fill="{{LIGHT}}" /><rect x="13" y="3" width="3" height="13" fill="{{DARK}}" /><rect x="4" y="4" width="2" height="1" fill="{{LIGHT}}" /><rect x="6" y="4" width="4" height="3" fill="{{DARK}}" /><rect x="10" y="4" width="2" height="1" fill="{{LIGHT}}" /><rect x="4" y="5" width="1" height="3" fill="{{LIGHT}}" /><rect x="5" y="5" width="1" height="11" fill="{{DARK}}" /><rect x="10" y="5" width="1" height="2" fill="{{DARK}}" /><rect x="11" y="5" width="1" height="4" fill="{{LIGHT}}" /><rect x="6" y="7" width="3" height="1" fill="{{DARK}}" /><rect x="9" y="7" width="2" height="2" fill="{{LIGHT}}" /><rect x="3" y="8" width="2" height="8" fill="{{DARK}}" /><rect x="6" y="8" width="1" height="8" fill="{{DARK}}" /><rect x="7" y="8" width="2" height="3" fill="{{LIGHT}}" /><rect x="12" y="8" width="1" height="8" fill="{{DARK}}" /><rect x="9" y="9" width="1" height="1" fill="{{LIGHT}}" /><rect x="10" y="9" width="2" height="7" fill="{{DARK}}" /><rect x="9" y="10" width="1" height="6" fill="{{DARK}}" /><rect x="7" y="11" width="2" height="1" fill="{{DARK}}" /><rect x="7" y="12" width="2" height="2" fill="{{LIGHT}}" /><rect x="7" y="14" width="2" height="2" fill="{{DARK}}" /></svg>',
-    defaultImageDescription:
-      "Default guest book emblem with randomly generated colors.",
+    allowedImagePathPrefix: "/assets/guestbook/",
+    allowedImageFileExtensions: ["png", "gif", "jpeg", "jpg", "webp"],
+    defaultImagePath: "/assets/guestbook/default.svg",
+    defaultImageDescription: "Black and white emblem with a pixel crest.",
     maxNameLength: 60,
     maxMessageLength: 360,
     maxAltLength: 120,
     maxLinkLength: 300,
     maxDataUrlLength: 4096,
   });
-
-  function padHex(value) {
-    return value.toString(16).padStart(2, "0");
-  }
-
-  function randomChannel(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  function randomColor(range) {
-    const [min, max] = range;
-    const r = padHex(randomChannel(min, max));
-    const g = padHex(randomChannel(min, max));
-    const b = padHex(randomChannel(min, max));
-    return `#${r}${g}${b}`;
-  }
-
-  function buildDefaultImage() {
-    const dark = randomColor([0, 120]);
-    let light = randomColor([180, 255]);
-    if (light === dark) {
-      light = randomColor([180, 255]);
-    }
-
-    const svg = settings.defaultImageTemplate
-      .replace(/\{\{DARK\}\}/g, dark)
-      .replace(/\{\{LIGHT\}\}/g, light);
-
-    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-  }
 
   function showStatus(message) {
     root.replaceChildren();
@@ -95,10 +65,53 @@
     }
 
     if (trimmed.toLowerCase() === "default") {
-      return "default";
+      return settings.defaultImagePath;
     }
 
-    if (!trimmed.toLowerCase().startsWith("data:image/")) {
+    const lowerTrimmed = trimmed.toLowerCase();
+    const prefixesToCheck = [
+      settings.allowedImagePathPrefix,
+      settings.allowedImagePathPrefix.startsWith("/")
+        ? settings.allowedImagePathPrefix.slice(1)
+        : settings.allowedImagePathPrefix,
+    ].filter(Boolean);
+
+    const matchedPrefix = prefixesToCheck.find(prefix =>
+      lowerTrimmed.startsWith(prefix.toLowerCase())
+    );
+
+    if (matchedPrefix) {
+      const suffix = trimmed.slice(matchedPrefix.length);
+      const normalizedSuffix = suffix.replace(/^\/+/, "");
+      const normalizedPath = `${settings.allowedImagePathPrefix}${normalizedSuffix}`;
+      if (!normalizedPath.startsWith(settings.allowedImagePathPrefix)) {
+        return null;
+      }
+      if (!normalizedSuffix) {
+        return null;
+      }
+      if (normalizedPath.includes("..")) {
+        return null;
+      }
+
+      const extension = normalizedPath.split(".").pop();
+      if (!extension) {
+        return null;
+      }
+
+      const normalizedExtension = extension.toLowerCase() === "jpg" ? "jpeg" : extension.toLowerCase();
+      const allowedExtensions = settings.allowedImageFileExtensions.map(ext =>
+        ext.toLowerCase() === "jpg" ? "jpeg" : ext.toLowerCase()
+      );
+
+      if (!allowedExtensions.includes(normalizedExtension)) {
+        return null;
+      }
+
+      return normalizedPath;
+    }
+
+    if (!lowerTrimmed.startsWith("data:image/")) {
       return null;
     }
 
@@ -222,8 +235,8 @@
     }
 
     const sanitizedImage = sanitizeImageSource(candidate.image);
-    const usingDefaultImage = sanitizedImage === "default" || !sanitizedImage;
-    const image = usingDefaultImage ? buildDefaultImage() : sanitizedImage;
+    const usingDefaultImage = !sanitizedImage || sanitizedImage === settings.defaultImagePath;
+    const image = usingDefaultImage ? settings.defaultImagePath : sanitizedImage;
     const message = sanitizeOptionalText(candidate.message, settings.maxMessageLength);
     const link = sanitizeLink(candidate.link);
     let imageDescription = sanitizeOptionalText(candidate.imageDescription, settings.maxAltLength);
