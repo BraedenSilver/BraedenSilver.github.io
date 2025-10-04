@@ -1,14 +1,22 @@
 <footer>
   <div class="footer-bar">
     <div class="footer-meta">
-      <p class="last-updated">Last updated: <span id="last-updated">See Git history</span></p>
+      <!-- Last updated text is filled in by JavaScript -->
+      <p class="last-updated">
+        Last updated: <span id="last-updated">See Git history</span>
+      </p>
+      <!-- Share button triggers the clipboard helper in js/site.js -->
       <button type="button" class="footer-share" data-share-button>
         Copy page link
       </button>
-      <span class="footer-share-feedback" data-share-feedback aria-live="polite"></span>
+      <span
+        class="footer-share-feedback"
+        data-share-feedback
+        aria-live="polite"
+      ></span>
     </div>
 
-    <!-- Right cluster: Kilroy -->
+    <!-- Right cluster: Kilroy peek animation lives purely in CSS -->
     <div class="kilroy-peek footer-eyes" aria-hidden="true">
       <div class="head">
         <div class="eye left"><div class="pupil"></div></div>
@@ -16,7 +24,6 @@
       </div>
     </div>
   </div>
-
 </footer>
 
 <!-- Styles moved to /assets/site.css -->

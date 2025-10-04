@@ -4,13 +4,26 @@
 const SITE_CONTENT = Object.freeze({
   navItems: [
     { href: "/index.html", section: "home", label: "Home" },
-    { href: "/pages/projects/index.html", section: "projects", label: "Projects" },
-    { href: "/pages/research/index.html", section: "research", label: "Research" },
+    {
+      href: "/pages/projects/index.html",
+      section: "projects",
+      label: "Projects",
+    },
+    {
+      href: "/pages/research/index.html",
+      section: "research",
+      label: "Research",
+    },
     { href: "/pages/blog/index.html", section: "blog", label: "Blog" },
-    { href: "/pages/guest-book.html", section: "guest-book", label: "Guest Book" },
+    {
+      href: "/pages/guest-book.html",
+      section: "guest-book",
+      label: "Guest Book",
+    },
     { href: "/pages/contact.html", section: "contact", label: "Contact" },
   ],
-  announcementText: "Total Site Overhaul, Happy Oktoberfest and Happy Halloween!",
+  announcementText:
+    "Total Site Overhaul, Happy Oktoberfest and Happy Halloween!",
   announcementRepeat: 3,
 });
 
@@ -45,8 +58,10 @@ const MODULE_IMPORTERS = Object.freeze({
   blog: () => import("/js/blog.js"),
 });
 
+// Store lazy-loaded modules so we only fetch each bundle once per session.
 const moduleCache = new Map();
 
+// Dynamically import optional feature bundles (blog list rendering, etc.).
 function loadModule(name) {
   if (!MODULE_IMPORTERS[name]) {
     return Promise.reject(new Error(`Unknown module: ${name}`));
@@ -62,6 +77,7 @@ function loadModule(name) {
   return moduleCache.get(name);
 }
 
+// Provide a plain-text placeholder when JavaScript fails to render dynamic content.
 function setContentFallback(rootId, message) {
   if (!rootId || !message) return;
   const root = document.getElementById(rootId);
@@ -69,31 +85,43 @@ function setContentFallback(rootId, message) {
   root.textContent = message;
 }
 
+// Escape potential HTML from content strings before injecting into the DOM.
 function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, match => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-  })[match]);
+  return String(value).replace(
+    /[&<>"']/g,
+    (match) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[match],
+  );
 }
 
+// Render the inline navigation links using site metadata above.
 function renderNavLinks() {
   return SITE_CONTENT.navItems
-    .map(item => `<a href="${item.href}" data-section="${item.section}">${escapeHtml(item.label)}</a>`)
+    .map(
+      (item) =>
+        `<a href="${item.href}" data-section="${item.section}">${escapeHtml(item.label)}</a>`,
+    )
     .join(" · ");
 }
 
+// Build the optional marquee announcement banner.
 function renderAnnouncementBanner() {
   const text = (SITE_CONTENT.announcementText || "").trim();
   if (!text) {
     return "";
   }
 
-  const repeat = Number.isFinite(SITE_CONTENT.announcementRepeat) && SITE_CONTENT.announcementRepeat > 0
-    ? SITE_CONTENT.announcementRepeat
-    : 3;
+  const repeat =
+    Number.isFinite(SITE_CONTENT.announcementRepeat) &&
+    SITE_CONTENT.announcementRepeat > 0
+      ? SITE_CONTENT.announcementRepeat
+      : 3;
 
   return `
 <div class="announcement-banner" data-text="${escapeHtml(text)}" data-repeat="${repeat}">
@@ -106,10 +134,12 @@ function renderAnnouncementBanner() {
 </div>`;
 }
 
+// 1% of visits get the alternate ASCII art for variety.
 function selectWideLogo() {
   return Math.random() < 0.01 ? ASCII_LOGO_WIDE_ALT : ASCII_LOGO_WIDE;
 }
 
+// Compose the full header markup, including ASCII art and theme toggle.
 function renderHeader() {
   const wideLogo = selectWideLogo();
   return `
@@ -140,6 +170,7 @@ ${renderAnnouncementBanner()}
 <hr>`;
 }
 
+// Compose the footer markup, which is reused across every page.
 function renderFooter() {
   return `
 <footer>
@@ -162,6 +193,7 @@ function renderFooter() {
 </footer>`;
 }
 
+// Inject shared header/footer HTML into placeholder elements on every page.
 function injectSharedLayout() {
   const headerHost = document.getElementById("site-header");
   if (headerHost) {
@@ -174,15 +206,19 @@ function injectSharedLayout() {
   }
 }
 
+// Keys and helpers for remembering the user's theme preference.
 const THEME_STORAGE_KEY = "bs-theme";
 const Theme = Object.freeze({ LIGHT: "light", DARK: "dark" });
 
-const systemDarkQuery = typeof window !== "undefined" && typeof window.matchMedia === "function"
-  ? window.matchMedia("(prefers-color-scheme: dark)")
-  : null;
+// Watch the system color scheme so we can respond when the user hasn't set a preference.
+const systemDarkQuery =
+  typeof window !== "undefined" && typeof window.matchMedia === "function"
+    ? window.matchMedia("(prefers-color-scheme: dark)")
+    : null;
 
 let hasExplicitThemePreference = false;
 
+// Pull the persisted theme from localStorage, if available.
 function readStoredTheme() {
   if (typeof window === "undefined") return null;
   try {
@@ -197,6 +233,7 @@ function readStoredTheme() {
   return null;
 }
 
+// Determine the active theme, respecting user choice and system preference.
 function getPreferredTheme() {
   const stored = readStoredTheme();
   if (stored) return stored;
@@ -205,6 +242,7 @@ function getPreferredTheme() {
 
 let currentTheme = getPreferredTheme();
 
+// Toggle the document theme classes and optionally persist the selection.
 function applyTheme(theme, { persist = true } = {}) {
   const root = document.documentElement;
   if (!root) return;
@@ -216,7 +254,9 @@ function applyTheme(theme, { persist = true } = {}) {
   root.dataset.theme = nextTheme;
 
   if (previousTheme !== nextTheme) {
-    document.dispatchEvent(new CustomEvent("bs:themechange", { detail: { theme: nextTheme } }));
+    document.dispatchEvent(
+      new CustomEvent("bs:themechange", { detail: { theme: nextTheme } }),
+    );
   }
 
   if (!persist) {
@@ -231,11 +271,15 @@ function applyTheme(theme, { persist = true } = {}) {
   hasExplicitThemePreference = true;
 }
 
+// Keep the toggle button's ARIA labels in sync with the current theme.
 function updateThemeToggleButton(theme = currentTheme) {
   const toggle = document.querySelector("[data-theme-toggle]");
   if (!toggle) return;
   const isDark = theme === Theme.DARK;
-  toggle.setAttribute("aria-label", isDark ? "Activate light mode" : "Activate dark mode");
+  toggle.setAttribute(
+    "aria-label",
+    isDark ? "Activate light mode" : "Activate dark mode",
+  );
   toggle.setAttribute("aria-pressed", String(isDark));
 }
 
@@ -275,29 +319,33 @@ if (typeof window !== "undefined") {
 function highlightCurrentNav() {
   const section = document.body?.dataset?.section;
   if (!section) return;
-  const links = document.querySelectorAll('#site-header nav a[data-section]');
-  links.forEach(link => {
+  const links = document.querySelectorAll("#site-header nav a[data-section]");
+  links.forEach((link) => {
     const isMatch = link.dataset.section === section;
-    link.classList.toggle('is-active', isMatch);
+    link.classList.toggle("is-active", isMatch);
     if (isMatch) {
-      link.setAttribute('aria-current', 'page');
+      link.setAttribute("aria-current", "page");
     } else {
-      link.removeAttribute('aria-current');
+      link.removeAttribute("aria-current");
     }
   });
 
-  const footerLinks = document.querySelectorAll('#site-footer a[data-section]');
-  footerLinks.forEach(link => {
+  const footerLinks = document.querySelectorAll("#site-footer a[data-section]");
+  footerLinks.forEach((link) => {
     if (link.dataset.section === section) {
-      link.setAttribute('aria-current', 'page');
+      link.setAttribute("aria-current", "page");
     } else {
-      link.removeAttribute('aria-current');
+      link.removeAttribute("aria-current");
     }
   });
 }
 
+// Respect the user's reduced-motion preference to avoid distracting effects.
 function prefersReducedMotion() {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+  if (
+    typeof window === "undefined" ||
+    typeof window.matchMedia !== "function"
+  ) {
     return false;
   }
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -307,21 +355,21 @@ function prefersReducedMotion() {
  * Scale the wide ASCII logo so it fits within its container.
  */
 function initAsciiLogoScaler() {
-  const wrap = document.querySelector('.logo-ascii');
-  const pre = wrap ? wrap.querySelector('pre') : null;
+  const wrap = document.querySelector(".logo-ascii");
+  const pre = wrap ? wrap.querySelector("pre") : null;
   if (!wrap || !pre) return;
 
   const applyScale = () => {
     if (!document.body.contains(pre)) return;
     const styles = window.getComputedStyle(wrap);
-    if (styles.display === 'none' || wrap.clientWidth === 0) {
-      pre.style.transform = '';
-      pre.style.height = '';
+    if (styles.display === "none" || wrap.clientWidth === 0) {
+      pre.style.transform = "";
+      pre.style.height = "";
       return;
     }
 
-    pre.style.transform = 'scale(1)';
-    pre.style.height = 'auto';
+    pre.style.transform = "scale(1)";
+    pre.style.height = "auto";
 
     const contentWidth = pre.scrollWidth;
     const available = wrap.clientWidth;
@@ -329,18 +377,18 @@ function initAsciiLogoScaler() {
 
     const scale = Math.min(1, available / contentWidth);
     pre.style.transform = `scale(${scale})`;
-    pre.style.height = pre.getBoundingClientRect().height + 'px';
+    pre.style.height = pre.getBoundingClientRect().height + "px";
   };
 
   const requestScale = () => window.requestAnimationFrame(applyScale);
 
   requestScale();
-  window.addEventListener('resize', requestScale);
+  window.addEventListener("resize", requestScale);
   if (document.fonts?.ready) {
     document.fonts.ready.then(requestScale).catch(() => {});
   }
 
-  if ('ResizeObserver' in window) {
+  if ("ResizeObserver" in window) {
     const observer = new ResizeObserver(() => requestScale());
     observer.observe(wrap);
     // Preserve a reference so the observer isn't garbage-collected prematurely.
@@ -370,9 +418,11 @@ async function updateLastUpdated() {
   }
 
   const opts = { year: "numeric", month: "short", day: "numeric" };
-  t.textContent = new Date(document.lastModified).toLocaleDateString(undefined, opts);
+  t.textContent = new Date(document.lastModified).toLocaleDateString(
+    undefined,
+    opts,
+  );
 }
-
 
 /**
  * Spawn a colorful spark where the user clicks.
@@ -392,6 +442,7 @@ function initClickEffect() {
 
 const CUSTOM_CURSOR_ENABLED = false;
 
+// Wire up the theme toggle button to flip between light and dark modes.
 function initThemeToggle() {
   const toggle = document.querySelector("[data-theme-toggle]");
   if (!toggle) return;
@@ -416,50 +467,50 @@ function initCustomCursor() {
   const html = document.documentElement;
   if (!html) return;
 
-  let cursor = document.getElementById('custom-cursor');
+  let cursor = document.getElementById("custom-cursor");
   if (!cursor) {
-    cursor = document.createElement('div');
-    cursor.id = 'custom-cursor';
+    cursor = document.createElement("div");
+    cursor.id = "custom-cursor";
     document.body.appendChild(cursor);
   }
 
-  html.classList.add('cursor-enabled');
+  html.classList.add("cursor-enabled");
 
-  document.addEventListener('pointermove', e => {
-    cursor.style.left = (e.clientX - 3) + 'px';
-    cursor.style.top = (e.clientY - 3) + 'px';
-    if (e.target.closest('a, button')) {
-      cursor.classList.add('pointer');
+  document.addEventListener("pointermove", (e) => {
+    cursor.style.left = e.clientX - 3 + "px";
+    cursor.style.top = e.clientY - 3 + "px";
+    if (e.target.closest("a, button")) {
+      cursor.classList.add("pointer");
     } else {
-      cursor.classList.remove('pointer');
+      cursor.classList.remove("pointer");
     }
   });
 }
 
-
+// Hidden Easter egg: unlock a music video when the Konami code is entered.
 function initKonamiCode() {
   const sequence = [
-    'arrowup',
-    'arrowup',
-    'arrowdown',
-    'arrowdown',
-    'arrowleft',
-    'arrowright',
-    'arrowleft',
-    'arrowright',
-    'b',
-    'a',
+    "arrowup",
+    "arrowup",
+    "arrowdown",
+    "arrowdown",
+    "arrowleft",
+    "arrowright",
+    "arrowleft",
+    "arrowright",
+    "b",
+    "a",
   ];
 
   const buffer = [];
   let previousFocus = null;
 
   const removeOverlay = () => {
-    const overlay = document.getElementById('konami-overlay');
+    const overlay = document.getElementById("konami-overlay");
     if (!overlay) return;
     overlay.remove();
-    document.body.classList.remove('konami-active');
-    if (previousFocus && typeof previousFocus.focus === 'function') {
+    document.body.classList.remove("konami-active");
+    if (previousFocus && typeof previousFocus.focus === "function") {
       previousFocus.focus();
     }
     previousFocus = null;
@@ -467,63 +518,67 @@ function initKonamiCode() {
   };
 
   const spawnOverlay = () => {
-    if (document.getElementById('konami-overlay')) return;
+    if (document.getElementById("konami-overlay")) return;
 
-    previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
 
-    const overlay = document.createElement('div');
-    overlay.id = 'konami-overlay';
-    overlay.className = 'konami-overlay';
-    overlay.setAttribute('role', 'dialog');
-    overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-labelledby', 'konami-title');
+    const overlay = document.createElement("div");
+    overlay.id = "konami-overlay";
+    overlay.className = "konami-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-labelledby", "konami-title");
 
-    const panel = document.createElement('div');
-    panel.className = 'konami-panel';
-    panel.addEventListener('click', event => event.stopPropagation());
+    const panel = document.createElement("div");
+    panel.className = "konami-panel";
+    panel.addEventListener("click", (event) => event.stopPropagation());
 
-    const title = document.createElement('h2');
-    title.id = 'konami-title';
-    title.textContent = 'Secret Video Unlocked';
+    const title = document.createElement("h2");
+    title.id = "konami-title";
+    title.textContent = "Secret Video Unlocked";
 
-    const videoWrap = document.createElement('div');
-    videoWrap.className = 'konami-video';
+    const videoWrap = document.createElement("div");
+    videoWrap.className = "konami-video";
 
-    const video = document.createElement('iframe');
-    video.src = 'https://www.youtube.com/embed/5IsSpAOD6K8?autoplay=1&start=12';
-    video.title = 'Talking Heads — Once in a Lifetime';
-    video.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    const video = document.createElement("iframe");
+    video.src = "https://www.youtube.com/embed/5IsSpAOD6K8?autoplay=1&start=12";
+    video.title = "Talking Heads — Once in a Lifetime";
+    video.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     video.allowFullscreen = true;
-    video.loading = 'lazy';
-    video.referrerPolicy = 'strict-origin-when-cross-origin';
+    video.loading = "lazy";
+    video.referrerPolicy = "strict-origin-when-cross-origin";
     videoWrap.appendChild(video);
 
-    const close = document.createElement('button');
-    close.type = 'button';
-    close.className = 'konami-close';
-    close.textContent = 'Exit video';
-    close.addEventListener('click', removeOverlay);
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "konami-close";
+    close.textContent = "Exit video";
+    close.addEventListener("click", removeOverlay);
 
     panel.appendChild(title);
     panel.appendChild(videoWrap);
     panel.appendChild(close);
 
     overlay.appendChild(panel);
-    overlay.addEventListener('keydown', event => {
-      if (event.key === 'Tab') {
+    overlay.addEventListener("keydown", (event) => {
+      if (event.key === "Tab") {
         event.preventDefault();
         close.focus();
       }
     });
-    overlay.addEventListener('focusin', event => {
+    overlay.addEventListener("focusin", (event) => {
       if (event.target !== close) {
         close.focus();
       }
     });
-    overlay.addEventListener('click', removeOverlay);
+    overlay.addEventListener("click", removeOverlay);
 
     document.body.appendChild(overlay);
-    document.body.classList.add('konami-active');
+    document.body.classList.add("konami-active");
     buffer.length = 0;
 
     requestAnimationFrame(() => {
@@ -531,44 +586,54 @@ function initKonamiCode() {
     });
   };
 
-  document.addEventListener('keydown', event => {
+  document.addEventListener("keydown", (event) => {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
 
     const target = event.target;
     if (
       target instanceof HTMLElement &&
-      (target.isContentEditable || ['INPUT', 'TEXTAREA'].includes(target.tagName) || target.getAttribute('role') === 'textbox')
+      (target.isContentEditable ||
+        ["INPUT", "TEXTAREA"].includes(target.tagName) ||
+        target.getAttribute("role") === "textbox")
     ) {
       return;
     }
 
-    if (event.key === 'Escape' && document.body.classList.contains('konami-active')) {
+    if (
+      event.key === "Escape" &&
+      document.body.classList.contains("konami-active")
+    ) {
       event.preventDefault();
       removeOverlay();
       return;
     }
 
-    const key = event.key.length === 1 ? event.key.toLowerCase() : event.key.toLowerCase();
+    const key =
+      event.key.length === 1
+        ? event.key.toLowerCase()
+        : event.key.toLowerCase();
     buffer.push(key);
     if (buffer.length > sequence.length) {
       buffer.shift();
     }
 
-    if (buffer.length === sequence.length && sequence.every((expected, index) => buffer[index] === expected)) {
+    if (
+      buffer.length === sequence.length &&
+      sequence.every((expected, index) => buffer[index] === expected)
+    ) {
       spawnOverlay();
     }
   });
 }
 
-
 /**
  * Initialize the scrolling announcement banner below the header.
  */
 function initAnnouncementBanner() {
-  const banner = document.querySelector('.announcement-banner');
+  const banner = document.querySelector(".announcement-banner");
   if (!banner) return;
 
-  const DISMISS_KEY = 'announcement-dismissed-at';
+  const DISMISS_KEY = "announcement-dismissed-at";
   const DISMISS_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
   const now = Date.now();
@@ -576,7 +641,10 @@ function initAnnouncementBanner() {
     const stored = window.localStorage?.getItem(DISMISS_KEY);
     if (stored) {
       const dismissedAt = Number.parseInt(stored, 10);
-      if (Number.isFinite(dismissedAt) && now - dismissedAt < DISMISS_DURATION_MS) {
+      if (
+        Number.isFinite(dismissedAt) &&
+        now - dismissedAt < DISMISS_DURATION_MS
+      ) {
         banner.remove();
         return;
       }
@@ -585,37 +653,38 @@ function initAnnouncementBanner() {
     // Ignore storage access issues and show the banner normally.
   }
 
-  const track = banner.querySelector('.announcement-message');
+  const track = banner.querySelector(".announcement-message");
   if (!track) return;
 
-  const text = (banner.dataset.text || '').trim();
+  const text = (banner.dataset.text || "").trim();
   if (!text) {
     banner.remove();
     return;
   }
 
   track.replaceChildren();
-  const repeatAttr = parseInt(banner.dataset.repeat || '', 10);
-  const repeatCount = Number.isFinite(repeatAttr) && repeatAttr > 1 ? repeatAttr : 3;
+  const repeatAttr = parseInt(banner.dataset.repeat || "", 10);
+  const repeatCount =
+    Number.isFinite(repeatAttr) && repeatAttr > 1 ? repeatAttr : 3;
 
   for (let i = 0; i < repeatCount; i += 1) {
-    const span = document.createElement('span');
+    const span = document.createElement("span");
     span.textContent = text;
     if (i > 0) {
-      span.setAttribute('aria-hidden', 'true');
+      span.setAttribute("aria-hidden", "true");
     }
     track.appendChild(span);
   }
 
   // Restart the animation so it begins after the DOM is ready.
-  track.style.animation = 'none';
+  track.style.animation = "none";
   // eslint-disable-next-line no-unused-expressions
   track.offsetHeight;
-  track.style.animation = '';
+  track.style.animation = "";
 
-  const close = banner.querySelector('.announcement-close');
+  const close = banner.querySelector(".announcement-close");
   if (close) {
-    close.addEventListener('click', () => {
+    close.addEventListener("click", () => {
       try {
         window.localStorage?.setItem(DISMISS_KEY, String(Date.now()));
       } catch {
@@ -626,13 +695,13 @@ function initAnnouncementBanner() {
   }
 }
 
-
+// Enhance links with data-history-back to use browser history when available.
 function initHistoryBackLinks() {
-  const links = document.querySelectorAll('[data-history-back]');
+  const links = document.querySelectorAll("[data-history-back]");
   if (!links.length) return;
 
-  links.forEach(link => {
-    link.addEventListener('click', event => {
+  links.forEach((link) => {
+    link.addEventListener("click", (event) => {
       if (window.history.length > 1) {
         event.preventDefault();
         window.history.back();
@@ -641,67 +710,67 @@ function initHistoryBackLinks() {
   });
 }
 
-
+// Copy helper used by the share button fallback path.
 async function copyTextToClipboard(text) {
-  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(text);
     return;
   }
 
-  const textArea = document.createElement('textarea');
+  const textArea = document.createElement("textarea");
   textArea.value = text;
-  textArea.setAttribute('readonly', '');
-  textArea.style.position = 'absolute';
-  textArea.style.left = '-9999px';
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "absolute";
+  textArea.style.left = "-9999px";
   document.body.appendChild(textArea);
   textArea.select();
-  const succeeded = document.execCommand('copy');
+  const succeeded = document.execCommand("copy");
   textArea.remove();
   if (!succeeded) {
-    throw new Error('copy-failed');
+    throw new Error("copy-failed");
   }
 }
 
-
+// Attach copy/share behavior to the footer share button.
 function initShareLink() {
-  const button = document.querySelector('[data-share-button]');
+  const button = document.querySelector("[data-share-button]");
   if (!button) return;
 
-  const feedback = document.querySelector('[data-share-feedback]');
+  const feedback = document.querySelector("[data-share-feedback]");
   let clearTimer = null;
 
   const setFeedback = (message, isError = false) => {
     if (!feedback) return;
     feedback.textContent = message;
-    feedback.classList.toggle('is-error', Boolean(isError && message));
+    feedback.classList.toggle("is-error", Boolean(isError && message));
     if (clearTimer) {
       clearTimeout(clearTimer);
       clearTimer = null;
     }
     if (message) {
       clearTimer = window.setTimeout(() => {
-        feedback.textContent = '';
-        feedback.classList.remove('is-error');
+        feedback.textContent = "";
+        feedback.classList.remove("is-error");
         clearTimer = null;
       }, 4000);
     }
   };
 
-  button.addEventListener('click', async () => {
+  button.addEventListener("click", async () => {
     const shareUrl = button.dataset.shareUrl || window.location.href;
     const shareData = {
       title: document.title,
       url: shareUrl,
     };
 
-    if (typeof navigator !== 'undefined' && navigator.share) {
+    if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share(shareData);
-        setFeedback('Link shared!');
+        setFeedback("Link shared!");
         return;
       } catch (error) {
-        if (error?.name === 'AbortError') {
-          setFeedback('');
+        if (error?.name === "AbortError") {
+          setFeedback("");
           return;
         }
         // Fall back to copying the link if Web Share fails for another reason.
@@ -710,69 +779,78 @@ function initShareLink() {
 
     try {
       await copyTextToClipboard(shareUrl);
-      setFeedback('Link copied to clipboard.');
+      setFeedback("Link copied to clipboard.");
     } catch (error) {
       setFeedback(`Copy failed. Copy manually: ${shareUrl}`, true);
     }
   });
 }
 
-
-
+// Map each data-content-render token to its associated loader and fallback handler.
 const CONTENT_RENDERERS = Object.freeze({
   "blog:index": {
-    run: () => loadModule("blog").then(mod => {
-      if (typeof mod.renderBlogIndex !== 'function') {
-        throw new Error('renderBlogIndex is not available');
-      }
-      return mod.renderBlogIndex();
-    }),
+    run: () =>
+      loadModule("blog").then((mod) => {
+        if (typeof mod.renderBlogIndex !== "function") {
+          throw new Error("renderBlogIndex is not available");
+        }
+        return mod.renderBlogIndex();
+      }),
     onError: () => setContentFallback("blog-list", "Failed to load posts."),
   },
   "blog:entry": {
-    run: () => loadModule("blog").then(mod => {
-      if (typeof mod.renderBlogPost !== 'function') {
-        throw new Error('renderBlogPost is not available');
-      }
-      return mod.renderBlogPost();
-    }),
+    run: () =>
+      loadModule("blog").then((mod) => {
+        if (typeof mod.renderBlogPost !== "function") {
+          throw new Error("renderBlogPost is not available");
+        }
+        return mod.renderBlogPost();
+      }),
     onError: () => setContentFallback("blog-post", "Failed to load post."),
   },
   "projects:index": {
-    run: () => loadModule("blog").then(mod => {
-      if (typeof mod.renderProjectsIndex !== 'function') {
-        throw new Error('renderProjectsIndex is not available');
-      }
-      return mod.renderProjectsIndex();
-    }),
-    onError: () => setContentFallback("projects-list", "Failed to load projects."),
+    run: () =>
+      loadModule("blog").then((mod) => {
+        if (typeof mod.renderProjectsIndex !== "function") {
+          throw new Error("renderProjectsIndex is not available");
+        }
+        return mod.renderProjectsIndex();
+      }),
+    onError: () =>
+      setContentFallback("projects-list", "Failed to load projects."),
   },
   "projects:entry": {
-    run: () => loadModule("blog").then(mod => {
-      if (typeof mod.renderProjectEntry !== 'function') {
-        throw new Error('renderProjectEntry is not available');
-      }
-      return mod.renderProjectEntry();
-    }),
-    onError: () => setContentFallback("project-entry", "Failed to load project."),
+    run: () =>
+      loadModule("blog").then((mod) => {
+        if (typeof mod.renderProjectEntry !== "function") {
+          throw new Error("renderProjectEntry is not available");
+        }
+        return mod.renderProjectEntry();
+      }),
+    onError: () =>
+      setContentFallback("project-entry", "Failed to load project."),
   },
   "research:index": {
-    run: () => loadModule("blog").then(mod => {
-      if (typeof mod.renderResearchIndex !== 'function') {
-        throw new Error('renderResearchIndex is not available');
-      }
-      return mod.renderResearchIndex();
-    }),
-    onError: () => setContentFallback("research-list", "Failed to load research entries."),
+    run: () =>
+      loadModule("blog").then((mod) => {
+        if (typeof mod.renderResearchIndex !== "function") {
+          throw new Error("renderResearchIndex is not available");
+        }
+        return mod.renderResearchIndex();
+      }),
+    onError: () =>
+      setContentFallback("research-list", "Failed to load research entries."),
   },
   "research:entry": {
-    run: () => loadModule("blog").then(mod => {
-      if (typeof mod.renderResearchEntry !== 'function') {
-        throw new Error('renderResearchEntry is not available');
-      }
-      return mod.renderResearchEntry();
-    }),
-    onError: () => setContentFallback("research-entry", "Failed to load research entry."),
+    run: () =>
+      loadModule("blog").then((mod) => {
+        if (typeof mod.renderResearchEntry !== "function") {
+          throw new Error("renderResearchEntry is not available");
+        }
+        return mod.renderResearchEntry();
+      }),
+    onError: () =>
+      setContentFallback("research-entry", "Failed to load research entry."),
   },
 });
 
@@ -780,31 +858,35 @@ function parseRenderTokens(value) {
   if (!value) return [];
   return String(value)
     .split(/[\s,]+/)
-    .map(token => token.trim())
+    .map((token) => token.trim())
     .filter(Boolean);
 }
 
+// Read tokens from the body and any child elements that request dynamic rendering.
 function collectContentRenderers() {
   const tokens = new Set();
   const body = document.body;
   if (body?.dataset?.contentRender) {
-    parseRenderTokens(body.dataset.contentRender).forEach(token => tokens.add(token));
+    parseRenderTokens(body.dataset.contentRender).forEach((token) =>
+      tokens.add(token),
+    );
   }
-  document.querySelectorAll('[data-content-render]').forEach(el => {
+  document.querySelectorAll("[data-content-render]").forEach((el) => {
     if (el === body) return;
     const value = el.dataset.contentRender;
-    parseRenderTokens(value).forEach(token => tokens.add(token));
+    parseRenderTokens(value).forEach((token) => tokens.add(token));
   });
   return Array.from(tokens);
 }
 
+// Load and run the renderers requested by the current page.
 async function initContentRenderers() {
   const keys = collectContentRenderers();
   if (!keys.length) return;
   for (const key of keys) {
     const entry = CONTENT_RENDERERS[key];
-    if (!entry || typeof entry.run !== 'function') {
-      console.warn('No renderer configured for', key);
+    if (!entry || typeof entry.run !== "function") {
+      console.warn("No renderer configured for", key);
       continue;
     }
     try {
@@ -813,16 +895,15 @@ async function initContentRenderers() {
         // noop — renderer handled DOM updates
       }
     } catch (error) {
-      console.error('Renderer failed', key, error);
+      console.error("Renderer failed", key, error);
       try {
         entry.onError?.(error);
       } catch (fallbackError) {
-        console.error('Failed to apply fallback for', key, fallbackError);
+        console.error("Failed to apply fallback for", key, fallbackError);
       }
     }
   }
 }
-
 
 window.addEventListener("DOMContentLoaded", async () => {
   injectSharedLayout();
@@ -835,11 +916,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   initHistoryBackLinks();
   initShareLink();
 
-  await Promise.all([
-    initContentRenderers(),
-    updateLastUpdated(),
-  ]);
-  if (window.matchMedia('(pointer: fine)').matches) {
+  await Promise.all([initContentRenderers(), updateLastUpdated()]);
+  if (window.matchMedia("(pointer: fine)").matches) {
     if (!prefersReducedMotion()) {
       initClickEffect();
     }
@@ -848,12 +926,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // Tiny googly eyes in footer
   (() => {
-    const eyes = document.querySelectorAll('.footer-eyes .eye');
+    const eyes = document.querySelectorAll(".footer-eyes .eye");
     if (!eyes.length) return;
 
     function movePupils(x, y) {
-      eyes.forEach(eye => {
-        const pupil = eye.querySelector('.pupil');
+      eyes.forEach((eye) => {
+        const pupil = eye.querySelector(".pupil");
         const rect = eye.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
@@ -868,23 +946,24 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     function centerPupils() {
-      eyes.forEach(eye => {
-        const pupil = eye.querySelector('.pupil');
-        if (pupil) pupil.style.transform = 'translate(-50%, -50%)';
+      eyes.forEach((eye) => {
+        const pupil = eye.querySelector(".pupil");
+        if (pupil) pupil.style.transform = "translate(-50%, -50%)";
       });
     }
 
-    window.addEventListener('pointermove', e => movePupils(e.clientX, e.clientY));
-    window.addEventListener('mouseleave', centerPupils);
-    window.addEventListener('blur', centerPupils);
+    window.addEventListener("pointermove", (e) =>
+      movePupils(e.clientX, e.clientY),
+    );
+    window.addEventListener("mouseleave", centerPupils);
+    window.addEventListener("blur", centerPupils);
 
-    eyes.forEach(eye => {
-      eye.addEventListener('click', () => {
-        if (eye.classList.contains('wink')) return;
-        eye.classList.add('wink');
-        setTimeout(() => eye.classList.remove('wink'), 1500);
+    eyes.forEach((eye) => {
+      eye.addEventListener("click", () => {
+        if (eye.classList.contains("wink")) return;
+        eye.classList.add("wink");
+        setTimeout(() => eye.classList.remove("wink"), 1500);
       });
     });
   })();
-
 });
