@@ -23,6 +23,15 @@ const ASCII_LOGO_WIDE = String.raw`
 ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝
 `;
 
+const ASCII_LOGO_WIDE_ALT = String.raw`
+██████╗ ██████╗ ███████╗ █████╗ ██████╗ ███████╗███╗   ██╗███████╗██╗     ██╗██╗   ██╗███████╗██████╗     ██████╗ ██████╗ ███╗   ███╗
+██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝████╗  ██║██╔════╝██║     ██║██║   ██║██╔════╝██╔══██╗   ██╔════╝██╔═══██╗████╗ ████║
+██████╔╝██████╔╝█████╗  ███████║██║  ██║█████╗  ██╔██╗ ██║███████╗██║     ██║██║   ██║█████╗  ██████╔╝   ██║     ██║   ██║██╔████╔██║
+██╔══██╗██╔══██╗██╔══╝  ██╔══██║██║  ██║██╔══╝  ██║╚██╗██║╚════██║██║     ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║     ██║   ██║██║╚██╔╝██║
+██████╔╝██║  ██║███████╗██║  ██║██████╔╝███████╗██║ ╚████║███████║███████╗██║ ╚████╔╝ ███████╗██║  ██║██╗╚██████╗╚██████╔╝██║ ╚═╝ ██║
+╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚══════╝╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝
+`;
+
 const ASCII_LOGO_COMPACT = String.raw`
 ██████╗ ███████╗
 ██╔══██╗██╔════╝
@@ -97,13 +106,18 @@ function renderAnnouncementBanner() {
 </div>`;
 }
 
+function selectWideLogo() {
+  return Math.random() < 0.01 ? ASCII_LOGO_WIDE_ALT : ASCII_LOGO_WIDE;
+}
+
 function renderHeader() {
+  const wideLogo = selectWideLogo();
   return `
 <header class="ascii-header">
   <div class="site-branding">
     <a href="/" class="site-logo" aria-label="Braeden Silver — Home">
       <span class="logo-ascii" aria-hidden="true">
-        <pre id="ascii-logo">${ASCII_LOGO_WIDE}</pre>
+        <pre id="ascii-logo">${wideLogo}</pre>
       </span>
       <span class="logo-mobile" aria-hidden="true">
         <pre>${ASCII_LOGO_COMPACT}</pre>
