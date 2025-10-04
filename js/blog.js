@@ -18,8 +18,7 @@ const SECTION_CONFIG = {
     emptyMessage: "No posts yet.",
     noneMatchMessage: "No posts match the selected tags yet.",
     fallbackDescription: "Notes from the lab bench.",
-    schemaType: "BlogPosting",
-    ogType: "article"
+    schemaType: "BlogPosting"
   },
   projects: {
     label: "Projects",
@@ -30,8 +29,7 @@ const SECTION_CONFIG = {
     emptyMessage: "No projects yet.",
     noneMatchMessage: "No projects match the selected tags yet.",
     fallbackDescription: "Hands-on builds and experiments.",
-    schemaType: "CreativeWork",
-    ogType: "article"
+    schemaType: "CreativeWork"
   },
   research: {
     label: "Research",
@@ -42,8 +40,7 @@ const SECTION_CONFIG = {
     emptyMessage: "No research yet.",
     noneMatchMessage: "No research entries match the selected tags yet.",
     fallbackDescription: "Longer-form investigations and papers.",
-    schemaType: "ScholarlyArticle",
-    ogType: "article"
+    schemaType: "ScholarlyArticle"
   }
 };
 
@@ -410,20 +407,12 @@ function updateMetaTags(entry, canonicalUrl, config, blocks) {
 
   setMeta("og:title", docTitle);
   setMeta("og:description", desc);
-  setMeta("og:url", canonicalUrl);
-  setMeta("og:type", config.ogType || "article");
 
   if (entry.hero) {
     setMeta("og:image", entry.hero);
-    setMeta("twitter:card", "summary_large_image", false);
-    setMeta("twitter:image", entry.hero, false);
   } else {
-    setMeta("og:image", "/assets/footer.gif");
-    setMeta("twitter:card", "summary", false);
-    setMeta("twitter:image", "/assets/footer.gif", false);
+    setMeta("og:image", "/assets/dino-mail.gif");
   }
-  setMeta("twitter:title", docTitle, false);
-  setMeta("twitter:description", desc, false);
 
   let canonical = document.querySelector('link[rel="canonical"]');
   if (!canonical) {
