@@ -1,15 +1,31 @@
-# Brand & Attribution Guidelines
+# Guest Book Style Guide
 
-These guidelines explain how to reference Braeden Silver and the braedensilver.com project when reusing code or content from this repository.
+This guide captures the look-and-feel for braedensilver.com now that the community guest book is the public-facing way to contribute. Follow these notes when proposing content or design tweaks so the site stays cohesive.
 
-## Attribution
-- Clearly state that your work is based on material from braedensilver.com.
-- Distinguish your derivative project from the original site so visitors understand who maintains each version.
+## Voice and tone
+- Write in the first person ("I" statements) when Braeden is speaking directly to visitors.
+- Keep copy upbeat, welcoming, and PG-rated; the README house rules also apply here.
+- Limit guest book messages to two short sentences (≈360 characters) so every signature has room to breathe.
 
-## Use of Name and Likeness
-- Do not imply endorsement or authorship by Braeden Silver unless you have written permission.
-- Avoid reusing personal imagery or signatures without approval.
+## Icons and imagery
+- Guest book avatars are **exactly 16×16 pixels**. Convert them to `data:image/*;base64` strings and paste them into `data/guestbook.json` so contributors never have to commit binary files.
+- Keep the encoded output under 4&nbsp;KB and prefer PNG, GIF, or WebP for crisp pixel art.
+- Provide concise `imageDescription` alt text that explains the icon without repeating the contributor’s name.
+- If you skip the icon, use the literal value `"default"` so the shared lavender starburst appears instead.
 
-## Visual Identity
-- You are encouraged to adapt colors, layouts, or typography to suit your project.
-- When in doubt about specific assets, contact the maintainer through the repository issue tracker.
+## Layout and navigation
+- Every page loads the shared header/footer via `js/site.js`. If you add a new section, wire it into `SITE_CONTENT.navItems` and mirror the change in `partials/header.html` for the no-JavaScript fallback.
+- When you link to core sections from other pages (e.g., Quick Links on the homepage), list them in the same order as the global navigation: Home, Projects, Research, Blog, Guest Book, Contact.
+- Back links should reuse the `.page-back` pattern so visitors can rely on consistent placement and copy.
+
+## Typography and colors
+- Font stack: `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif` with monospace ASCII art using `ui-monospace` variants.
+- The light theme background is pure white (`#fff`) with black (`#000`) text; dark mode mirrors the existing CSS variables in `assets/site.css`. Don’t introduce new brand colors without updating both themes.
+- Use the highlight color (`--color-highlight-bg`) for friendly callouts and keep borders at `2px` solid for that retro, punchy feel.
+
+## Accessibility must-haves
+- Ensure interactive elements remain keyboard reachable and provide focus states (the theme toggle styles are the reference point).
+- External links open in new tabs should include `rel="noopener noreferrer"`; guest book profile links add `nofollow` as well.
+- Check new pages against automated tools (e.g., Lighthouse, axe) and manual keyboard navigation to maintain the site’s accessibility baseline.
+
+Stick to these guidelines and the guest book will look like a curated collection rather than a chaotic wall of GIFs.

@@ -1,8 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: 🌐 Live Site
-    url: https://braedensilver.com
-    about: Visit the production site for context before filing an issue.
-  - name: 📬 Direct Contact
-    url: mailto:hello@braedensilver.com
-    about: Reach out directly for private or sensitive matters.
