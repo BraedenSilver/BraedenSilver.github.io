@@ -1,35 +1,26 @@
-# Braeden's Guest Book
+# braedensilver.com
 
-This repository powers the static site at [braedensilver.com](https://braedensilver.com). The community guest book now lives inside a GitHub Discussion that is embedded on [/pages/guestbook.html](https://braedensilver.com/pages/guestbook.html) with [giscus](https://giscus.app/).
+This repository powers the static site at [braedensilver.com](https://braedensilver.com). The site highlights projects, research, writing, and ways to get in touch with Braeden Silver.
 
-## Leave a message
+## Project structure
 
-1. **Sign in to GitHub.** Discussions require a GitHub account, so log in before you start typing.
-2. **Open the discussion.** Visit [/pages/guestbook.html](https://braedensilver.com/pages/guestbook.html) or jump directly to the [Guest Book discussion](https://github.com/BraedenSilver/BraedenSilver.github.io/discussions).
-3. **Post your reply.** Click “Add a comment,” share a quick hello, and keep things friendly. Replies show up instantly on the website and in GitHub.
+- `index.html` — homepage with quick links to core sections.
+- `pages/` — standalone pages for projects, research, blog posts, and contact details.
+- `partials/` — shared HTML fragments used when JavaScript is disabled.
+- `js/` — client-side scripts for rendering the shared header/footer and page-specific enhancements.
+- `assets/` — site-wide images, stylesheets, and fonts.
+- `data/` — structured content used by specific pages.
 
-Moderation happens in GitHub Discussions. The embed includes a language filter that automatically hides the widget if it detects hateful or profane content. Anything that violates the code of conduct will be removed from the discussion.
+## Local development
 
-## Site maintainer setup
+Because the site is fully static, you can use any HTTP server to preview changes locally. One option bundled with Python is:
 
-If you fork this project or need to update the giscus settings:
+```bash
+python3 -m http.server 8000
+```
 
-1. Enable **GitHub Discussions** on the repository and create a category (for example, “Guestbook”).
-2. Visit [giscus.app](https://giscus.app) and copy the generated repository, discussion category, and ID values.
-3. Update the JSON block with `id="guestbook-config"` in [`pages/guestbook.html`](pages/guestbook.html).
-   - Provide a `discussionUrl` that points at the guest book thread. The script uses that URL to resolve the repository slug, discussion number, category name, and GraphQL IDs automatically.
-   - If you already know the `repoId` or `categoryId`, add them anyway to skip the lookup and save an API call.
-4. (Optional) If you want to restyle the iframe, provide `theme.light` and `theme.dark` paths in the config and edit [`assets/giscus-theme-light.css`](assets/giscus-theme-light.css) and [`assets/giscus-theme-dark.css`](assets/giscus-theme-dark.css). Leaving `theme` out uses giscus's default appearance.
+Then open `http://localhost:8000` in your browser. Commit HTML, CSS, JS, and asset changes directly—there is no build step.
 
-## House rules
+## Contributing
 
-- Keep things friendly, inclusive, and PG-rated.
-- Do not post copyrighted material you do not own.
-- Flashing imagery, gore, slurs, hate speech, or spam will be removed.
-- Respect other contributors—reply constructively and do not edit someone else’s comments.
-
-Thanks for stopping by!
-
-## Style guide
-
-For design conventions and accessibility expectations, check out [BRAND_GUIDE.md](./BRAND_GUIDE.md). It keeps every page aligned with the rest of the site.
+Issues and pull requests are welcome. Please match the existing tone, layout, and accessibility patterns when proposing updates so the experience stays cohesive across the site.
