@@ -1,4 +1,4 @@
-(function () {
+(async function () {
   const SECTION_ID = "guestbook";
   if (document.body?.dataset?.section !== SECTION_ID) {
     return;
@@ -39,17 +39,128 @@
     return;
   }
 
-  const requiredKeys = ["repo", "repoId", "category", "categoryId", "discussionTerm", "discussionUrl"];
-  const missingKeys = requiredKeys.filter((key) => {
-    const value = config[key];
-    return !value || typeof value !== "string" || !value.trim() || /REPLACE_WITH/i.test(value);
-  });
+  const isValidString = (value) => typeof value === "string" && value.trim() && !/REPLACE_WITH/i.test(value);
+
+  const requiredKeys = ["repo", "category", "discussionTerm", "discussionUrl"];
+  const missingKeys = requiredKeys.filter((key) => !isValidString(config[key]));
 
   if (missingKeys.length > 0) {
     showStatus(
       "The guest book isn't configured yet. Update the discussion settings in the page source to finish setup.",
       { isError: true },
     );
+    return;
+  }
+
+  const repo = config.repo.trim();
+  const category = config.category.trim();
+
+  function normalizeRepo(value) {
+    return value
+      .split("/")
+      .map((segment, index) => {
+        if (index > 1) {
+          return segment;
+        }
+        return segment.trim();
+      })
+      .slice(0, 2)
+      .join("/");
+  }
+
+  const repoSlug = normalizeRepo(repo);
+
+  async function resolveRepoId() {
+    if (isValidString(config.repoId)) {
+      return config.repoId.trim();
+    }
+
+    showStatus("Connecting to GitHub…");
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+
+    try {
+      const response = await fetch(`https://api.github.com/repos/${repoSlug}`, {
+        headers: {
+          Accept: "application/vnd.github+json",
+        },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (isValidString(data?.node_id)) {
+        config.repoId = data.node_id.trim();
+        return config.repoId;
+      }
+    } catch (error) {
+      console.error("Failed to resolve repoId", error);
+      showStatus(
+        "We couldn't confirm the discussion settings with GitHub. Open the guest book on GitHub Discussions while we investigate.",
+        { isError: true },
+      );
+      throw error;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  async function resolveCategoryId() {
+    if (isValidString(config.categoryId)) {
+      return config.categoryId.trim();
+    }
+
+    showStatus("Checking discussion category…");
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+
+    try {
+      const response = await fetch(`https://api.github.com/repos/${repoSlug}/discussions/categories`, {
+        headers: {
+          Accept: "application/vnd.github+json",
+        },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      const categories = await response.json();
+      const match = (Array.isArray(categories) ? categories : []).find((item) => {
+        if (!item || typeof item !== "object") {
+          return false;
+        }
+        const name = typeof item.name === "string" ? item.name.trim() : "";
+        return name.toLowerCase() === category.toLowerCase();
+      });
+
+      const nodeId = match?.node_id || match?.id;
+      if (isValidString(nodeId)) {
+        config.categoryId = nodeId.trim();
+        return config.categoryId;
+      }
+    } catch (error) {
+      console.error("Failed to resolve categoryId", error);
+      showStatus(
+        "We couldn't find the discussion category on GitHub. Open the guest book on GitHub Discussions while we investigate.",
+        { isError: true },
+      );
+      throw error;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  try {
+    await Promise.all([resolveRepoId(), resolveCategoryId()]);
+  } catch (error) {
+    console.error("Guest book initialization halted", error);
     return;
   }
 
