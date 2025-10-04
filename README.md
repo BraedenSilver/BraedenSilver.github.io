@@ -1,35 +1,33 @@
 # Braeden's Guest Book
 
-This repository powers the static site at [braedensilver.com](https://braedensilver.com). The only collaborative feature that remains is the community guest book — a throwback space where visitors can leave their name and a tiny 16×16 calling card.
+This repository powers the static site at [braedensilver.com](https://braedensilver.com). The community guest book now lives inside a GitHub Discussion that is embedded on [/pages/guestbook.html](https://braedensilver.com/pages/guestbook.html) with [giscus](https://giscus.app/).
 
-## Sign the guest book
+## Leave a message
 
-1. **Fork** this repository.
-2. **Prepare your icon**: export a 16×16 image (PNG, GIF, JPG, or WebP under ~10&nbsp;KB). You can either convert it to a Base64 string (run `base64 -w 0 your-icon.png` on macOS/Linux or `[Convert]::ToBase64String([IO.File]::ReadAllBytes("my-icon.png"))` in Windows PowerShell) or commit the file to `assets/guestbook/`.
-3. **Append your entry** in `data/guestbook.json`:
-   ```json
-   {
-     "name": "Your Name",
-     "message": "Optional short note",
-     "link": "https://your-website.example",
-     "image": "data:image/png;base64,PASTE-YOUR-BASE64-HERE",
-     "imageDescription": "Alt text that describes the icon"
-   }
-   ```
-   *Only `name` and `image` are required. If you uploaded a file, reference it like `"/assets/guestbook/your-icon.png"`. Use `"default"` (or simply omit the field) to display the shared crest stored at `/assets/guestbook/default.svg`. Keep messages under 360 characters and write alt text that screen readers can understand.*
-4. **Open a pull request**. Once merged, the site deploys automatically and your signature appears on [/pages/guestbook.html](https://braedensilver.com/pages/guestbook.html).
+1. **Sign in to GitHub.** Discussions require a GitHub account, so log in before you start typing.
+2. **Open the discussion.** Visit [/pages/guestbook.html](https://braedensilver.com/pages/guestbook.html) or jump directly to the [Guest Book discussion](https://github.com/BraedenSilver/BraedenSilver.github.io/discussions).
+3. **Post your reply.** Click “Add a comment,” share a quick hello, and keep things friendly. Replies show up instantly on the website and in GitHub.
 
-Need help checking your Base64 output or want more icon tips? Read [`assets/guestbook/README.md`](assets/guestbook/README.md).
+Moderation happens in GitHub Discussions. The embed includes a language filter that automatically hides the widget if it detects hateful or profane content. Anything that violates the code of conduct will be removed from the discussion.
+
+## Site maintainer setup
+
+If you fork this project or need to update the giscus settings:
+
+1. Enable **GitHub Discussions** on the repository and create a category (for example, “Guestbook”).
+2. Visit [giscus.app](https://giscus.app) and copy the generated repository, discussion category, and ID values.
+3. Update the JSON block with `id="guestbook-config"` in [`pages/guestbook.html`](pages/guestbook.html) so the `repoId` and `categoryId` fields contain your values. Adjust `discussionTerm` if you rename the thread.
+4. (Optional) Tweak the light and dark iframe themes in [`assets/giscus-theme-light.css`](assets/giscus-theme-light.css) and [`assets/giscus-theme-dark.css`](assets/giscus-theme-dark.css) to match your brand colors.
 
 ## House rules
 
 - Keep things friendly, inclusive, and PG-rated.
-- Do not upload copyrighted material you do not own.
-- Flashing imagery, gore, slurs, hate speech, or spam will be rejected.
-- Refrain from editing other people’s entries unless you’re fixing a typo with their permission.
+- Do not post copyrighted material you do not own.
+- Flashing imagery, gore, slurs, hate speech, or spam will be removed.
+- Respect other contributors—reply constructively and do not edit someone else’s comments.
 
-Happy signing!
+Thanks for stopping by!
 
 ## Style guide
 
-For design conventions, avatar specs, and accessibility expectations, check out [BRAND_GUIDE.md](./BRAND_GUIDE.md). It keeps every page and signature aligned with the rest of the site.
+For design conventions and accessibility expectations, check out [BRAND_GUIDE.md](./BRAND_GUIDE.md). It keeps every page aligned with the rest of the site.

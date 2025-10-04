@@ -1,21 +1,21 @@
 # Guest Book Style Guide
 
-This guide captures the look-and-feel for braedensilver.com now that the community guest book is the public-facing way to contribute. Follow these notes when proposing content or design tweaks so the site stays cohesive.
+This guide captures the look-and-feel for braedensilver.com now that the community guest book is powered by GitHub Discussions through giscus. Follow these notes when proposing content or design tweaks so the site stays cohesive.
 
 ## Voice and tone
 - Write in the first person ("I" statements) when Braeden is speaking directly to visitors.
 - Keep copy upbeat, welcoming, and PG-rated; the README house rules also apply here.
-- Limit guest book messages to two short sentences (≈360 characters) so every signature has room to breathe.
+- Keep guest book messages punchy—two short sentences (≈360 characters) still feels great inside the discussion thread.
 
-## Icons and imagery
-- Guest book avatars are **exactly 16×16 pixels**. Convert them to `data:image/*;base64` strings and paste them into `data/guestbook.json` so contributors never have to commit binary files.
-- Keep the encoded output under 4&nbsp;KB and prefer PNG, GIF, or WebP for crisp pixel art.
-- Provide concise `imageDescription` alt text that explains the icon without repeating the contributor’s name.
-- If you skip the icon, use the literal value `"default"` so the shared lavender starburst appears instead.
+## Imagery and embeds
+- The guest book now runs through a single GitHub Discussion. Encourage people to upload tasteful avatars through GitHub rather than storing them in the repo.
+- giscus loads inside a card on `/pages/guestbook.html`. Keep the layout roomy and the copy short so the embed feels native to the rest of the site.
+- The iframe themes live in `assets/giscus-theme-light.css` and `assets/giscus-theme-dark.css`. Mirror any brand color tweaks in both files.
 
 ## Layout and navigation
 - Every page loads the shared header/footer via `js/site.js`. If you add a new section, wire it into `SITE_CONTENT.navItems` and mirror the change in `partials/header.html` for the no-JavaScript fallback.
 - When you link to core sections from other pages (e.g., Quick Links on the homepage), list them in the same order as the global navigation: Home, Projects, Research, Blog, Guest Book, Contact.
+- `/pages/guestbook.html` loads `js/guestbook-giscus.js` for configuration, theme syncing, and moderation. Keep related functionality encapsulated there.
 - Back links should reuse the `.page-back` pattern so visitors can rely on consistent placement and copy.
 
 ## Typography and colors
@@ -25,7 +25,7 @@ This guide captures the look-and-feel for braedensilver.com now that the communi
 
 ## Accessibility must-haves
 - Ensure interactive elements remain keyboard reachable and provide focus states (the theme toggle styles are the reference point).
-- External links open in new tabs should include `rel="noopener noreferrer"`; guest book profile links add `nofollow` as well.
+- External links that open in new tabs should include `rel="noopener noreferrer"`. The guest book links back to GitHub Discussions, which already handle SEO signals.
 - Check new pages against automated tools (e.g., Lighthouse, axe) and manual keyboard navigation to maintain the site’s accessibility baseline.
 
-Stick to these guidelines and the guest book will look like a curated collection rather than a chaotic wall of GIFs.
+Stick to these guidelines and the guest book will feel cohesive while still benefiting from GitHub’s moderation and notifications.
