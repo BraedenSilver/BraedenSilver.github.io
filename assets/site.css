@@ -1195,20 +1195,79 @@ details#sources[open] > ol {
   max-width: 60ch;
 }
 
-.guestbook-how-to {
-  margin-top: 2rem;
-  padding: 1.5rem;
+.guestbook-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.guestbook-instructions {
   border: 2px solid var(--color-border);
   border-radius: 0.75rem;
   background: var(--color-panel-muted);
+  padding: 1.25rem;
 }
 
-.guestbook-how-to ol {
+.guestbook-instructions__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.guestbook-instructions__title {
+  margin: 0;
+}
+
+.guestbook-instructions__toggle {
+  display: none;
+  margin-left: auto;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.guestbook-instructions[data-js-enabled="true"] .guestbook-instructions__toggle {
+  display: inline-flex;
+  align-items: center;
+}
+
+.guestbook-instructions__toggle::after {
+  content: "▾";
+  margin-left: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.guestbook-instructions__toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+.guestbook-instructions__toggle:hover,
+.guestbook-instructions__toggle:focus-visible {
+  background: var(--color-highlight-bg);
+  transform: translateY(-1px);
+}
+
+.guestbook-instructions__content {
+  margin-top: 1rem;
+}
+
+.guestbook-instructions[data-js-enabled="true"][data-state="collapsed"] .guestbook-instructions__content {
+  display: none;
+}
+
+.guestbook-instructions__content ol {
   margin-left: 1.5rem;
   padding-left: 1rem;
 }
 
-.guestbook-how-to li + li {
+.guestbook-instructions__content li + li {
   margin-top: 0.75rem;
 }
 
@@ -1217,8 +1276,14 @@ details#sources[open] > ol {
   font-style: italic;
 }
 
+.guestbook-signatures {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .guestbook-root {
-  margin-top: 2rem;
+  margin-top: 0;
 }
 
 .guestbook-status {
@@ -1289,4 +1354,24 @@ details#sources[open] > ol {
 .guestbook-entry__message {
   margin: 0;
   line-height: 1.6;
+}
+
+@media (min-width: 960px) {
+  body[data-section="guestbook"] main {
+    max-width: min(58vw, 720px);
+  }
+
+  .guestbook-layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .guestbook-instructions {
+    position: fixed;
+    top: clamp(2rem, 6vh, 4.5rem);
+    right: clamp(1.5rem, 6vw, 4rem);
+    width: min(22rem, 28vw);
+    max-width: 320px;
+  }
 }
