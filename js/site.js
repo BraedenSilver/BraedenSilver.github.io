@@ -156,10 +156,16 @@ function initClickEffect() {
   });
 }
 
+const CUSTOM_CURSOR_ENABLED = false;
+
 /**
  * Hide the native cursor and replace it with a smaller custom one.
  */
 function initCustomCursor() {
+  if (!CUSTOM_CURSOR_ENABLED) {
+    // Custom cursor is temporarily disabled but implementation is preserved.
+    return;
+  }
   const html = document.documentElement;
   if (!html) return;
 
