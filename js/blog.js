@@ -444,8 +444,6 @@ function updateMetaTags(entry, canonicalUrl, config, blocks) {
 
   if (entry.hero) {
     setMeta("og:image", entry.hero);
-  } else {
-    setMeta("og:image", "/assets/dino-mail.gif");
   }
 
   let canonical = document.querySelector('link[rel="canonical"]');
