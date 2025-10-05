@@ -22,10 +22,17 @@ const SITE_CONTENT = Object.freeze({
     },
     { href: "/pages/contact.html", section: "contact", label: "Contact" },
   ],
-  announcementText:
-    "Total Site Overhaul, Happy Oktoberfest and Happy Halloween!",
-  announcementRepeat: 3,
 });
+
+const DEFAULT_ANNOUNCEMENT = Object.freeze({
+  messages: ["Total Site Overhaul is underway"],
+  repeat: 3,
+});
+
+const FALLBACK_VISITOR_MESSAGE = "Thank you for visiting BraedenSilver.com";
+
+const HOLIDAY_CONFIG_URL = "/data/holiday-banners.json";
+const BANNER_TIME_ZONE = "America/Chicago";
 
 const ASCII_LOGO_WIDE = String.raw`
 ██████╗ ██████╗  █████╗ ███████╗██████╗ ███████╗███╗   ██╗███████╗██╗██╗     ██╗   ██╗███████╗██████╗     ██████╗ ██████╗ ███╗   ███╗
@@ -77,6 +84,311 @@ function loadModule(name) {
   return moduleCache.get(name);
 }
 
+function getDateForNthWeekday(year, month, weekday, occurrence) {
+  const monthIndex = month - 1;
+  if (occurrence === 0) return null;
+
+  if (occurrence > 0) {
+    const firstOfMonth = new Date(year, monthIndex, 1);
+    const offset = (weekday - firstOfMonth.getDay() + 7) % 7;
+    const day = 1 + offset + (occurrence - 1) * 7;
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+    return day > daysInMonth ? null : day;
+  }
+
+  const lastOfMonth = new Date(year, monthIndex + 1, 0);
+  const offset = (lastOfMonth.getDay() - weekday + 7) % 7;
+  let day = lastOfMonth.getDate() - offset;
+  const occurrencesFromEnd = Math.abs(occurrence) - 1;
+  day -= occurrencesFromEnd * 7;
+  return day < 1 ? null : day;
+}
+
+function getDateComponentsForTimeZone(timeZone, referenceDate = new Date()) {
+  try {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    });
+    const parts = formatter.formatToParts(referenceDate);
+    const result = {};
+    for (const { type, value } of parts) {
+      if (type === "year" || type === "month" || type === "day") {
+        result[type] = Number.parseInt(value, 10);
+      }
+    }
+
+    const { year, month, day } = result;
+    if (
+      !Number.isFinite(year) ||
+      !Number.isFinite(month) ||
+      !Number.isFinite(day)
+    ) {
+      return null;
+    }
+
+    return { year, month, day };
+  } catch (error) {
+    console.warn(
+      `Failed to resolve timezone-adjusted date for "${timeZone}"`,
+      error,
+    );
+    return null;
+  }
+}
+
+function formatDateForAnnouncement(todayComponents, timeZone) {
+  let dateToFormat = null;
+
+  if (
+    todayComponents &&
+    Number.isFinite(todayComponents.year) &&
+    Number.isFinite(todayComponents.month) &&
+    Number.isFinite(todayComponents.day)
+  ) {
+    dateToFormat = new Date(
+      Date.UTC(todayComponents.year, todayComponents.month - 1, todayComponents.day),
+    );
+  }
+
+  if (!dateToFormat) {
+    dateToFormat = new Date();
+  }
+
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }).format(dateToFormat);
+  } catch (error) {
+    console.warn("Failed to format banner date", error);
+    return null;
+  }
+}
+
+function getWesternEasterMonthDay(year) {
+  if (!Number.isFinite(year)) {
+    return null;
+  }
+
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+
+  return { month, day };
+}
+
+function getDateForDayOfYear(year, dayOfYear) {
+  if (!Number.isFinite(year) || !Number.isFinite(dayOfYear)) {
+    return null;
+  }
+
+  const dayInteger = Math.trunc(dayOfYear);
+  if (dayInteger < 1) {
+    return null;
+  }
+
+  const date = new Date(Date.UTC(year, 0, dayInteger));
+  return { month: date.getUTCMonth() + 1, day: date.getUTCDate() };
+}
+
+function getComputedEventMonthDay(event, year) {
+  const rule = String(event?.rule || "").trim().toLowerCase();
+
+  if (!rule) {
+    return null;
+  }
+
+  switch (rule) {
+    case "western-easter":
+      return getWesternEasterMonthDay(year);
+    case "day-of-year": {
+      const dayOfYear = Number.parseInt(event.dayOfYear, 10);
+      if (!Number.isFinite(dayOfYear)) {
+        return null;
+      }
+      return getDateForDayOfYear(year, dayOfYear);
+    }
+    default:
+      return null;
+  }
+}
+
+function eventMatchesToday(event, today) {
+  if (!event || typeof event !== "object") return false;
+  if (!today) return false;
+  const { year, month: currentMonth, day } = today;
+  if (
+    !Number.isFinite(year) ||
+    !Number.isFinite(currentMonth) ||
+    !Number.isFinite(day)
+  ) {
+    return false;
+  }
+
+  const { type } = event;
+  const month = Number.parseInt(event.month, 10);
+  if (!Number.isFinite(month) || month < 1 || month > 12) {
+    return false;
+  }
+
+  if (currentMonth !== month) {
+    return false;
+  }
+
+  if (type === "fixed-date") {
+    const targetDay = Number.parseInt(event.day, 10);
+    if (!Number.isFinite(targetDay)) {
+      return false;
+    }
+    return targetDay === day;
+  }
+
+  if (type === "nth-weekday") {
+    const weekday = Number.parseInt(event.weekday, 10);
+    const occurrence = Number.parseInt(event.occurrence, 10);
+    if (
+      !Number.isFinite(weekday) ||
+      weekday < 0 ||
+      weekday > 6 ||
+      !Number.isFinite(occurrence) ||
+      occurrence === 0
+    ) {
+      return false;
+    }
+    const matchDay = getDateForNthWeekday(year, month, weekday, occurrence);
+    return matchDay === day;
+  }
+
+  if (type === "computed") {
+    const computed = getComputedEventMonthDay(event, year);
+    if (!computed) {
+      return false;
+    }
+
+    const computedMonth = Number.parseInt(computed.month, 10);
+    const computedDay = Number.parseInt(computed.day, 10);
+    if (!Number.isFinite(computedMonth) || !Number.isFinite(computedDay)) {
+      return false;
+    }
+
+    return computedMonth === currentMonth && computedDay === day;
+  }
+
+  return false;
+}
+
+function appendDateMessage(messages, todayComponents) {
+  const result = Array.isArray(messages) ? messages.slice() : [];
+  const dateMessage = formatDateForAnnouncement(todayComponents, BANNER_TIME_ZONE);
+  if (dateMessage) {
+    result.push(dateMessage);
+  }
+  return result;
+}
+
+async function resolveAnnouncementBanner() {
+  const today = getDateComponentsForTimeZone(BANNER_TIME_ZONE);
+  let fallbackMessages = Array.isArray(DEFAULT_ANNOUNCEMENT.messages)
+    ? DEFAULT_ANNOUNCEMENT.messages
+        .map((message) => String(message || "").trim())
+        .filter(Boolean)
+    : (DEFAULT_ANNOUNCEMENT.text || "").trim()
+    ? [String(DEFAULT_ANNOUNCEMENT.text).trim()]
+    : [];
+  if (!fallbackMessages.length) {
+    fallbackMessages = [FALLBACK_VISITOR_MESSAGE];
+  } else if (!fallbackMessages.includes(FALLBACK_VISITOR_MESSAGE)) {
+    fallbackMessages.push(FALLBACK_VISITOR_MESSAGE);
+  }
+  const fallbackRepeat = Number.isFinite(DEFAULT_ANNOUNCEMENT.repeat)
+    ? DEFAULT_ANNOUNCEMENT.repeat
+    : 3;
+  const fallbackMessagesWithDate = appendDateMessage(fallbackMessages, today);
+  const fallback = fallbackMessagesWithDate.length
+    ? { messages: fallbackMessagesWithDate, repeat: fallbackRepeat }
+    : null;
+
+  try {
+    const response = await fetch(HOLIDAY_CONFIG_URL, {
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to load holiday config: ${response.status}`);
+    }
+
+    const config = await response.json();
+    const events = Array.isArray(config.events) ? config.events : [];
+    const defaultRepeat = Number.isFinite(config.defaultRepeat)
+      ? config.defaultRepeat
+      : fallbackRepeat;
+
+    let baseMessages = Array.isArray(config.defaultMessages)
+      ? config.defaultMessages
+          .map((message) => String(message || "").trim())
+          .filter(Boolean)
+      : (config.defaultMessage || "").trim()
+      ? [String(config.defaultMessage).trim()]
+      : [];
+
+    const usedFallbackMessages = !baseMessages.length;
+
+    if (usedFallbackMessages) {
+      baseMessages = fallbackMessages.slice();
+    }
+
+    if (usedFallbackMessages && !baseMessages.includes(FALLBACK_VISITOR_MESSAGE)) {
+      baseMessages.push(FALLBACK_VISITOR_MESSAGE);
+    }
+
+    const messages = appendDateMessage(baseMessages, today);
+
+    const matchingEvents = events.filter((event) =>
+      eventMatchesToday(event, today),
+    );
+
+    if (matchingEvents.length > 0) {
+      for (const event of matchingEvents) {
+        const baseMessage = String(event.message || "").trim();
+        const eventName = String(event.name || "").trim();
+        const message = baseMessage
+          ? baseMessage
+          : eventName
+          ? `Happy ${eventName}!`
+          : "";
+        if (message) {
+          messages.push(message);
+        }
+      }
+    }
+
+    const uniqueMessages = Array.from(new Set(messages));
+
+    if (uniqueMessages.length) {
+      return { messages: uniqueMessages, repeat: defaultRepeat };
+    }
+  } catch (error) {
+    console.warn("Holiday banner configuration failed", error);
+  }
+
+  return fallback;
+}
+
 // Provide a plain-text placeholder when JavaScript fails to render dynamic content.
 function setContentFallback(rootId, message) {
   if (!rootId || !message) return;
@@ -111,23 +423,45 @@ function renderNavLinks() {
 }
 
 // Build the optional marquee announcement banner.
-function renderAnnouncementBanner() {
-  const text = (SITE_CONTENT.announcementText || "").trim();
-  if (!text) {
+function renderAnnouncementBanner(announcement) {
+  if (!announcement) {
+    return "";
+  }
+
+  const messages = Array.isArray(announcement.messages)
+    ? announcement.messages
+        .map((message) => String(message || "").trim())
+        .filter(Boolean)
+    : [];
+
+  const fallbackText = String(announcement.text || "").trim();
+  const hasMessages = messages.length > 0;
+  const bannerText = hasMessages
+    ? messages.join(" • ")
+    : fallbackText;
+
+  if (!bannerText) {
     return "";
   }
 
   const repeat =
-    Number.isFinite(SITE_CONTENT.announcementRepeat) &&
-    SITE_CONTENT.announcementRepeat > 0
-      ? SITE_CONTENT.announcementRepeat
-      : 3;
+    Number.isFinite(announcement?.repeat) && announcement.repeat > 0
+      ? announcement.repeat
+      : DEFAULT_ANNOUNCEMENT.repeat;
+
+  const displayHtml = hasMessages
+    ? messages
+        .map((message) => `<span>${escapeHtml(message)}</span>`)
+        .join(
+          '<span class="announcement-separator" aria-hidden="true">&nbsp;•&nbsp;</span>',
+        )
+    : `<span>${escapeHtml(bannerText)}</span>`;
 
   return `
-<div class="announcement-banner" data-text="${escapeHtml(text)}" data-repeat="${repeat}">
+<div class="announcement-banner" data-text="${escapeHtml(bannerText)}" data-repeat="${repeat}">
   <div class="announcement-marquee" role="status" aria-live="polite">
     <div class="announcement-message">
-      <span>${escapeHtml(text)}</span>
+      ${displayHtml}
     </div>
   </div>
   <button type="button" class="announcement-close" aria-label="Dismiss announcement">&times;</button>
@@ -140,7 +474,7 @@ function selectWideLogo() {
 }
 
 // Compose the full header markup, including ASCII art and theme toggle.
-function renderHeader() {
+function renderHeader(announcement) {
   const wideLogo = selectWideLogo();
   return `
 <header class="ascii-header">
@@ -166,12 +500,26 @@ function renderHeader() {
     </button>
   </div>
 </header>
-${renderAnnouncementBanner()}
+${renderAnnouncementBanner(announcement)}
 <hr>`;
 }
 
 // Compose the footer markup, which is reused across every page.
-function renderFooter() {
+function getCurrentYearForFooter() {
+  const components = getDateComponentsForTimeZone(BANNER_TIME_ZONE);
+  if (components?.year && Number.isFinite(components.year)) {
+    return components.year;
+  }
+
+  const fallback = new Date().getFullYear();
+  return Number.isFinite(fallback) ? fallback : null;
+}
+
+function renderFooter(yearText) {
+  const safeYearText = escapeHtml(
+    typeof yearText === "string" && yearText.trim() ? yearText : "2025",
+  );
+
   return `
 <footer class="footer-fixed">
   <div class="footer-bar">
@@ -205,21 +553,34 @@ function renderFooter() {
   </div>
 </footer>
 <footer class="footer-static">
-  <p class="footer-note">© 2025 Braeden Silver. All rights reserved.</p>
+  <p class="footer-note">© <span data-current-year>${safeYearText}</span> Braeden Silver. All rights reserved.</p>
 </footer>`;
 }
 
+function updateFooterYearDisplay(yearText) {
+  const text = typeof yearText === "string" && yearText.trim() ? yearText : "2025";
+  const yearTargets = document.querySelectorAll("[data-current-year]");
+  for (const target of yearTargets) {
+    target.textContent = text;
+  }
+}
+
 // Inject shared header/footer HTML into placeholder elements on every page.
-function injectSharedLayout() {
+function injectSharedLayout(announcement) {
+  const currentYear = getCurrentYearForFooter();
+  const yearText = Number.isFinite(currentYear) ? String(currentYear) : "2025";
+
   const headerHost = document.getElementById("site-header");
   if (headerHost) {
-    headerHost.innerHTML = renderHeader();
+    headerHost.innerHTML = renderHeader(announcement);
   }
 
   const footerHost = document.getElementById("site-footer");
   if (footerHost) {
-    footerHost.innerHTML = renderFooter();
+    footerHost.innerHTML = renderFooter(yearText);
   }
+
+  updateFooterYearDisplay(yearText);
 }
 
 // Keys and helpers for remembering the user's theme preference.
@@ -956,7 +1317,8 @@ async function initContentRenderers() {
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
-  injectSharedLayout();
+  const announcement = await resolveAnnouncementBanner();
+  injectSharedLayout(announcement);
   highlightCurrentNav();
 
   initAsciiLogoScaler();
