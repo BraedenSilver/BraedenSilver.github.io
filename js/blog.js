@@ -888,10 +888,18 @@ export async function renderLatestEntries(section, options = {}) {
     return;
   }
 
-  const limit =
+  const requestedLimit =
     Number.isFinite(options.limit) && options.limit > 0
       ? Math.floor(options.limit)
       : 3;
+  const maxItems =
+    Number.isFinite(options.maxItems) && options.maxItems > 0
+      ? Math.floor(options.maxItems)
+      : null;
+  const limit = Math.max(
+    1,
+    maxItems === null ? requestedLimit : Math.min(requestedLimit, maxItems),
+  );
 
   const entries = (manifest.entries || [])
     .map((entry) => {
