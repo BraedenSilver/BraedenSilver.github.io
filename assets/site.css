@@ -174,6 +174,31 @@ main {
   border: 0;
 }
 
+.skip-link {
+  position: absolute;
+  top: -200px;
+  left: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-strong-bg);
+  color: var(--color-strong-text);
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 999px;
+  box-shadow: 4px 4px 0 var(--color-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 10000;
+}
+
+.skip-link:hover {
+  color: var(--color-strong-text);
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
+  transform: translateY(-4px);
+  box-shadow: 6px 6px 0 var(--color-shadow);
+}
+
 
 .header-actions {
   display: flex;
@@ -429,6 +454,43 @@ html.theme-dark .theme-toggle__icon--moon {
   justify-items: start;
 }
 
+.home-section {
+  margin-top: 3rem;
+}
+
+.home-section__intro {
+  margin-top: 0.5rem;
+  color: var(--color-muted-text);
+  max-width: 60ch;
+}
+
+.home-section__intro a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.home-section__intro a:hover,
+.home-section__intro a:focus-visible {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.home-section__list {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.home-section__list > p {
+  margin: 0;
+}
+
+@media (min-width: 720px) {
+  .home-section__list {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
 .quick-links li {
   margin: 0;
 }
@@ -495,6 +557,20 @@ html.theme-dark .theme-toggle__icon--moon {
 
 .quick-links .quick-link .quick-link-label {
   font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.quick-links .quick-link .quick-link-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.quick-links .quick-link .quick-link-description {
+  font-size: 0.85rem;
+  color: var(--color-muted-text);
+  line-height: 1.4;
 }
 
 .quick-link-label {
@@ -845,7 +921,15 @@ body.konami-active {
   border: 0;
 }
 
-.konami-close {
+.konami-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.konami-action {
   align-self: center;
   border: 2px solid #fefcf6;
   background: transparent;
@@ -854,15 +938,28 @@ body.konami-active {
   padding: 0.5rem 1.6rem;
   border-radius: 999px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease,
+    color 0.2s ease;
   box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45);
 }
 
-.konami-close:hover,
-.konami-close:focus-visible {
+.konami-action:hover,
+.konami-action:focus-visible {
   transform: translate(-2px, -2px);
   background: #fefcf6;
   color: #141129;
+}
+
+.konami-action[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.konami-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.95rem;
+  color: var(--color-muted-text);
+  text-align: center;
 }
 
 .cursor-enabled,

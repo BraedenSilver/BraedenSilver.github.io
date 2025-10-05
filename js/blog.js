@@ -871,6 +871,56 @@ async function renderSectionEntry(section, options = {}) {
 }
 
 // Exported entry points consumed by js/site.js for lazy rendering.
+export async function renderLatestEntries(section, options = {}) {
+  const config = getSectionConfig(section);
+  const rootId = options.rootId || `${section}-latest`;
+  const root = document.getElementById(rootId);
+  if (!root) return;
+
+  let manifest;
+  try {
+    manifest = await loadManifest(section);
+  } catch (error) {
+    const fallback =
+      options.errorMessage ||
+      `Failed to load ${config.label.toLowerCase()} highlights.`;
+    root.textContent = fallback;
+    return;
+  }
+
+  const limit =
+    Number.isFinite(options.limit) && options.limit > 0
+      ? Math.floor(options.limit)
+      : 3;
+
+  const entries = (manifest.entries || [])
+    .map((entry) => {
+      const normalized = normalizeEntrySummary({ ...entry });
+      if (!normalized.summary && config.fallbackDescription) {
+        normalized.summary = config.fallbackDescription;
+      }
+      return normalized;
+    })
+    .filter((entry) => entry && entry.id && entry.title);
+
+  entries.sort((a, b) => parseISO(b.date) - parseISO(a.date));
+
+  const latest = entries.slice(0, limit);
+
+  if (!latest.length) {
+    const emptyMessage =
+      options.emptyMessage || config.emptyMessage || "No entries yet.";
+    root.textContent = emptyMessage;
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  latest.forEach((entry) => {
+    frag.appendChild(createEntryCard(section, entry));
+  });
+  root.replaceChildren(frag);
+}
+
 export async function renderBlogIndex() {
   return renderSectionIndex("blog", {
     rootId: "blog-list",
