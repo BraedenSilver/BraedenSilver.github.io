@@ -23,6 +23,7 @@ html {
   --color-kilroy-skin: #f92672;
   --color-kilroy-border: #000;
   --color-kilroy-pupil: #000;
+  --color-kilroy-sclera: #fff;
 }
 
 html.theme-dark {
@@ -46,6 +47,7 @@ html.theme-dark {
   --color-kilroy-skin: #f92672;
   --color-kilroy-border: #000;
   --color-kilroy-pupil: #000;
+  --color-kilroy-sclera: #fff;
 }
 
 *, *::before, *::after {
@@ -659,7 +661,7 @@ html.theme-dark .theme-toggle__icon--moon {
   width: var(--eye-size);
   height: var(--eye-size);
   border-radius: 50%;
-  background: var(--color-surface);
+  background: var(--color-kilroy-sclera);
   border: var(--eye-border) solid var(--color-kilroy-border);
   position: absolute;
   overflow: hidden;
@@ -694,7 +696,7 @@ html.theme-dark .theme-toggle__icon--moon {
   height: 0;
   top: calc(var(--eye-top) + var(--eye-size) / 2 - var(--eye-border) / 2);
   border: none;
-  border-top: var(--eye-border) solid var(--color-border);
+  border-top: var(--eye-border) solid var(--color-kilroy-border);
   border-radius: 0;
 }
 
@@ -740,7 +742,7 @@ body.kilroy-page main {
   height: var(--eye-size);
   border: var(--eye-border) solid var(--color-kilroy-border);
   border-radius: 50%;
-  background: var(--color-surface);
+  background: var(--color-kilroy-sclera);
   overflow: hidden;
   transition: all 150ms ease;
 }
