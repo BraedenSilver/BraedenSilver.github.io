@@ -784,28 +784,24 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .footer-eyes .eye {
-  --eye-size: 28px;
-  --eye-border: 2px;
-  width: var(--eye-size);
-  height: var(--eye-size);
+  width: var(--eye-size, 28px);
+  height: var(--eye-size, 28px);
   border-radius: 50%;
   background: var(--color-kilroy-sclera);
-  border: var(--eye-border) solid var(--color-kilroy-border);
+  border: var(--eye-border, 2px) solid var(--color-kilroy-border);
   position: absolute;
   overflow: hidden;
   transition: all 150ms ease;
 }
 
 .footer-eyes .eye.left {
-  left: 24px;
-  --eye-top: 38px;
-  top: var(--eye-top);
+  left: var(--eye-offset, 24px);
+  top: var(--eye-top, 38px);
 }
 
 .footer-eyes .eye.right {
-  right: 24px;
-  --eye-top: 38px;
-  top: var(--eye-top);
+  right: var(--eye-offset, 24px);
+  top: var(--eye-top, 38px);
 }
 
 .footer-eyes .pupil {
@@ -1420,114 +1416,90 @@ details#sources[open] > ol {
 }
 
 .awkward-killroy {
+  --awkward-size-default: clamp(112px, 28vw, 176px);
+  --awkward-eye-size-default: clamp(
+    22px,
+    calc(var(--awkward-size-default) * 0.24),
+    40px
+  );
+  --awkward-eye-border-default: clamp(
+    2px,
+    calc(var(--awkward-size-default) * 0.018),
+    4px
+  );
+  --awkward-eye-offset-default: clamp(
+    22px,
+    calc(var(--awkward-size-default) * 0.21),
+    48px
+  );
+  --awkward-eye-top-default: clamp(
+    30px,
+    calc(var(--awkward-size-default) * 0.35),
+    60px
+  );
+  --awkward-border-width-default: clamp(
+    2px,
+    calc(var(--awkward-size-default) * 0.016),
+    3px
+  );
+  --awkward-shadow-offset-default: clamp(
+    4px,
+    calc(var(--awkward-size-default) * 0.035),
+    8px
+  );
   position: absolute;
-  width: 120px;
-  height: 90px;
-  color: hsl(var(--killroy-hue, 12), 80%, 56%);
   left: var(--killroy-x, 50%);
   top: var(--killroy-y, 50%);
-  transform: translate(-50%, -50%) scale(var(--killroy-scale, 1))
-    rotate(var(--killroy-rotate, 0deg));
-  opacity: 0.8;
+  width: var(--awkward-size, var(--awkward-size-default));
+  height: var(--awkward-size, var(--awkward-size-default));
+  transform: translate(-50%, -50%) rotate(var(--killroy-rotate, 0deg));
   pointer-events: none;
-}
-
-.awkward-killroy::before {
-  content: "";
-  position: absolute;
-  width: 74px;
-  height: 44px;
-  border: 4px solid currentColor;
-  border-bottom: none;
-  border-radius: 60px 60px 0 0;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-}
-
-.awkward-killroy::after {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 24px;
-  border-radius: 50% 50% 40% 40%;
-  background: currentColor;
-  left: 50%;
-  top: 36px;
-  transform: translate(-50%, -50%);
-}
-
-.awkward-killroy__eyes {
-  position: absolute;
-  top: 22px;
-  left: 50%;
-  width: 50px;
+  opacity: 0.94;
   display: flex;
-  justify-content: space-between;
-  transform: translateX(-50%);
+  align-items: center;
+  justify-content: center;
 }
 
-.awkward-killroy__eyes::before,
-.awkward-killroy__eyes::after {
-  content: "";
-  width: 12px;
-  height: 12px;
+.awkward-killroy__head {
+  position: relative;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  background: currentColor;
+  border: var(--awkward-border-width, var(--awkward-border-width-default)) solid
+    var(--color-kilroy-border);
+  background: var(--awkward-skin, var(--color-kilroy-skin));
+  box-shadow: var(--awkward-shadow-offset, var(--awkward-shadow-offset-default))
+      var(--awkward-shadow-offset, var(--awkward-shadow-offset-default)) 0
+      var(--color-shadow);
+  overflow: hidden;
 }
 
-.awkward-killroy__hands {
-  position: absolute;
-  top: 58px;
-  left: 50%;
-  width: 100px;
-  height: 36px;
-  border: 4px solid currentColor;
-  border-top: none;
-  border-radius: 0 0 18px 18px;
-  transform: translateX(-50%);
+.awkward-killroy .eye {
+  width: var(--eye-size, var(--awkward-eye-size-default));
+  height: var(--eye-size, var(--awkward-eye-size-default));
+  border: var(--eye-border, var(--awkward-eye-border-default))
+    solid var(--color-kilroy-border);
+  background: var(--awkward-sclera, var(--color-kilroy-sclera));
+  z-index: 1;
 }
 
-.awkward-killroy__hands::before,
-.awkward-killroy__hands::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;
-  width: 20px;
-  height: 20px;
-  border: 4px solid currentColor;
-  border-radius: 50%;
+.awkward-killroy .eye.left {
+  left: var(--eye-offset, var(--awkward-eye-offset-default));
+  top: var(--eye-top, var(--awkward-eye-top-default));
 }
 
-.awkward-killroy__hands::before {
-  left: -4px;
+.awkward-killroy .eye.right {
+  right: var(--eye-offset, var(--awkward-eye-offset-default));
+  top: var(--eye-top, var(--awkward-eye-top-default));
 }
 
-.awkward-killroy__hands::after {
-  right: -4px;
-}
-
-.awkward-killroy__caption {
-  position: absolute;
-  bottom: -1.2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: currentColor;
-  opacity: 0.6;
+.awkward-killroy .pupil {
+  background: var(--awkward-pupil, var(--color-kilroy-pupil));
 }
 
 @media (max-width: 600px) {
   .awkward-killroy {
-    width: 96px;
-    height: 74px;
-  }
-
-  .awkward-killroy__hands {
-    width: 80px;
+    --awkward-size-default: clamp(96px, 42vw, 152px);
   }
 }
 
