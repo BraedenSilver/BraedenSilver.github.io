@@ -765,7 +765,7 @@ html.theme-dark .theme-toggle__icon--moon {
 .kilroy-peek {
   position: absolute;
   bottom: -30px;
-  right: 1rem;
+  right: 20px;
   width: 160px;
   height: 120px;
   overflow: hidden;
