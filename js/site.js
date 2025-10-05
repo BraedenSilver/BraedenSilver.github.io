@@ -1614,7 +1614,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         const angle = Math.atan2(dy, dx);
         const px = Math.cos(angle) * radius;
         const py = Math.sin(angle) * radius;
-        pupil.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
+        pupil.style.transform = `translate(-50%, -50%) translate(${px}px, ${py}px)`;
       });
     }
 
@@ -1629,14 +1629,15 @@ window.addEventListener("DOMContentLoaded", async () => {
         const magnitude = radius * (0.35 + Math.random() * 0.65);
         const px = Math.cos(angle) * magnitude;
         const py = Math.sin(angle) * magnitude;
-        pupil.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
+        pupil.style.transform = `translate(-50%, -50%) translate(${px}px, ${py}px)`;
       });
     }
 
     function centerPupils() {
       eyes.forEach((eye) => {
         const pupil = eye.querySelector(".pupil");
-        if (pupil) pupil.style.transform = "translate(-50%, -50%)";
+        if (pupil)
+          pupil.style.transform = "translate(-50%, -50%) translate(0, 0)";
       });
     }
 

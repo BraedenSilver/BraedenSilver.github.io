@@ -660,8 +660,10 @@ html.theme-dark .theme-toggle__icon--moon {
   left: 0;
   right: 0;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
   background: var(--color-surface);
   padding: 0.5rem 1rem;
   padding-right: 180px;
@@ -670,6 +672,14 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .footer-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.footer-share-group {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -736,6 +746,10 @@ html.theme-dark .theme-toggle__icon--moon {
   font-weight: 600;
 }
 
+.footer-share-group .footer-share-feedback {
+  min-width: auto;
+}
+
 .kilroy-peek {
   position: absolute;
   bottom: -30px;
@@ -789,8 +803,9 @@ html.theme-dark .theme-toggle__icon--moon {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translate3d(0, 0, 0);
   transition: transform var(--pupil-transition-duration, 80ms) ease;
+  will-change: transform;
 }
 
 .footer-eyes .eye.wink {
@@ -807,6 +822,40 @@ html.theme-dark .theme-toggle__icon--moon {
 
 body.kilroy-page .kilroy-peek {
   display: none;
+}
+
+@media (min-width: 900px) {
+  .footer-bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 1.5rem;
+    padding-right: 1rem;
+  }
+
+  .footer-meta {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .footer-share-group {
+    grid-column: 3;
+    justify-self: end;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+
+  .footer-share-feedback {
+    text-align: right;
+  }
+
+  .kilroy-peek {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
 }
 
 body.kilroy-page main {
@@ -868,8 +917,9 @@ body.kilroy-page main {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translate3d(0, 0, 0);
   transition: transform 60ms linear;
+  will-change: transform;
 }
 
 body.konami-active {
