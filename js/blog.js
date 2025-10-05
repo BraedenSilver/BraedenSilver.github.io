@@ -249,6 +249,22 @@ function createParagraphBlock(text, htmlOverride) {
     return block;
   }
 
+  if (cleanText && cleanText !== escapeHtml(cleanText)) {
+    const scratch = document.createElement("div");
+    scratch.innerHTML = cleanText;
+    if (scratch.querySelector("*")) {
+      const sanitizedHtml = scratch.innerHTML.trim();
+      if (sanitizedHtml) {
+        block.html = sanitizedHtml;
+        const textContent = scratch.textContent ? scratch.textContent.trim() : "";
+        if (textContent) {
+          block.text = textContent;
+        }
+        return block;
+      }
+    }
+  }
+
   if (cleanText) {
     const { html, containsLink } = linkifyText(cleanText);
     if (containsLink) {
