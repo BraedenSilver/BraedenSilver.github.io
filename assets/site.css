@@ -391,9 +391,6 @@ html.theme-dark .theme-toggle__icon--moon {
     transition: none !important;
   }
 
-  .click-spark {
-    display: none !important;
-  }
 }
 
 @media (max-width: 900px) {
@@ -769,26 +766,6 @@ body.kilroy-page main {
   top: 50%;
   transform: translate(-50%, -50%);
   transition: transform 60ms linear;
-}
-
-.click-spark {
-  position: fixed;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  pointer-events: none;
-  animation: spark-fade 600ms ease-out forwards;
-}
-
-@keyframes spark-fade {
-  from {
-    transform: scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: scale(2);
-    opacity: 0;
-  }
 }
 
 body.konami-active {

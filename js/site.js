@@ -181,6 +181,7 @@ function renderFooter() {
         Copy page link
       </button>
       <span class="footer-share-feedback" data-share-feedback aria-live="polite"></span>
+      <p class="footer-note">© 2025 Braeden Silver. All rights reserved.</p>
     </div>
 
     <div class="kilroy-peek footer-eyes" aria-hidden="true">
@@ -422,22 +423,6 @@ async function updateLastUpdated() {
     undefined,
     opts,
   );
-}
-
-/**
- * Spawn a colorful spark where the user clicks.
- */
-function initClickEffect() {
-  if (prefersReducedMotion()) return;
-  document.addEventListener("click", (e) => {
-    const s = document.createElement("span");
-    s.className = "click-spark";
-    s.style.left = e.clientX + "px";
-    s.style.top = e.clientY + "px";
-    s.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 600);
-  });
 }
 
 const CUSTOM_CURSOR_ENABLED = false;
@@ -918,9 +903,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await Promise.all([initContentRenderers(), updateLastUpdated()]);
   if (window.matchMedia("(pointer: fine)").matches) {
-    if (!prefersReducedMotion()) {
-      initClickEffect();
-    }
     initCustomCursor();
   }
 
