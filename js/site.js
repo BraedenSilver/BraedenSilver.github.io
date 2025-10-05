@@ -1456,8 +1456,8 @@ const CONTENT_RENDERERS = Object.freeze({
         }
         return mod.renderLatestEntries("blog", {
           rootId: "home-latest-blog",
-          limit: 3,
-          maxItems: 3,
+          limit: 4,
+          maxItems: 4,
           errorMessage: "Latest posts are temporarily unavailable.",
         });
       }),
@@ -1475,8 +1475,8 @@ const CONTENT_RENDERERS = Object.freeze({
         }
         return mod.renderLatestEntries("research", {
           rootId: "home-latest-research",
-          limit: 3,
-          maxItems: 3,
+          limit: 4,
+          maxItems: 4,
           errorMessage: "Latest research highlights are unavailable right now.",
         });
       }),
@@ -1494,8 +1494,8 @@ const CONTENT_RENDERERS = Object.freeze({
         }
         return mod.renderLatestEntries("projects", {
           rootId: "home-latest-projects",
-          limit: 3,
-          maxItems: 3,
+          limit: 4,
+          maxItems: 4,
           errorMessage: "Latest projects are temporarily unavailable.",
         });
       }),
