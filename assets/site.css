@@ -19,25 +19,33 @@ html {
   --color-panel-muted: #f7f7f7;
   --color-blog-filter-bg: #f6f5ff;
   --color-project-filter-bg: #ffe9d6;
+  --color-logo: var(--color-text);
+  --color-kilroy-skin: #f92672;
+  --color-kilroy-border: #000;
+  --color-kilroy-pupil: #000;
 }
 
 html.theme-dark {
   color-scheme: dark;
   --color-bg: #272822;
   --color-text: #f8f8f2;
-  --color-border: #f8f8f2;
-  --color-surface: #32332a;
+  --color-border: #f8f8f0;
+  --color-surface: #2f3028;
   --color-highlight-bg: #49483e;
   --color-focus: #66d9ef;
-  --color-strong-bg: #a6e22e;
-  --color-strong-text: #1b1c17;
-  --color-shadow: rgba(0, 0, 0, 0.75);
-  --color-muted-text: #a59f85;
-  --color-subtle-text: #e6e6dc;
+  --color-strong-bg: #fd971f;
+  --color-strong-text: #272822;
+  --color-shadow: rgba(0, 0, 0, 0.85);
+  --color-muted-text: #75715e;
+  --color-subtle-text: #f4bf75;
   --color-error-text: #f92672;
-  --color-panel-muted: #3a3b30;
-  --color-blog-filter-bg: #3b3228;
-  --color-project-filter-bg: #49411f;
+  --color-panel-muted: #35362c;
+  --color-blog-filter-bg: #2f3126;
+  --color-project-filter-bg: #3b3221;
+  --color-logo: #f4bf75;
+  --color-kilroy-skin: #f92672;
+  --color-kilroy-border: #000;
+  --color-kilroy-pupil: #000;
 }
 
 *, *::before, *::after {
@@ -105,13 +113,13 @@ main {
   gap: 0.5rem;
   max-width: min(95vw, 1100px);
   text-decoration: none;
-  color: inherit;
+  color: var(--color-logo);
   line-height: 1;
 }
 
 .site-logo:hover,
 .site-logo:focus-visible {
-  color: inherit;
+  color: var(--color-logo);
 }
 
 .logo-ascii,
@@ -640,14 +648,9 @@ html.theme-dark .theme-toggle__icon--moon {
   right: 0;
   width: 120px;
   height: 120px;
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-kilroy-border);
   border-radius: 50%;
-  background: var(--color-surface);
-}
-
-html.theme-dark .kilroy-peek .head {
-  background: #fff;
-  border-color: #000;
+  background: var(--color-kilroy-skin);
 }
 
 .footer-eyes .eye {
@@ -657,15 +660,10 @@ html.theme-dark .kilroy-peek .head {
   height: var(--eye-size);
   border-radius: 50%;
   background: var(--color-surface);
-  border: var(--eye-border) solid var(--color-border);
+  border: var(--eye-border) solid var(--color-kilroy-border);
   position: absolute;
   overflow: hidden;
   transition: all 150ms ease;
-}
-
-html.theme-dark .kilroy-peek .eye {
-  background: #fff;
-  border-color: #000;
 }
 
 .footer-eyes .eye.left {
@@ -684,16 +682,12 @@ html.theme-dark .kilroy-peek .eye {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--color-strong-bg);
+  background: var(--color-kilroy-pupil);
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   transition: transform 60ms linear;
-}
-
-html.theme-dark .kilroy-peek .pupil {
-  background: #000;
 }
 
 .footer-eyes .eye.wink {
@@ -733,9 +727,9 @@ body.kilroy-page main {
   left: 0;
   width: 100%;
   height: 100%;
-  border: 5px solid var(--color-border);
+  border: 5px solid var(--color-kilroy-border);
   border-radius: 50%;
-  background: var(--color-surface);
+  background: var(--color-kilroy-skin);
 }
 
 .kilroy-full.footer-eyes .eye {
@@ -744,7 +738,7 @@ body.kilroy-page main {
   --eye-border: 5px;
   width: var(--eye-size);
   height: var(--eye-size);
-  border: var(--eye-border) solid var(--color-border);
+  border: var(--eye-border) solid var(--color-kilroy-border);
   border-radius: 50%;
   background: var(--color-surface);
   overflow: hidden;
@@ -767,7 +761,7 @@ body.kilroy-page main {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--color-strong-bg);
+  background: var(--color-kilroy-pupil);
   position: absolute;
   left: 50%;
   top: 50%;
