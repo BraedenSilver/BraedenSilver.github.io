@@ -88,6 +88,18 @@ const MODULE_IMPORTERS = Object.freeze({
 
 // Store lazy-loaded modules so we only fetch each bundle once per session.
 const moduleCache = new Map();
+const timeZoneOffsetWarningSet = new Set();
+const timeZoneOffsetCache = new Map();
+
+function ensureValidDate(value) {
+  if (value instanceof Date) {
+    const time = value.getTime();
+    if (Number.isFinite(time)) {
+      return new Date(time);
+    }
+  }
+  return new Date();
+}
 
 // Dynamically import optional feature bundles (blog list rendering, etc.).
 function loadModule(name) {
@@ -125,7 +137,86 @@ function getDateForNthWeekday(year, month, weekday, occurrence) {
   return day < 1 ? null : day;
 }
 
+function getTimeZoneOffsetMinutes(timeZone, referenceDate = new Date()) {
+  const safeReference = ensureValidDate(referenceDate);
+  const cacheKey = `${timeZone}:${safeReference.toISOString().slice(0, 10)}`;
+  if (timeZoneOffsetCache.has(cacheKey)) {
+    return timeZoneOffsetCache.get(cacheKey);
+  }
+
+  const warnOnce = (message, error) => {
+    if (timeZoneOffsetWarningSet.has(timeZone)) {
+      return;
+    }
+    timeZoneOffsetWarningSet.add(timeZone);
+    if (error !== undefined) {
+      console.warn(message, error);
+    } else {
+      console.warn(message);
+    }
+  };
+
+  try {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      timeZoneName: "shortOffset",
+    });
+    const parts = formatter.formatToParts(safeReference);
+    const timeZoneName = parts.find((part) => part.type === "timeZoneName")?.value;
+    if (!timeZoneName) {
+      warnOnce(
+        `Time zone name unavailable when resolving offset for "${timeZone}"`,
+      );
+      timeZoneOffsetCache.set(cacheKey, null);
+      return null;
+    }
+
+    const match = /GMT([+-])(\d{2})(?::?(\d{2}))?/i.exec(timeZoneName);
+    if (!match) {
+      warnOnce(
+        `Unexpected time zone offset format "${timeZoneName}" for "${timeZone}"`,
+      );
+      timeZoneOffsetCache.set(cacheKey, null);
+      return null;
+    }
+
+    const sign = match[1] === "-" ? -1 : 1;
+    const hours = Number.parseInt(match[2], 10);
+    const minutes = match[3] ? Number.parseInt(match[3], 10) : 0;
+
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+      warnOnce(`Invalid time zone offset for "${timeZone}"`);
+      timeZoneOffsetCache.set(cacheKey, null);
+      return null;
+    }
+
+    const offset = sign * (hours * 60 + minutes);
+    timeZoneOffsetCache.set(cacheKey, offset);
+    return offset;
+  } catch (error) {
+    warnOnce(`Failed to determine time zone offset for "${timeZone}"`, error);
+    timeZoneOffsetCache.set(cacheKey, null);
+    return null;
+  }
+}
+
 function getDateComponentsForTimeZone(timeZone, referenceDate = new Date()) {
+  const safeReference = ensureValidDate(referenceDate);
+
+  const offsetMinutes = getTimeZoneOffsetMinutes(timeZone, safeReference);
+  if (offsetMinutes !== null) {
+    const utcMillis =
+      safeReference.getTime() + safeReference.getTimezoneOffset() * 60 * 1000;
+    const zonedMillis = utcMillis + offsetMinutes * 60 * 1000;
+    const zonedDate = new Date(zonedMillis);
+
+    return {
+      year: zonedDate.getUTCFullYear(),
+      month: zonedDate.getUTCMonth() + 1,
+      day: zonedDate.getUTCDate(),
+    };
+  }
+
   try {
     const formatter = new Intl.DateTimeFormat("en-US", {
       timeZone,
@@ -133,7 +224,7 @@ function getDateComponentsForTimeZone(timeZone, referenceDate = new Date()) {
       month: "numeric",
       day: "numeric",
     });
-    const parts = formatter.formatToParts(referenceDate);
+    const parts = formatter.formatToParts(safeReference);
     const result = {};
     for (const { type, value } of parts) {
       if (type === "year" || type === "month" || type === "day") {
@@ -160,23 +251,34 @@ function getDateComponentsForTimeZone(timeZone, referenceDate = new Date()) {
   }
 }
 
-function formatDateForAnnouncement(todayComponents, timeZone) {
-  let dateToFormat = null;
-
+function createDateAtNoonInTimeZone(components, timeZone) {
   if (
-    todayComponents &&
-    Number.isFinite(todayComponents.year) &&
-    Number.isFinite(todayComponents.month) &&
-    Number.isFinite(todayComponents.day)
+    !components ||
+    !Number.isFinite(components.year) ||
+    !Number.isFinite(components.month) ||
+    !Number.isFinite(components.day)
   ) {
-    dateToFormat = new Date(
-      Date.UTC(todayComponents.year, todayComponents.month - 1, todayComponents.day),
-    );
+    return null;
   }
 
-  if (!dateToFormat) {
-    dateToFormat = new Date();
+  const utcMidday = Date.UTC(
+    components.year,
+    components.month - 1,
+    components.day,
+    12,
+  );
+  const referenceForOffset = ensureValidDate(new Date(utcMidday));
+  const offsetMinutes = getTimeZoneOffsetMinutes(timeZone, referenceForOffset);
+  if (offsetMinutes === null) {
+    return new Date(utcMidday);
   }
+
+  return new Date(utcMidday - offsetMinutes * 60 * 1000);
+}
+
+function formatDateForAnnouncement(todayComponents, timeZone) {
+  const dateToFormat =
+    createDateAtNoonInTimeZone(todayComponents, timeZone) || new Date();
 
   try {
     return new Intl.DateTimeFormat("en-US", {
@@ -1355,6 +1457,7 @@ const CONTENT_RENDERERS = Object.freeze({
         return mod.renderLatestEntries("blog", {
           rootId: "home-latest-blog",
           limit: 3,
+          maxItems: 3,
           errorMessage: "Latest posts are temporarily unavailable.",
         });
       }),
@@ -1373,6 +1476,7 @@ const CONTENT_RENDERERS = Object.freeze({
         return mod.renderLatestEntries("research", {
           rootId: "home-latest-research",
           limit: 3,
+          maxItems: 3,
           errorMessage: "Latest research highlights are unavailable right now.",
         });
       }),
@@ -1391,6 +1495,7 @@ const CONTENT_RENDERERS = Object.freeze({
         return mod.renderLatestEntries("projects", {
           rootId: "home-latest-projects",
           limit: 3,
+          maxItems: 3,
           errorMessage: "Latest projects are temporarily unavailable.",
         });
       }),
