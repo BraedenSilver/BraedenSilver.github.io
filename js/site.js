@@ -193,6 +193,10 @@ function renderFooter() {
 </footer>
 <footer class="footer-static">
   <p class="footer-note">© 2025 Braeden Silver. All rights reserved.</p>
+  <p class="footer-version">
+    Version
+    <span data-footer-version data-version-prefix="V0.1." data-version-fallback="194">V0.1.194</span>
+  </p>
 </footer>`;
 }
 
@@ -425,6 +429,56 @@ async function updateLastUpdated() {
     undefined,
     opts,
   );
+}
+
+const FOOTER_VERSION_ENDPOINT =
+  "https://api.github.com/repos/BraedenSilver/BraedenSilver.github.io/commits?per_page=1";
+
+async function fetchCommitCount() {
+  const response = await fetch(FOOTER_VERSION_ENDPOINT, {
+    headers: { Accept: "application/vnd.github+json" },
+  });
+
+  if (!response.ok) {
+    throw new Error(`GitHub responded with ${response.status}`);
+  }
+
+  const linkHeader = response.headers.get("Link");
+  if (linkHeader) {
+    const match = linkHeader.match(/&page=(\d+)>; rel="last"/);
+    if (match) {
+      const count = Number.parseInt(match[1], 10);
+      if (Number.isFinite(count) && count > 0) {
+        return count;
+      }
+    }
+  }
+
+  const commits = await response.json();
+  return Array.isArray(commits) ? commits.length : 0;
+}
+
+async function updateFooterVersion() {
+  const target = document.querySelector("[data-footer-version]");
+  if (!target) return;
+
+  const prefix = target.dataset.versionPrefix ?? "";
+  const fallbackCount = target.dataset.versionFallback ?? "";
+  const fallbackValue = fallbackCount ? `${prefix}${fallbackCount}` : target.textContent;
+
+  try {
+    const count = await fetchCommitCount();
+    if (Number.isFinite(count) && count > 0) {
+      target.textContent = `${prefix}${count}`;
+      return;
+    }
+  } catch (error) {
+    console.warn("Failed to load commit count", error);
+  }
+
+  if (fallbackValue) {
+    target.textContent = fallbackValue;
+  }
 }
 
 const CUSTOM_CURSOR_ENABLED = false;
@@ -903,7 +957,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   initHistoryBackLinks();
   initShareLink();
 
-  await Promise.all([initContentRenderers(), updateLastUpdated()]);
+  await Promise.all([
+    initContentRenderers(),
+    updateLastUpdated(),
+    updateFooterVersion(),
+  ]);
   if (window.matchMedia("(pointer: fine)").matches) {
     initCustomCursor();
   }
