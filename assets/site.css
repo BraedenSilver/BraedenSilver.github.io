@@ -61,12 +61,10 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   /*
-   * Reserve generous space for the fixed footer so page content (like the
-   * Elly gif and quick links) can scroll fully into view on small screens.
-   * The max() keeps the previous desktop spacing while guaranteeing extra
-   * room on shorter viewports.
+   * Reserve space for the fixed footer so page content can scroll fully into
+   * view while still allowing the static footer to rest at the very bottom.
    */
-  padding-bottom: max(calc(5rem + 24px), 40vh);
+  padding-bottom: calc(5rem + 24px);
 }
 
 :where(a, button, [role="button"]):focus-visible {
@@ -90,7 +88,7 @@ body {
 @media (max-width: 600px) {
   body {
     padding: 10px;
-    padding-bottom: max(calc(5rem + 24px), 40vh);
+    padding-bottom: calc(5rem + 24px);
   }
 }
 
@@ -686,7 +684,7 @@ html.theme-dark .theme-toggle__icon--moon {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  transition: transform 60ms linear;
+  transition: transform var(--pupil-transition-duration, 80ms) ease;
 }
 
 .footer-eyes .eye.wink {
@@ -1152,13 +1150,19 @@ details#sources[open] > ol {
   margin-top: 2rem;
 }
 
-.footer-note {
-  margin: 1.5rem 0 0;
+.footer-static {
+  margin-top: 3rem;
+  padding: 2rem 1rem 3rem;
+  text-align: center;
+}
+
+.footer-static .footer-note {
+  margin: 0;
   font-size: 0.9rem;
   color: var(--color-subtle-text);
 }
 
-.footer-note a[aria-current="page"] {
+.footer-static .footer-note a[aria-current="page"] {
   font-weight: 600;
   text-decoration: underline;
 }

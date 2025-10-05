@@ -173,7 +173,7 @@ ${renderAnnouncementBanner()}
 // Compose the footer markup, which is reused across every page.
 function renderFooter() {
   return `
-<footer>
+<footer class="footer-fixed">
   <div class="footer-bar">
     <div class="footer-meta">
       <p class="last-updated">Last updated: <span id="last-updated">See Git history</span></p>
@@ -181,7 +181,6 @@ function renderFooter() {
         Copy page link
       </button>
       <span class="footer-share-feedback" data-share-feedback aria-live="polite"></span>
-      <p class="footer-note">© 2025 Braeden Silver. All rights reserved.</p>
     </div>
 
     <div class="kilroy-peek footer-eyes" aria-hidden="true">
@@ -191,6 +190,9 @@ function renderFooter() {
       </div>
     </div>
   </div>
+</footer>
+<footer class="footer-static">
+  <p class="footer-note">© 2025 Braeden Silver. All rights reserved.</p>
 </footer>`;
 }
 
@@ -911,10 +913,21 @@ window.addEventListener("DOMContentLoaded", async () => {
     const eyes = document.querySelectorAll(".footer-eyes .eye");
     if (!eyes.length) return;
 
+    const pointerFineQuery =
+      typeof window.matchMedia === "function"
+        ? window.matchMedia("(pointer: fine)")
+        : null;
+    const reduceMotionQuery =
+      typeof window.matchMedia === "function"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : null;
+
     function movePupils(x, y) {
       eyes.forEach((eye) => {
         const pupil = eye.querySelector(".pupil");
+        if (!pupil) return;
         const rect = eye.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
         const dx = x - cx;
@@ -927,6 +940,21 @@ window.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
+    function randomizePupils() {
+      eyes.forEach((eye) => {
+        const pupil = eye.querySelector(".pupil");
+        if (!pupil) return;
+        const rect = eye.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const radius = rect.width * 0.3;
+        const angle = Math.random() * Math.PI * 2;
+        const magnitude = radius * (0.35 + Math.random() * 0.65);
+        const px = Math.cos(angle) * magnitude;
+        const py = Math.sin(angle) * magnitude;
+        pupil.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
+      });
+    }
+
     function centerPupils() {
       eyes.forEach((eye) => {
         const pupil = eye.querySelector(".pupil");
@@ -934,11 +962,135 @@ window.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
-    window.addEventListener("pointermove", (e) =>
-      movePupils(e.clientX, e.clientY),
-    );
-    window.addEventListener("mouseleave", centerPupils);
-    window.addEventListener("blur", centerPupils);
+    function enablePointerTracking() {
+      const handlePointerMove = (event) =>
+        movePupils(event.clientX, event.clientY);
+      const handlePointerLeave = () => centerPupils();
+
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("mouseleave", handlePointerLeave);
+      window.addEventListener("blur", handlePointerLeave);
+
+      return () => {
+        window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("mouseleave", handlePointerLeave);
+        window.removeEventListener("blur", handlePointerLeave);
+        centerPupils();
+      };
+    }
+
+    function enableRandomMotion() {
+      const pupils = Array.from(
+        document.querySelectorAll(".footer-eyes .pupil"),
+      );
+      pupils.forEach((pupil) => {
+        pupil.style.setProperty("--pupil-transition-duration", "320ms");
+      });
+
+      let timeoutId = null;
+
+      const scheduleNext = () => {
+        const delay = 1500 + Math.random() * 1500;
+        timeoutId = window.setTimeout(() => {
+          randomizePupils();
+          scheduleNext();
+        }, delay);
+      };
+
+      const isDocumentVisible = () => {
+        return typeof document.visibilityState === "string"
+          ? document.visibilityState === "visible"
+          : true;
+      };
+
+      const start = () => {
+        if (timeoutId !== null || !isDocumentVisible()) {
+          return;
+        }
+        randomizePupils();
+        scheduleNext();
+      };
+
+      const stop = () => {
+        if (timeoutId === null) return;
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      };
+
+      const handleVisibilityChange = () => {
+        if (!isDocumentVisible()) {
+          stop();
+          centerPupils();
+        } else {
+          start();
+        }
+      };
+
+      start();
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+
+      return () => {
+        stop();
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
+        pupils.forEach((pupil) => {
+          pupil.style.removeProperty("--pupil-transition-duration");
+        });
+        centerPupils();
+      };
+    }
+
+    let activeCleanup = null;
+    let currentMode = "";
+
+    const applyMode = () => {
+      const reduceMotion = prefersReducedMotion();
+      const shouldTrackPointer =
+        !reduceMotion && (pointerFineQuery ? pointerFineQuery.matches : true);
+      const nextMode = reduceMotion
+        ? "static"
+        : shouldTrackPointer
+          ? "pointer"
+          : "random";
+
+      if (nextMode === currentMode) {
+        return;
+      }
+
+      activeCleanup?.();
+      activeCleanup = null;
+      currentMode = nextMode;
+
+      if (nextMode === "pointer") {
+        activeCleanup = enablePointerTracking();
+      } else if (nextMode === "random") {
+        activeCleanup = enableRandomMotion();
+      } else {
+        centerPupils();
+      }
+    };
+
+    applyMode();
+
+    const handlePointerChange = () => applyMode();
+    if (pointerFineQuery) {
+      if (typeof pointerFineQuery.addEventListener === "function") {
+        pointerFineQuery.addEventListener("change", handlePointerChange);
+      } else if (typeof pointerFineQuery.addListener === "function") {
+        pointerFineQuery.addListener(handlePointerChange);
+      }
+    }
+
+    if (reduceMotionQuery) {
+      const handleReduceMotionChange = () => applyMode();
+      if (typeof reduceMotionQuery.addEventListener === "function") {
+        reduceMotionQuery.addEventListener(
+          "change",
+          handleReduceMotionChange,
+        );
+      } else if (typeof reduceMotionQuery.addListener === "function") {
+        reduceMotionQuery.addListener(handleReduceMotionChange);
+      }
+    }
 
     eyes.forEach((eye) => {
       eye.addEventListener("click", () => {
