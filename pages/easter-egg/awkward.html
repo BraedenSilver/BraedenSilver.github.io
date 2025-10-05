@@ -72,15 +72,16 @@
         if (!field) {
           return;
         }
-        const total = 28;
+        const total = 7;
         const fragment = document.createDocumentFragment();
         for (let i = 0; i < total; i += 1) {
           const el = document.createElement("div");
-          el.className = "awkward-killroy";
+          el.className = "awkward-killroy footer-eyes";
           el.innerHTML =
-            '<span class="awkward-killroy__eyes"></span>' +
-            '<span class="awkward-killroy__hands"></span>' +
-            '<span class="awkward-killroy__caption">Kilroy!</span>';
+            '<div class="awkward-killroy__head">' +
+            '  <div class="eye left"><div class="pupil"></div></div>' +
+            '  <div class="eye right"><div class="pupil"></div></div>' +
+            "</div>";
           fragment.appendChild(el);
         }
         field.appendChild(fragment);
@@ -89,18 +90,58 @@
           return Math.random() * (max - min) + min;
         }
 
+        function toHsl(hue, saturation, lightness) {
+          return `hsl(${Math.round(hue)}deg ${saturation.toFixed(1)}% ${lightness.toFixed(1)}%)`;
+        }
+
+        const isCompactViewport =
+          typeof window.matchMedia === "function"
+            ? window.matchMedia("(max-width: 600px)").matches
+            : false;
+
         requestAnimationFrame(() => {
           field.querySelectorAll(".awkward-killroy").forEach((el) => {
-            const hue = Math.floor(Math.random() * 360);
-            const x = randomInRange(10, 90);
-            const y = randomInRange(8, 92);
-            const scale = randomInRange(0.65, 1.6);
-            const rotate = randomInRange(-30, 30);
-            el.style.setProperty("--killroy-hue", hue.toString());
-            el.style.setProperty("--killroy-x", `${x}%`);
-            el.style.setProperty("--killroy-y", `${y}%`);
-            el.style.setProperty("--killroy-scale", scale.toFixed(2));
+            el.style.removeProperty("--awkward-border");
+            el.style.removeProperty("--awkward-shadow");
+            el.style.removeProperty("--awkward-pupil");
+
+            const hue = randomInRange(0, 360);
+            const saturation = randomInRange(62, 88);
+            const lightness = randomInRange(56, 78);
+
+            const x = randomInRange(12, 88);
+            const y = randomInRange(12, 88);
+            const minSize = isCompactViewport ? 102 : 120;
+            const maxSize = isCompactViewport ? 148 : 176;
+            const size = randomInRange(minSize, maxSize);
+            const rotate = randomInRange(-7, 7);
+
+            const eyeOffset = Math.round(size * randomInRange(0.19, 0.22));
+            const eyeTop = Math.round(size * randomInRange(0.32, 0.36));
+            const eyeSize = Math.round(size * randomInRange(0.22, 0.25));
+            const eyeBorder = Math.min(4, Math.max(2, Math.round(size * 0.018)));
+            const borderWidth = Math.min(3, Math.max(2, Math.round(size * 0.016)));
+            const shadowOffset = Math.min(8, Math.max(4, Math.round(size * 0.035)));
+
+            const scleraLightness = Math.min(97, lightness + randomInRange(24, 32));
+            const scleraColor = toHsl(
+              hue,
+              Math.max(6, saturation - 46),
+              scleraLightness
+            );
+
+            el.style.setProperty("--awkward-skin", toHsl(hue, saturation, lightness));
+            el.style.setProperty("--awkward-sclera", scleraColor);
+            el.style.setProperty("--killroy-x", `${x.toFixed(2)}%`);
+            el.style.setProperty("--killroy-y", `${y.toFixed(2)}%`);
             el.style.setProperty("--killroy-rotate", `${rotate.toFixed(1)}deg`);
+            el.style.setProperty("--awkward-size", `${size.toFixed(0)}px`);
+            el.style.setProperty("--eye-offset", `${eyeOffset}px`);
+            el.style.setProperty("--eye-top", `${eyeTop}px`);
+            el.style.setProperty("--eye-size", `${eyeSize}px`);
+            el.style.setProperty("--eye-border", `${eyeBorder}px`);
+            el.style.setProperty("--awkward-border-width", `${borderWidth}px`);
+            el.style.setProperty("--awkward-shadow-offset", `${shadowOffset}px`);
           });
         });
       })();
