@@ -115,9 +115,21 @@ async function loadEntry(section, id) {
   return request;
 }
 
+const ISO_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
 // Parse potentially invalid ISO date strings safely.
 function parseISO(d) {
   if (!d) return 0;
+  if (typeof d === "string") {
+    const match = ISO_DATE_RE.exec(d.trim());
+    if (match) {
+      const year = Number(match[1]);
+      const month = Number(match[2]) - 1;
+      const day = Number(match[3]);
+      const t = new Date(year, month, day, 12).getTime();
+      return Number.isFinite(t) ? t : 0;
+    }
+  }
   const t = Date.parse(d);
   return Number.isFinite(t) ? t : 0;
 }
@@ -135,9 +147,23 @@ const DATE_FMT =
 function formatDate(d) {
   if (!d) return "";
   try {
+    const match = typeof d === "string" ? ISO_DATE_RE.exec(d.trim()) : null;
+    if (match) {
+      const year = Number(match[1]);
+      const month = Number(match[2]) - 1;
+      const day = Number(match[3]);
+      if (!Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
+        const dateObj = new Date(year, month, day, 12);
+        return DATE_FMT
+          ? DATE_FMT.format(dateObj)
+          : `${match[1]}-${match[2]}-${match[3]}`;
+      }
+    }
+
+    const fallbackDate = new Date(d);
     return DATE_FMT
-      ? DATE_FMT.format(new Date(d))
-      : new Date(d).toISOString().slice(0, 10);
+      ? DATE_FMT.format(fallbackDate)
+      : fallbackDate.toISOString().slice(0, 10);
   } catch (err) {
     return d;
   }
