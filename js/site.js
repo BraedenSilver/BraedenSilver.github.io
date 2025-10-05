@@ -3,24 +3,45 @@
 
 const SITE_CONTENT = Object.freeze({
   navItems: [
-    { href: "/index.html", section: "home", label: "Home" },
+    {
+      href: "/index.html",
+      section: "home",
+      label: "Home",
+      groups: ["primary"],
+    },
     {
       href: "/pages/projects/index.html",
       section: "projects",
       label: "Projects",
+      groups: ["primary", "content"],
+      description: "Hands-on builds and experiments.",
     },
     {
       href: "/pages/research/index.html",
       section: "research",
       label: "Research",
+      groups: ["primary", "content"],
+      description: "Long-form investigations and notes.",
     },
-    { href: "/pages/blog/index.html", section: "blog", label: "Blog" },
+    {
+      href: "/pages/blog/index.html",
+      section: "blog",
+      label: "Blog",
+      groups: ["primary", "content"],
+      description: "Updates and reflections from recent work.",
+    },
     {
       href: "/pages/guest-book.html",
       section: "guest-book",
       label: "Guest Book",
+      groups: ["primary"],
     },
-    { href: "/pages/contact.html", section: "contact", label: "Contact" },
+    {
+      href: "/pages/contact.html",
+      section: "contact",
+      label: "Contact",
+      groups: ["primary"],
+    },
   ],
 });
 
@@ -412,14 +433,77 @@ function escapeHtml(value) {
   );
 }
 
+function getNavItemsByGroup(group) {
+  if (!group) {
+    return [];
+  }
+
+  return SITE_CONTENT.navItems.filter((item) => {
+    const groups = Array.isArray(item.groups)
+      ? item.groups
+      : typeof item.group === "string"
+        ? [item.group]
+        : ["primary"];
+    return groups.includes(group);
+  });
+}
+
 // Render the inline navigation links using site metadata above.
 function renderNavLinks() {
-  return SITE_CONTENT.navItems
+  return getNavItemsByGroup("primary")
     .map(
       (item) =>
         `<a href="${item.href}" data-section="${item.section}">${escapeHtml(item.label)}</a>`,
     )
     .join(" · ");
+}
+
+function renderQuickLinks(rootId = "home-quick-links") {
+  const root = document.getElementById(rootId);
+  if (!root) {
+    return;
+  }
+
+  const contentItems = getNavItemsByGroup("content");
+  if (!contentItems.length) {
+    root.remove();
+    return;
+  }
+
+  const listMarkup = contentItems
+    .map((item) => {
+      const description = item.description
+        ? `<span class="quick-link-description">${escapeHtml(item.description)}</span>`
+        : "";
+      return `
+        <li>
+          <a class="project-entry quick-link" href="${item.href}">
+            <img
+              src="/assets/arrowright.gif"
+              alt=""
+              class="arrow"
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="quick-link-content">
+              <span class="quick-link-label">${escapeHtml(item.label)}</span>
+              ${description}
+            </span>
+            <img
+              src="/assets/arrowleft.gif"
+              alt=""
+              class="arrow"
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+        </li>`;
+    })
+    .join("");
+
+  root.innerHTML = `<ul class="quick-links">${listMarkup}</ul>`;
 }
 
 // Build the optional marquee announcement banner.
@@ -490,6 +574,7 @@ function renderHeader(announcement) {
   </div>
 
   <div class="header-actions">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <nav>
       ${renderNavLinks()}
     </nav>
@@ -851,7 +936,15 @@ async function updateFooterVersion() {
   }
 }
 
-const CUSTOM_CURSOR_ENABLED = false;
+const customCursorState = {
+  enabled: false,
+  cursorEl: null,
+  moveHandler: null,
+  listeners: new Set(),
+  supported: false,
+  mediaQuery: null,
+  initialized: false,
+};
 
 // Wire up the theme toggle button to flip between light and dark modes.
 function initThemeToggle() {
@@ -870,32 +963,154 @@ function initThemeToggle() {
 /**
  * Hide the native cursor and replace it with a smaller custom one.
  */
-function initCustomCursor() {
-  if (!CUSTOM_CURSOR_ENABLED) {
-    // Custom cursor is temporarily disabled but implementation is preserved.
-    return;
+function notifyCustomCursorChange() {
+  customCursorState.listeners.forEach((listener) => {
+    try {
+      listener(customCursorState.enabled);
+    } catch (error) {
+      console.error("Custom cursor listener failed", error);
+    }
+  });
+}
+
+function onCustomCursorChange(listener) {
+  if (typeof listener !== "function") {
+    return () => {};
+  }
+  customCursorState.listeners.add(listener);
+  try {
+    listener(customCursorState.enabled);
+  } catch (error) {
+    console.error("Custom cursor listener failed", error);
+  }
+  return () => {
+    customCursorState.listeners.delete(listener);
+  };
+}
+
+function isCustomCursorEnabled() {
+  return customCursorState.enabled;
+}
+
+function isCustomCursorSupported() {
+  return customCursorState.supported;
+}
+
+function ensureCustomCursorElement() {
+  if (
+    customCursorState.cursorEl &&
+    document.body.contains(customCursorState.cursorEl)
+  ) {
+    return customCursorState.cursorEl;
+  }
+  if (!document.body) {
+    return null;
+  }
+  const cursor = document.createElement("div");
+  cursor.id = "custom-cursor";
+  document.body.appendChild(cursor);
+  customCursorState.cursorEl = cursor;
+  return cursor;
+}
+
+function enableCustomCursor() {
+  if (!isCustomCursorSupported()) {
+    console.info("Custom cursor requires a mouse or trackpad.");
+    return false;
+  }
+  if (customCursorState.enabled) {
+    return true;
   }
   const html = document.documentElement;
-  if (!html) return;
-
-  let cursor = document.getElementById("custom-cursor");
-  if (!cursor) {
-    cursor = document.createElement("div");
-    cursor.id = "custom-cursor";
-    document.body.appendChild(cursor);
+  if (!html) {
+    return false;
   }
-
-  html.classList.add("cursor-enabled");
-
-  document.addEventListener("pointermove", (e) => {
-    cursor.style.left = e.clientX - 3 + "px";
-    cursor.style.top = e.clientY - 3 + "px";
-    if (e.target.closest("a, button")) {
+  const cursor = ensureCustomCursorElement();
+  if (!cursor) {
+    return false;
+  }
+  const handler = (event) => {
+    cursor.style.left = `${event.clientX - 3}px`;
+    cursor.style.top = `${event.clientY - 3}px`;
+    if (event.target.closest("a, button")) {
       cursor.classList.add("pointer");
     } else {
       cursor.classList.remove("pointer");
     }
-  });
+  };
+  document.addEventListener("pointermove", handler);
+  customCursorState.moveHandler = handler;
+  html.classList.add("cursor-enabled");
+  customCursorState.enabled = true;
+  notifyCustomCursorChange();
+  return true;
+}
+
+function disableCustomCursor() {
+  if (!customCursorState.enabled) {
+    return true;
+  }
+  if (customCursorState.moveHandler) {
+    document.removeEventListener("pointermove", customCursorState.moveHandler);
+    customCursorState.moveHandler = null;
+  }
+  document.documentElement.classList.remove("cursor-enabled");
+  if (customCursorState.cursorEl) {
+    customCursorState.cursorEl.remove();
+    customCursorState.cursorEl = null;
+  }
+  customCursorState.enabled = false;
+  notifyCustomCursorChange();
+  return true;
+}
+
+function toggleCustomCursor(force) {
+  const shouldEnable =
+    typeof force === "boolean" ? force : !customCursorState.enabled;
+  return shouldEnable ? enableCustomCursor() : disableCustomCursor();
+}
+
+function initCustomCursorSupport() {
+  if (customCursorState.initialized) {
+    return;
+  }
+  customCursorState.initialized = true;
+
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return;
+  }
+
+  if (typeof window.matchMedia === "function") {
+    const query = window.matchMedia("(pointer: fine)");
+    customCursorState.mediaQuery = query;
+    customCursorState.supported = Boolean(query?.matches);
+
+    const updateSupport = (event) => {
+      customCursorState.supported = Boolean(event.matches);
+      if (!event.matches) {
+        disableCustomCursor();
+      }
+      notifyCustomCursorChange();
+    };
+
+    if (query) {
+      if (typeof query.addEventListener === "function") {
+        query.addEventListener("change", updateSupport);
+      } else if (typeof query.addListener === "function") {
+        query.addListener(updateSupport);
+      }
+    }
+  } else {
+    customCursorState.supported = false;
+  }
+
+  window.enableCustomCursor = enableCustomCursor;
+  window.disableCustomCursor = disableCustomCursor;
+  window.toggleCustomCursor = toggleCustomCursor;
+  window.isCustomCursorEnabled = isCustomCursorEnabled;
+  window.isCustomCursorSupported = isCustomCursorSupported;
+
+  notifyCustomCursorChange();
 }
 
 // Hidden Easter egg: unlock a music video when the Konami code is entered.
@@ -915,12 +1130,17 @@ function initKonamiCode() {
 
   const buffer = [];
   let previousFocus = null;
+  let overlayCursorCleanup = null;
 
   const removeOverlay = () => {
     const overlay = document.getElementById("konami-overlay");
     if (!overlay) return;
     overlay.remove();
     document.body.classList.remove("konami-active");
+    if (typeof overlayCursorCleanup === "function") {
+      overlayCursorCleanup();
+      overlayCursorCleanup = null;
+    }
     if (previousFocus && typeof previousFocus.focus === "function") {
       previousFocus.focus();
     }
@@ -951,6 +1171,10 @@ function initKonamiCode() {
     title.id = "konami-title";
     title.textContent = "Secret Video Unlocked";
 
+    const intro = document.createElement("p");
+    intro.textContent =
+      "Enjoy a tune and flip on the experimental custom cursor toggle.";
+
     const videoWrap = document.createElement("div");
     videoWrap.className = "konami-video";
 
@@ -964,26 +1188,82 @@ function initKonamiCode() {
     video.referrerPolicy = "strict-origin-when-cross-origin";
     videoWrap.appendChild(video);
 
+    const actions = document.createElement("div");
+    actions.className = "konami-actions";
+
+    const toggleButton = document.createElement("button");
+    toggleButton.type = "button";
+    toggleButton.className = "konami-action konami-cursor-toggle";
+    const cursorSupported = isCustomCursorSupported();
+
+    if (cursorSupported) {
+      overlayCursorCleanup = onCustomCursorChange((enabled) => {
+        toggleButton.textContent = enabled
+          ? "Disable custom cursor"
+          : "Enable custom cursor";
+        toggleButton.setAttribute("aria-pressed", String(enabled));
+      });
+      toggleButton.addEventListener("click", () => {
+        const success = toggleCustomCursor();
+        if (!success) {
+          toggleButton.disabled = true;
+          toggleButton.setAttribute("aria-disabled", "true");
+        }
+      });
+    } else {
+      toggleButton.textContent = "Custom cursor needs a mouse";
+      toggleButton.disabled = true;
+      toggleButton.setAttribute("aria-disabled", "true");
+    }
+
+    actions.appendChild(toggleButton);
+
     const close = document.createElement("button");
     close.type = "button";
-    close.className = "konami-close";
+    close.className = "konami-action konami-close";
     close.textContent = "Exit video";
     close.addEventListener("click", removeOverlay);
+    actions.appendChild(close);
 
     panel.appendChild(title);
+    panel.appendChild(intro);
     panel.appendChild(videoWrap);
-    panel.appendChild(close);
+    panel.appendChild(actions);
+
+    if (!cursorSupported) {
+      const note = document.createElement("p");
+      note.className = "konami-note";
+      note.textContent =
+        "Connect a mouse or trackpad to try the experimental cursor.";
+      panel.appendChild(note);
+    }
 
     overlay.appendChild(panel);
+
+    const getFocusableButtons = () =>
+      Array.from(panel.querySelectorAll("button:not([disabled])"));
+
     overlay.addEventListener("keydown", (event) => {
-      if (event.key === "Tab") {
-        event.preventDefault();
-        close.focus();
+      if (event.key !== "Tab") return;
+      event.preventDefault();
+      const focusable = getFocusableButtons();
+      if (!focusable.length) return;
+      const currentIndex = focusable.indexOf(document.activeElement);
+      let nextIndex = currentIndex;
+      if (currentIndex === -1) {
+        nextIndex = 0;
+      } else if (event.shiftKey) {
+        nextIndex = (currentIndex - 1 + focusable.length) % focusable.length;
+      } else {
+        nextIndex = (currentIndex + 1) % focusable.length;
       }
+      focusable[nextIndex].focus();
     });
     overlay.addEventListener("focusin", (event) => {
-      if (event.target !== close) {
-        close.focus();
+      const focusable = getFocusableButtons();
+      if (!focusable.length) return;
+      if (!focusable.includes(event.target)) {
+        focusable[0].focus();
       }
     });
     overlay.addEventListener("click", removeOverlay);
@@ -993,7 +1273,12 @@ function initKonamiCode() {
     buffer.length = 0;
 
     requestAnimationFrame(() => {
-      close.focus();
+      const focusable = getFocusableButtons();
+      if (focusable.length) {
+        focusable[0].focus();
+      } else {
+        close.focus();
+      }
     });
   };
 
@@ -1263,6 +1548,70 @@ const CONTENT_RENDERERS = Object.freeze({
     onError: () =>
       setContentFallback("research-entry", "Failed to load research entry."),
   },
+  "home:latest-blog": {
+    run: () =>
+      loadModule("blog").then((mod) => {
+        if (typeof mod.renderLatestEntries !== "function") {
+          throw new Error("renderLatestEntries is not available");
+        }
+        return mod.renderLatestEntries("blog", {
+          rootId: "home-latest-blog",
+          limit: 3,
+          errorMessage: "Latest posts are temporarily unavailable.",
+        });
+      }),
+    onError: () =>
+      setContentFallback(
+        "home-latest-blog",
+        "Latest posts are temporarily unavailable.",
+      ),
+  },
+  "home:latest-research": {
+    run: () =>
+      loadModule("blog").then((mod) => {
+        if (typeof mod.renderLatestEntries !== "function") {
+          throw new Error("renderLatestEntries is not available");
+        }
+        return mod.renderLatestEntries("research", {
+          rootId: "home-latest-research",
+          limit: 3,
+          errorMessage: "Latest research highlights are unavailable right now.",
+        });
+      }),
+    onError: () =>
+      setContentFallback(
+        "home-latest-research",
+        "Latest research highlights are unavailable right now.",
+      ),
+  },
+  "home:latest-projects": {
+    run: () =>
+      loadModule("blog").then((mod) => {
+        if (typeof mod.renderLatestEntries !== "function") {
+          throw new Error("renderLatestEntries is not available");
+        }
+        return mod.renderLatestEntries("projects", {
+          rootId: "home-latest-projects",
+          limit: 3,
+          errorMessage: "Latest projects are temporarily unavailable.",
+        });
+      }),
+    onError: () =>
+      setContentFallback(
+        "home-latest-projects",
+        "Latest projects are temporarily unavailable.",
+      ),
+  },
+  "home:quick-links": {
+    run: () => {
+      renderQuickLinks();
+    },
+    onError: () =>
+      setContentFallback(
+        "home-quick-links",
+        "Quick links are unavailable right now.",
+      ),
+  },
 });
 
 function parseRenderTokens(value) {
@@ -1333,9 +1682,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     updateLastUpdated(),
     updateFooterVersion(),
   ]);
-  if (window.matchMedia("(pointer: fine)").matches) {
-    initCustomCursor();
-  }
+  initCustomCursorSupport();
 
   // Tiny googly eyes in footer
   (() => {
