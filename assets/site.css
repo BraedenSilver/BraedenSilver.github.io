@@ -297,8 +297,9 @@ html.theme-dark .theme-toggle__icon--moon {
   position: relative;
   font-size: 0;
   line-height: 1;
+  box-shadow: 4px 4px 0 var(--color-shadow);
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .announcement-close::before,
@@ -325,7 +326,8 @@ html.theme-dark .theme-toggle__icon--moon {
   background: var(--color-strong-bg);
   color: var(--color-strong-text);
   border-color: transparent;
-  transform: scale(1.05);
+  transform: translate(-1px, -1px) scale(1.05);
+  box-shadow: 6px 6px 0 var(--color-shadow);
 }
 
 .announcement-close:hover::before,
@@ -338,6 +340,11 @@ html.theme-dark .theme-toggle__icon--moon {
 .announcement-close:hover::after,
 .announcement-close:focus-visible::after {
   transform: scaleX(1.2) rotate(-45deg);
+}
+
+.announcement-close:active {
+  transform: translate(1px, 1px) scale(0.96);
+  box-shadow: 2px 2px 0 var(--color-shadow);
 }
 
 .announcement-marquee {
@@ -722,17 +729,22 @@ html.theme-dark .theme-toggle__icon--moon {
   padding: 0.35rem 0.8rem 0.4rem;
   border-radius: 999px;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  box-shadow: 4px 4px 0 var(--color-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease,
+    color 0.2s ease;
 }
 
 .footer-share:hover,
 .footer-share:focus-visible {
   background: var(--color-strong-bg);
   color: var(--color-strong-text);
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 var(--color-shadow);
 }
 
 .footer-share:active {
-  transform: translateY(1px);
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--color-shadow);
 }
 
 .footer-share-feedback {
@@ -768,6 +780,7 @@ html.theme-dark .theme-toggle__icon--moon {
   border: 2px solid var(--color-kilroy-border);
   border-radius: 50%;
   background: var(--color-kilroy-skin);
+  box-shadow: 4px 4px 0 var(--color-shadow);
 }
 
 .footer-eyes .eye {
@@ -852,9 +865,9 @@ body.kilroy-page .kilroy-peek {
   }
 
   .kilroy-peek {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
+    left: auto;
+    right: 1rem;
+    transform: none;
   }
 }
 
