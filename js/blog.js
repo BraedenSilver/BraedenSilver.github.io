@@ -158,6 +158,107 @@ function createTagList(tags) {
   return ul;
 }
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function sanitizeUrl(raw) {
+  if (!raw) return null;
+  const url = String(raw).trim();
+  if (!url) return null;
+  if (/^https?:\/\//i.test(url)) return url;
+  if (/^mailto:/i.test(url)) return url;
+  if (url.startsWith("/")) return url;
+  if (url.startsWith("./")) return url;
+  if (url.startsWith("../")) return url;
+  if (url.startsWith("#")) return url;
+  if (url.startsWith("?")) return url;
+  return null;
+}
+
+function linkifyText(text) {
+  const pattern =
+    /\[([^\]]+)\]\(([^)]+)\)|(https?:\/\/[^\s<]+|mailto:[^\s<]+)/gi;
+  const tokens = [];
+  let lastIndex = 0;
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    const offset = match.index;
+    if (offset > lastIndex) {
+      tokens.push({ type: "text", value: text.slice(lastIndex, offset) });
+    }
+    if (match[1] && match[2]) {
+      tokens.push({ type: "markdown", label: match[1], url: match[2] });
+    } else if (match[3]) {
+      tokens.push({ type: "link", label: match[3], url: match[3] });
+    }
+    lastIndex = offset + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    tokens.push({ type: "text", value: text.slice(lastIndex) });
+  }
+
+  let containsLink = false;
+  const html = tokens
+    .map((token) => {
+      if (token.type === "text") {
+        return escapeHtml(token.value);
+      }
+      const url = sanitizeUrl(token.url);
+      if (!url) {
+        if (token.type === "markdown") {
+          return escapeHtml(`[${token.label}](${token.url})`);
+        }
+        return escapeHtml(token.label);
+      }
+      containsLink = true;
+      const label =
+        token.type === "markdown"
+          ? token.label && token.label.trim()
+            ? token.label
+            : url
+          : token.label;
+      const safeLabel = escapeHtml(label);
+      const rel = /^https?:/i.test(url)
+        ? " rel=\"noopener noreferrer\""
+        : "";
+      const target = /^https?:/i.test(url) ? " target=\"_blank\"" : "";
+      return `<a href="${escapeHtml(url)}"${target}${rel}>${safeLabel}</a>`;
+    })
+    .join("");
+
+  return { html, containsLink };
+}
+
+function createParagraphBlock(text, htmlOverride) {
+  const cleanText = typeof text === "string" ? text.trim() : "";
+  const providedHtml =
+    typeof htmlOverride === "string" ? htmlOverride.trim() : "";
+  if (!cleanText && !providedHtml) return null;
+
+  const block = { type: "paragraph" };
+  if (cleanText) block.text = cleanText;
+
+  if (providedHtml) {
+    block.html = providedHtml;
+    return block;
+  }
+
+  if (cleanText) {
+    const { html, containsLink } = linkifyText(cleanText);
+    if (containsLink) {
+      block.html = html;
+    }
+  }
+
+  return block;
+}
+
 // Build an aside with resource links related to an entry.
 function createLinkList(links) {
   if (!links || !links.length) return null;
@@ -236,17 +337,12 @@ function createEntryCard(section, entry) {
 function normalizeBlock(block) {
   if (!block) return null;
   if (typeof block === "string") {
-    const text = block.trim();
-    if (!text) return null;
-    return { type: "paragraph", text };
+    return createParagraphBlock(block);
   }
   if (typeof block !== "object") return null;
   const type = String(block.type || "paragraph").toLowerCase();
   if (type === "paragraph") {
-    const text = typeof block.text === "string" ? block.text.trim() : "";
-    const html = typeof block.html === "string" ? block.html : "";
-    if (!text && !html.trim()) return null;
-    return { type: "paragraph", text, html };
+    return createParagraphBlock(block.text, block.html);
   }
   if (type === "image") {
     const src = typeof block.src === "string" ? block.src.trim() : "";
@@ -289,7 +385,8 @@ function createBodyBlocks(body) {
     .split(/\n\s*\n/g)
     .map((chunk) => chunk.replace(/\s*\n\s*/g, " ").trim())
     .filter(Boolean)
-    .map((chunk) => ({ type: "paragraph", text: chunk }));
+    .map((chunk) => createParagraphBlock(chunk))
+    .filter(Boolean);
   return paragraphs;
 }
 
