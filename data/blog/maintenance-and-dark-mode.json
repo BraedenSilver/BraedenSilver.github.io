@@ -1,0 +1,9 @@
+{
+  "id": "maintenance-and-dark-mode",
+  "title": "Dark Mode, Guestbook Experiments, and More Maintenance",
+  "date": "2025-10-04",
+  "summary": "Tried out a giscus-powered guestbook, refreshed visuals with Monokai dark mode, and kept learning about SaaS while planning future creative work.",
+  "tags": ["General"],
+  "body": "Today I did more maintenance on the website. I added a guestbook that is powered by giscus. I'm not sure if I'll keep using it, but only time will tell. If you have a problem or a better suggestion, you can always email me through the <a href=\"/pages/contact.html\">contacts page</a>.\n\nI also removed the GIFs from the pages. I loved them, but they needed to go. The blue arrow GIFs are still there because those are fun.\n\nThe biggest change today is the added dark and light mode. Dark mode is actually using the \"Monokai\" color palette. I also changed the Killroy in the footer to red.\n\nOther than that, I'm learning more about SaaS business models. I'm planning on either making a video game or a SaaS company while doing my undergrad. I'm a new officer in my IEEE club, and I want to impress my peers.",
+  "links": []
+}
