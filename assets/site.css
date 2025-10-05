@@ -595,6 +595,28 @@ html.theme-dark .theme-toggle__icon--moon {
 
 .last-updated {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.last-updated .footer-version {
+  font-size: inherit;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+.last-updated .footer-version:hover,
+.last-updated .footer-version:focus-visible {
+  color: var(--color-strong-text);
+  text-decoration-thickness: 2px;
 }
 
 .footer-share {
@@ -1160,13 +1182,6 @@ details#sources[open] > ol {
   margin: 0;
   font-size: 0.9rem;
   color: var(--color-subtle-text);
-}
-
-.footer-static .footer-version {
-  margin: 0.35rem 0 0;
-  font-size: 0.8rem;
-  color: var(--color-subtle-text);
-  letter-spacing: 0.02em;
 }
 
 .footer-static .footer-note a[aria-current="page"] {

@@ -176,7 +176,20 @@ function renderFooter() {
 <footer class="footer-fixed">
   <div class="footer-bar">
     <div class="footer-meta">
-      <p class="last-updated">Last updated: <span id="last-updated">See Git history</span></p>
+      <p class="last-updated">
+        Last updated: <span id="last-updated">See Git history</span>
+        <a
+          class="footer-version"
+          href="https://github.com/BraedenSilver/BraedenSilver.github.io"
+        >
+          Version
+          <span
+            data-footer-version
+            data-version-prefix="V0.1."
+            data-version-fallback="194"
+          >V0.1.194</span>
+        </a>
+      </p>
       <button type="button" class="footer-share" data-share-button>
         Copy page link
       </button>
@@ -193,10 +206,6 @@ function renderFooter() {
 </footer>
 <footer class="footer-static">
   <p class="footer-note">© 2025 Braeden Silver. All rights reserved.</p>
-  <p class="footer-version">
-    Version
-    <span data-footer-version data-version-prefix="V0.1." data-version-fallback="194">V0.1.194</span>
-  </p>
 </footer>`;
 }
 
