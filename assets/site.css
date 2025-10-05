@@ -615,7 +615,7 @@ html.theme-dark .theme-toggle__icon--moon {
 
 .last-updated .footer-version:hover,
 .last-updated .footer-version:focus-visible {
-  color: var(--color-strong-text);
+  color: var(--color-text);
   text-decoration-thickness: 2px;
 }
 
