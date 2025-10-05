@@ -765,7 +765,7 @@ html.theme-dark .theme-toggle__icon--moon {
 .kilroy-peek {
   position: absolute;
   bottom: -30px;
-  right: 20px;
+  right: 16px;
   width: 160px;
   height: 120px;
   overflow: hidden;
@@ -774,7 +774,7 @@ html.theme-dark .theme-toggle__icon--moon {
 .kilroy-peek .head {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 4px;
   width: 120px;
   height: 120px;
   border: 2px solid var(--color-kilroy-border);
@@ -866,7 +866,7 @@ body.kilroy-page .kilroy-peek {
 
   .kilroy-peek {
     left: auto;
-    right: 1rem;
+    right: calc(1rem - 4px);
     transform: none;
   }
 }
