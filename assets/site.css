@@ -955,35 +955,6 @@ body.konami-active {
   cursor: not-allowed;
 }
 
-.konami-note {
-  margin: 0.75rem 0 0;
-  font-size: 0.95rem;
-  color: var(--color-muted-text);
-  text-align: center;
-}
-
-.cursor-enabled,
-.cursor-enabled body,
-.cursor-enabled a,
-.cursor-enabled button {
-  cursor: none;
-}
-
-.cursor-enabled #custom-cursor {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 24px;
-  height: 24px;
-  pointer-events: none;
-  background: url('/assets/cursor/default.png') no-repeat center/24px 24px;
-  z-index: 12000;
-}
-
-.cursor-enabled #custom-cursor.pointer {
-  background-image: url('/assets/cursor/pointer.png');
-}
-
 details#sources > ol {
   overflow: hidden;
   transition: max-height 200ms ease;
