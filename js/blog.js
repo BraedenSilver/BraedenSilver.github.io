@@ -9,6 +9,9 @@ const VERSION = (function () {
 })();
 
 // Describe the content sources for each supported section.
+const AWKWARD_SURPRISE_URL = "/pages/easter-egg/awkward.html";
+const AWKWARD_SURPRISE_CHANCE = 1 / 500;
+
 const SECTION_CONFIG = {
   blog: {
     label: "Blog",
@@ -20,6 +23,7 @@ const SECTION_CONFIG = {
     noneMatchMessage: "No posts match the selected tags yet.",
     fallbackDescription: "Notes from the lab bench.",
     schemaType: "BlogPosting",
+    awkwardUrl: AWKWARD_SURPRISE_URL,
   },
   projects: {
     label: "Projects",
@@ -31,6 +35,7 @@ const SECTION_CONFIG = {
     noneMatchMessage: "No projects match the selected tags yet.",
     fallbackDescription: "Hands-on builds and experiments.",
     schemaType: "CreativeWork",
+    awkwardUrl: AWKWARD_SURPRISE_URL,
   },
   research: {
     label: "Research",
@@ -42,6 +47,7 @@ const SECTION_CONFIG = {
     noneMatchMessage: "No research entries match the selected tags yet.",
     fallbackDescription: "Longer-form investigations and papers.",
     schemaType: "ScholarlyArticle",
+    awkwardUrl: AWKWARD_SURPRISE_URL,
   },
 };
 
@@ -635,13 +641,25 @@ async function renderSectionIndex(section, options = {}) {
   const clearBtn = options.clearButtonId
     ? document.getElementById(options.clearButtonId)
     : null;
+  const randomBtn = options.randomButtonId
+    ? document.getElementById(options.randomButtonId)
+    : null;
 
   const { entries: manifestEntries = [], tags: manifestTags = [] } =
     await loadManifest(section);
   const entries = Array.isArray(manifestEntries) ? manifestEntries : [];
   const defaultTags = Array.isArray(manifestTags) ? manifestTags : [];
 
-  const state = { activeTags: new Set() };
+  const state = { activeTags: new Set(), lastRenderedEntries: [] };
+
+  const awkwardUrl =
+    typeof options.awkwardUrl === "string" && options.awkwardUrl
+      ? options.awkwardUrl
+      : config.awkwardUrl || AWKWARD_SURPRISE_URL;
+  const awkwardChance =
+    typeof options.awkwardChance === "number" && options.awkwardChance >= 0
+      ? options.awkwardChance
+      : AWKWARD_SURPRISE_CHANCE;
 
   const sortedEntries = entries
     .slice()
@@ -741,8 +759,34 @@ async function renderSectionIndex(section, options = {}) {
     });
   }
 
+  if (randomBtn) {
+    randomBtn.hidden = false;
+    randomBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      const pool =
+        state.lastRenderedEntries && state.lastRenderedEntries.length
+          ? state.lastRenderedEntries
+          : enrichedEntries;
+      const showAwkward =
+        pool.length === 0 || Math.random() < Math.min(awkwardChance, 1);
+      if (showAwkward) {
+        window.location.href = awkwardUrl;
+        return;
+      }
+      const choice =
+        pool[Math.floor(Math.random() * Math.max(1, pool.length))];
+      if (!choice || !choice.id) {
+        window.location.href = awkwardUrl;
+        return;
+      }
+      const url = `${config.detailPath}?id=${encodeURIComponent(choice.id)}`;
+      window.location.href = url;
+    });
+  }
+
   function renderList() {
     const filtered = filterEntries();
+    state.lastRenderedEntries = filtered;
     if (!filtered.length) {
       const message = document.createElement("p");
       message.textContent = state.activeTags.size
@@ -935,6 +979,7 @@ export async function renderBlogIndex() {
     filterContainerId: "blog-filter",
     filterTagsId: "blog-filter-tags",
     clearButtonId: "blog-filter-clear",
+    randomButtonId: "blog-random",
   });
 }
 
@@ -951,6 +996,7 @@ export async function renderProjectsIndex() {
     filterContainerId: "projects-filter",
     filterTagsId: "projects-filter-tags",
     clearButtonId: "projects-filter-clear",
+    randomButtonId: "projects-random",
   });
 }
 
@@ -967,6 +1013,7 @@ export async function renderResearchIndex() {
     filterContainerId: "research-filter",
     filterTagsId: "research-filter-tags",
     clearButtonId: "research-filter-clear",
+    randomButtonId: "research-random",
   });
 }
 

@@ -1122,6 +1122,39 @@ details#sources[open] > ol {
   font-style: italic;
 }
 
+.random-entry-button {
+  align-self: flex-start;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--color-shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease, color 0.15s ease;
+}
+
+.random-entry-button:hover,
+.random-entry-button:focus-visible {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--color-shadow);
+  background: var(--color-strong-bg);
+  color: var(--color-strong-text);
+}
+
+.random-entry-button:focus-visible {
+  outline: 2px solid var(--color-border);
+  outline-offset: 2px;
+}
+
+.random-entry-button:active {
+  transform: translate(0, 0);
+  box-shadow: 2px 2px 0 var(--color-shadow);
+}
+
 
 .blog-list {
   display: flex;
@@ -1142,7 +1175,9 @@ details#sources[open] > ol {
 }
 
 .blog-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   border: 2px solid var(--color-border);
   padding: 1.25rem;
   border-radius: 12px;
@@ -1155,7 +1190,9 @@ details#sources[open] > ol {
 }
 
 .blog-card .blog-tags {
-  margin-top: 1rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  align-self: flex-start;
 }
 
 .blog-card:hover,
@@ -1326,5 +1363,171 @@ details#sources[open] > ol {
 .footer-static .footer-note a[aria-current="page"] {
   font-weight: 600;
   text-decoration: underline;
+}
+
+.awkward-page main {
+  position: relative;
+  padding-bottom: 4rem;
+}
+
+.awkward-page__lead {
+  font-size: clamp(1.2rem, 2.5vw + 1rem, 2rem);
+  line-height: 1.6;
+  max-width: 55ch;
+}
+
+.awkward-page__actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.awkward-page__actions a {
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 0.6rem 1.3rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 3px 3px 0 var(--color-shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease, color 0.15s ease;
+}
+
+.awkward-page__actions a:hover,
+.awkward-page__actions a:focus-visible {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--color-shadow);
+  background: var(--color-strong-bg);
+  color: var(--color-strong-text);
+}
+
+.awkward-page__actions a:focus-visible {
+  outline: 2px solid var(--color-border);
+  outline-offset: 2px;
+}
+
+.awkward-killroy-field {
+  position: relative;
+  margin: 3rem 0;
+  min-height: clamp(320px, 60vh, 640px);
+  border: 2px dashed var(--color-border);
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--color-panel-muted);
+}
+
+.awkward-killroy {
+  position: absolute;
+  width: 120px;
+  height: 90px;
+  color: hsl(var(--killroy-hue, 12), 80%, 56%);
+  left: var(--killroy-x, 50%);
+  top: var(--killroy-y, 50%);
+  transform: translate(-50%, -50%) scale(var(--killroy-scale, 1))
+    rotate(var(--killroy-rotate, 0deg));
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.awkward-killroy::before {
+  content: "";
+  position: absolute;
+  width: 74px;
+  height: 44px;
+  border: 4px solid currentColor;
+  border-bottom: none;
+  border-radius: 60px 60px 0 0;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.awkward-killroy::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 24px;
+  border-radius: 50% 50% 40% 40%;
+  background: currentColor;
+  left: 50%;
+  top: 36px;
+  transform: translate(-50%, -50%);
+}
+
+.awkward-killroy__eyes {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  width: 50px;
+  display: flex;
+  justify-content: space-between;
+  transform: translateX(-50%);
+}
+
+.awkward-killroy__eyes::before,
+.awkward-killroy__eyes::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.awkward-killroy__hands {
+  position: absolute;
+  top: 58px;
+  left: 50%;
+  width: 100px;
+  height: 36px;
+  border: 4px solid currentColor;
+  border-top: none;
+  border-radius: 0 0 18px 18px;
+  transform: translateX(-50%);
+}
+
+.awkward-killroy__hands::before,
+.awkward-killroy__hands::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  width: 20px;
+  height: 20px;
+  border: 4px solid currentColor;
+  border-radius: 50%;
+}
+
+.awkward-killroy__hands::before {
+  left: -4px;
+}
+
+.awkward-killroy__hands::after {
+  right: -4px;
+}
+
+.awkward-killroy__caption {
+  position: absolute;
+  bottom: -1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: currentColor;
+  opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+  .awkward-killroy {
+    width: 96px;
+    height: 74px;
+  }
+
+  .awkward-killroy__hands {
+    width: 80px;
+  }
 }
 

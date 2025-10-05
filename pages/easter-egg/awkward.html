@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Oops, This Is Awkward — Braeden Silver</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="We couldn't find something to show you, so enjoy a field of mischievous Kilroys instead."
+    />
+    <meta property="og:title" content="Oops, This Is Awkward — Braeden Silver" />
+    <meta
+      property="og:description"
+      content="A surprise page full of colorful Kilroys when the randomizer runs out of ideas."
+    />
+    <link rel="stylesheet" href="/assets/site.css" />
+  </head>
+  <body class="awkward-page" data-section="awkward">
+    <div id="site-header">
+      <noscript>
+        <div class="noscript-banner" role="alert">
+          JavaScript powers the interactive parts of this site. Please enable it
+          to explore everything on BraedenSilver.com.
+          <a href="/pages/help/enable-javascript/index.html">
+            Learn how to turn on JavaScript.
+          </a>
+        </div>
+      </noscript>
+    </div>
+
+    <main id="main-content">
+      <nav class="page-back" aria-label="Back navigation">
+        <a class="project-entry back-link" href="/index.html">
+          <span class="back-link-icon" aria-hidden="true">←</span>
+          <span class="back-link-label">Take me back home</span>
+        </a>
+      </nav>
+      <h1>Oops, this is awkward.</h1>
+      <p class="awkward-page__lead">
+        The random button blinked, shrugged, and handed you to the Kilroy crew.
+        Refresh the page or try again for a proper entry — unless you're happy
+        to hang out with these doodled lookouts.
+      </p>
+      <div class="awkward-page__actions">
+        <a href="/pages/blog/index.html">Browse the full blog</a>
+        <a href="/pages/projects/index.html">Explore every project</a>
+        <a href="/pages/research/index.html">Inspect all research notes</a>
+      </div>
+      <div
+        class="awkward-killroy-field"
+        id="awkward-killroy-field"
+        aria-hidden="true"
+      ></div>
+    </main>
+
+    <div id="site-footer">
+      <noscript>
+        <div class="noscript-banner" role="alert">
+          JavaScript powers the interactive parts of this site. Please enable it
+          to explore everything on BraedenSilver.com.
+          <a href="/pages/help/enable-javascript/index.html">
+            Learn how to turn on JavaScript.
+          </a>
+        </div>
+      </noscript>
+    </div>
+
+    <script src="/js/site.js" defer></script>
+    <script>
+      (function () {
+        const field = document.getElementById("awkward-killroy-field");
+        if (!field) {
+          return;
+        }
+        const total = 28;
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < total; i += 1) {
+          const el = document.createElement("div");
+          el.className = "awkward-killroy";
+          el.innerHTML =
+            '<span class="awkward-killroy__eyes"></span>' +
+            '<span class="awkward-killroy__hands"></span>' +
+            '<span class="awkward-killroy__caption">Kilroy!</span>';
+          fragment.appendChild(el);
+        }
+        field.appendChild(fragment);
+
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        requestAnimationFrame(() => {
+          field.querySelectorAll(".awkward-killroy").forEach((el) => {
+            const hue = Math.floor(Math.random() * 360);
+            const x = randomInRange(10, 90);
+            const y = randomInRange(8, 92);
+            const scale = randomInRange(0.65, 1.6);
+            const rotate = randomInRange(-30, 30);
+            el.style.setProperty("--killroy-hue", hue.toString());
+            el.style.setProperty("--killroy-x", `${x}%`);
+            el.style.setProperty("--killroy-y", `${y}%`);
+            el.style.setProperty("--killroy-scale", scale.toFixed(2));
+            el.style.setProperty("--killroy-rotate", `${rotate.toFixed(1)}deg`);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
