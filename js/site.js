@@ -10,6 +10,13 @@ const SITE_CONTENT = Object.freeze({
       groups: ["primary"],
     },
     {
+      href: "/pages/blog/index.html",
+      section: "blog",
+      label: "Blog",
+      groups: ["primary", "content"],
+      description: "Updates and reflections from recent work.",
+    },
+    {
       href: "/pages/projects/index.html",
       section: "projects",
       label: "Projects",
@@ -22,13 +29,6 @@ const SITE_CONTENT = Object.freeze({
       label: "Research",
       groups: ["primary", "content"],
       description: "Long-form investigations and notes.",
-    },
-    {
-      href: "/pages/blog/index.html",
-      section: "blog",
-      label: "Blog",
-      groups: ["primary", "content"],
-      description: "Updates and reflections from recent work.",
     },
     {
       href: "/pages/guest-book.html",
