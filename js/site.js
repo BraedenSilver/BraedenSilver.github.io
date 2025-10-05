@@ -936,16 +936,6 @@ async function updateFooterVersion() {
   }
 }
 
-const customCursorState = {
-  enabled: false,
-  cursorEl: null,
-  moveHandler: null,
-  listeners: new Set(),
-  supported: false,
-  mediaQuery: null,
-  initialized: false,
-};
-
 // Wire up the theme toggle button to flip between light and dark modes.
 function initThemeToggle() {
   const toggle = document.querySelector("[data-theme-toggle]");
@@ -958,159 +948,6 @@ function initThemeToggle() {
     applyTheme(nextTheme);
     updateThemeToggleButton(nextTheme);
   });
-}
-
-/**
- * Hide the native cursor and replace it with a smaller custom one.
- */
-function notifyCustomCursorChange() {
-  customCursorState.listeners.forEach((listener) => {
-    try {
-      listener(customCursorState.enabled);
-    } catch (error) {
-      console.error("Custom cursor listener failed", error);
-    }
-  });
-}
-
-function onCustomCursorChange(listener) {
-  if (typeof listener !== "function") {
-    return () => {};
-  }
-  customCursorState.listeners.add(listener);
-  try {
-    listener(customCursorState.enabled);
-  } catch (error) {
-    console.error("Custom cursor listener failed", error);
-  }
-  return () => {
-    customCursorState.listeners.delete(listener);
-  };
-}
-
-function isCustomCursorEnabled() {
-  return customCursorState.enabled;
-}
-
-function isCustomCursorSupported() {
-  return customCursorState.supported;
-}
-
-function ensureCustomCursorElement() {
-  if (
-    customCursorState.cursorEl &&
-    document.body.contains(customCursorState.cursorEl)
-  ) {
-    return customCursorState.cursorEl;
-  }
-  if (!document.body) {
-    return null;
-  }
-  const cursor = document.createElement("div");
-  cursor.id = "custom-cursor";
-  document.body.appendChild(cursor);
-  customCursorState.cursorEl = cursor;
-  return cursor;
-}
-
-function enableCustomCursor() {
-  if (!isCustomCursorSupported()) {
-    console.info("Custom cursor requires a mouse or trackpad.");
-    return false;
-  }
-  if (customCursorState.enabled) {
-    return true;
-  }
-  const html = document.documentElement;
-  if (!html) {
-    return false;
-  }
-  const cursor = ensureCustomCursorElement();
-  if (!cursor) {
-    return false;
-  }
-  const handler = (event) => {
-    cursor.style.left = `${event.clientX - 3}px`;
-    cursor.style.top = `${event.clientY - 3}px`;
-    if (event.target.closest("a, button")) {
-      cursor.classList.add("pointer");
-    } else {
-      cursor.classList.remove("pointer");
-    }
-  };
-  document.addEventListener("pointermove", handler);
-  customCursorState.moveHandler = handler;
-  html.classList.add("cursor-enabled");
-  customCursorState.enabled = true;
-  notifyCustomCursorChange();
-  return true;
-}
-
-function disableCustomCursor() {
-  if (!customCursorState.enabled) {
-    return true;
-  }
-  if (customCursorState.moveHandler) {
-    document.removeEventListener("pointermove", customCursorState.moveHandler);
-    customCursorState.moveHandler = null;
-  }
-  document.documentElement.classList.remove("cursor-enabled");
-  if (customCursorState.cursorEl) {
-    customCursorState.cursorEl.remove();
-    customCursorState.cursorEl = null;
-  }
-  customCursorState.enabled = false;
-  notifyCustomCursorChange();
-  return true;
-}
-
-function toggleCustomCursor(force) {
-  const shouldEnable =
-    typeof force === "boolean" ? force : !customCursorState.enabled;
-  return shouldEnable ? enableCustomCursor() : disableCustomCursor();
-}
-
-function initCustomCursorSupport() {
-  if (customCursorState.initialized) {
-    return;
-  }
-  customCursorState.initialized = true;
-
-  if (typeof window === "undefined" || typeof document === "undefined") {
-    return;
-  }
-
-  if (typeof window.matchMedia === "function") {
-    const query = window.matchMedia("(pointer: fine)");
-    customCursorState.mediaQuery = query;
-    customCursorState.supported = Boolean(query?.matches);
-
-    const updateSupport = (event) => {
-      customCursorState.supported = Boolean(event.matches);
-      if (!event.matches) {
-        disableCustomCursor();
-      }
-      notifyCustomCursorChange();
-    };
-
-    if (query) {
-      if (typeof query.addEventListener === "function") {
-        query.addEventListener("change", updateSupport);
-      } else if (typeof query.addListener === "function") {
-        query.addListener(updateSupport);
-      }
-    }
-  } else {
-    customCursorState.supported = false;
-  }
-
-  window.enableCustomCursor = enableCustomCursor;
-  window.disableCustomCursor = disableCustomCursor;
-  window.toggleCustomCursor = toggleCustomCursor;
-  window.isCustomCursorEnabled = isCustomCursorEnabled;
-  window.isCustomCursorSupported = isCustomCursorSupported;
-
-  notifyCustomCursorChange();
 }
 
 // Hidden Easter egg: unlock a music video when the Konami code is entered.
@@ -1130,17 +967,12 @@ function initKonamiCode() {
 
   const buffer = [];
   let previousFocus = null;
-  let overlayCursorCleanup = null;
 
   const removeOverlay = () => {
     const overlay = document.getElementById("konami-overlay");
     if (!overlay) return;
     overlay.remove();
     document.body.classList.remove("konami-active");
-    if (typeof overlayCursorCleanup === "function") {
-      overlayCursorCleanup();
-      overlayCursorCleanup = null;
-    }
     if (previousFocus && typeof previousFocus.focus === "function") {
       previousFocus.focus();
     }
@@ -1172,8 +1004,7 @@ function initKonamiCode() {
     title.textContent = "Secret Video Unlocked";
 
     const intro = document.createElement("p");
-    intro.textContent =
-      "Enjoy a tune and flip on the experimental custom cursor toggle.";
+    intro.textContent = "Enjoy a tune unlocked by the Konami code.";
 
     const videoWrap = document.createElement("div");
     videoWrap.className = "konami-video";
@@ -1191,33 +1022,6 @@ function initKonamiCode() {
     const actions = document.createElement("div");
     actions.className = "konami-actions";
 
-    const toggleButton = document.createElement("button");
-    toggleButton.type = "button";
-    toggleButton.className = "konami-action konami-cursor-toggle";
-    const cursorSupported = isCustomCursorSupported();
-
-    if (cursorSupported) {
-      overlayCursorCleanup = onCustomCursorChange((enabled) => {
-        toggleButton.textContent = enabled
-          ? "Disable custom cursor"
-          : "Enable custom cursor";
-        toggleButton.setAttribute("aria-pressed", String(enabled));
-      });
-      toggleButton.addEventListener("click", () => {
-        const success = toggleCustomCursor();
-        if (!success) {
-          toggleButton.disabled = true;
-          toggleButton.setAttribute("aria-disabled", "true");
-        }
-      });
-    } else {
-      toggleButton.textContent = "Custom cursor needs a mouse";
-      toggleButton.disabled = true;
-      toggleButton.setAttribute("aria-disabled", "true");
-    }
-
-    actions.appendChild(toggleButton);
-
     const close = document.createElement("button");
     close.type = "button";
     close.className = "konami-action konami-close";
@@ -1229,14 +1033,6 @@ function initKonamiCode() {
     panel.appendChild(intro);
     panel.appendChild(videoWrap);
     panel.appendChild(actions);
-
-    if (!cursorSupported) {
-      const note = document.createElement("p");
-      note.className = "konami-note";
-      note.textContent =
-        "Connect a mouse or trackpad to try the experimental cursor.";
-      panel.appendChild(note);
-    }
 
     overlay.appendChild(panel);
 
@@ -1682,7 +1478,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     updateLastUpdated(),
     updateFooterVersion(),
   ]);
-  initCustomCursorSupport();
 
   // Tiny googly eyes in footer
   (() => {
