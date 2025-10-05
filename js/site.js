@@ -47,7 +47,7 @@ const SITE_CONTENT = Object.freeze({
 
 const DEFAULT_ANNOUNCEMENT = Object.freeze({
   messages: ["Total Site Overhaul is underway"],
-  repeat: 3,
+  repeat: 1,
 });
 
 const FALLBACK_VISITOR_MESSAGE = "Thank you for visiting BraedenSilver.com";
@@ -338,8 +338,8 @@ async function resolveAnnouncementBanner() {
     fallbackMessages.push(FALLBACK_VISITOR_MESSAGE);
   }
   const fallbackRepeat = Number.isFinite(DEFAULT_ANNOUNCEMENT.repeat)
-    ? DEFAULT_ANNOUNCEMENT.repeat
-    : 3;
+    ? Math.max(1, DEFAULT_ANNOUNCEMENT.repeat)
+    : 1;
   const fallbackMessagesWithDate = appendDateMessage(fallbackMessages, today);
   const fallback = fallbackMessagesWithDate.length
     ? { messages: fallbackMessagesWithDate, repeat: fallbackRepeat }
@@ -1157,7 +1157,9 @@ function initAnnouncementBanner() {
   track.replaceChildren();
   const repeatAttr = parseInt(banner.dataset.repeat || "", 10);
   const repeatCount =
-    Number.isFinite(repeatAttr) && repeatAttr > 1 ? repeatAttr : 3;
+    Number.isFinite(repeatAttr) && repeatAttr > 0
+      ? repeatAttr
+      : Math.max(1, DEFAULT_ANNOUNCEMENT.repeat);
 
   for (let i = 0; i < repeatCount; i += 1) {
     const span = document.createElement("span");

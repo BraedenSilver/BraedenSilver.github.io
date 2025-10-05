@@ -1,6 +1,16 @@
 {
   "entries": [
     {
+      "id": "github-workshop-plans",
+      "title": "Prepping a GitHub Workshop for IEEE",
+      "date": "2025-10-05",
+      "summary": "Shared a new GitHub Pages project with our IEEE team and polished the site with a version counter and smarter banner updates.",
+      "tags": [
+        "general",
+        "projects"
+      ]
+    },
+    {
       "id": "maintenance-and-dark-mode",
       "title": "Dark Mode, Guestbook Experiments, and More Maintenance",
       "date": "2025-10-04",

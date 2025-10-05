@@ -1,0 +1,11 @@
+{
+  "id": "github-workshop-plans",
+  "title": "Prepping a GitHub Workshop for IEEE",
+  "date": "2025-10-05",
+  "summary": "Shared a new GitHub Pages project with our IEEE team and polished the site with a version counter and smarter banner updates.",
+  "tags": [
+    "general",
+    "projects"
+  ],
+  "body": "Today I polished up a GitHub Pages project I've been tinkering with and passed it along to our IEEE Officer president. The goal is to give the Computer Society students a friendly tour of Git and GitHub—think commits, branches, pull requests, issues, and release tags—without diving into a single line of code. It's wild that we never cover version control in college, so I'm hoping this fills that gap.\n\nWhile I was in there, I spruced up the site itself. The index page finally feels like a real landing page, I added a little version number counter so folks can see it evolving, and the scrolling banner now swaps in fun tidbits on certain dates. Expect shout-outs to cool historical milestones, famous birthdays, or random holidays mixed in with the usual message."
+}
