@@ -1,6 +1,6 @@
 {
   "defaultMessages": ["Total Site Overhaul is underway"],
-  "defaultRepeat": 3,
+  "defaultRepeat": 1,
   "events": [
     { "name": "New Year's Day", "type": "fixed-date", "month": 1, "day": 1 },
     { "name": "Isaac Newton's Birthday", "type": "fixed-date", "month": 1, "day": 4 },
