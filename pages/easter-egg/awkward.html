@@ -71,7 +71,7 @@
           return;
         }
         const total = 10;
-        const RARE_FEATURE_CHANCE = 1 / 100;
+        const RARE_FEATURE_CHANCE = 0.05;
         const fragment = document.createDocumentFragment();
         for (let i = 0; i < total; i += 1) {
           const el = document.createElement("div");
@@ -309,6 +309,7 @@
             }
           });
         });
+
       })();
     </script>
   </body>

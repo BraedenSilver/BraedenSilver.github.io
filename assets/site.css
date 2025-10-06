@@ -794,7 +794,7 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .footer-eyes {
-  --kilroy-wink-tilt-angle: -8deg;
+  --kilroy-wink-tilt-angle: 0deg;
   --kilroy-head-tilt: 0deg;
 }
 
@@ -822,7 +822,12 @@ html.theme-dark .theme-toggle__icon--moon {
   border: var(--eye-border, 2px) solid var(--color-kilroy-border);
   position: absolute;
   overflow: hidden;
-  transition: all 150ms ease;
+  transition:
+    top 150ms ease,
+    left 150ms ease,
+    height 150ms ease,
+    width 150ms ease,
+    border-radius 150ms ease;
 }
 
 .footer-eyes .mouth {
@@ -845,7 +850,8 @@ html.theme-dark .theme-toggle__icon--moon {
 .footer-eyes .eye {
   --wink-top: calc(
     var(--eye-top, 38px) +
-      var(--eye-size, 28px) / 2
+      var(--eye-size, 28px) / 2 -
+      var(--eye-border, 2px) / 2
   );
 }
 
@@ -863,11 +869,11 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .footer-eyes .eye.wink {
-  height: 0;
+  height: var(--eye-border, 2px);
   top: var(--wink-top);
+  background: var(--color-kilroy-border);
   border: none;
-  border-top: var(--eye-border, 2px) solid var(--color-kilroy-border);
-  border-radius: 0;
+  border-radius: 999px;
 }
 
 .footer-eyes .eye.wink .pupil {
@@ -888,6 +894,11 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .awkward-killroy--cyclops .eye.cyclops {
+  --eye-size: clamp(
+    calc(var(--awkward-eye-size-default) * 1.2),
+    calc(var(--awkward-eye-size-default) * 1.4),
+    calc(var(--awkward-eye-size-default) * 1.6)
+  );
   left: 50%;
   top: var(--eye-top, var(--awkward-eye-top-default));
   transform: translateX(-50%);
