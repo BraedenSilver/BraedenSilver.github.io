@@ -853,7 +853,7 @@ function renderFooter(yearText) {
       <span class="footer-share-feedback" data-share-feedback aria-live="polite"></span>
     </div>
 
-    <div class="kilroy-peek footer-eyes" aria-hidden="true">
+    <div class="joejoe-peek footer-eyes" aria-hidden="true">
       <div class="head">
         <div class="eye left"><div class="pupil"></div></div>
         <div class="eye right"><div class="pupil"></div></div>
@@ -1414,172 +1414,6 @@ function initThemeToggle() {
 }
 
 // Hidden Easter egg: unlock a music video when the Konami code is entered.
-function initKonamiCode() {
-  const sequence = [
-    "arrowup",
-    "arrowup",
-    "arrowdown",
-    "arrowdown",
-    "arrowleft",
-    "arrowright",
-    "arrowleft",
-    "arrowright",
-    "b",
-    "a",
-  ];
-
-  const buffer = [];
-  let previousFocus = null;
-
-  const removeOverlay = () => {
-    const overlay = document.getElementById("konami-overlay");
-    if (!overlay) return;
-    overlay.remove();
-    document.body.classList.remove("konami-active");
-    if (previousFocus && typeof previousFocus.focus === "function") {
-      previousFocus.focus();
-    }
-    previousFocus = null;
-    buffer.length = 0;
-  };
-
-  const spawnOverlay = () => {
-    if (document.getElementById("konami-overlay")) return;
-
-    previousFocus =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-
-    const overlay = document.createElement("div");
-    overlay.id = "konami-overlay";
-    overlay.className = "konami-overlay";
-    overlay.setAttribute("role", "dialog");
-    overlay.setAttribute("aria-modal", "true");
-    overlay.setAttribute("aria-labelledby", "konami-title");
-
-    const panel = document.createElement("div");
-    panel.className = "konami-panel";
-    panel.addEventListener("click", (event) => event.stopPropagation());
-
-    const title = document.createElement("h2");
-    title.id = "konami-title";
-    title.textContent = "Secret Video Unlocked";
-
-    const intro = document.createElement("p");
-    intro.textContent = "Enjoy a tune unlocked by the Konami code.";
-
-    const videoWrap = document.createElement("div");
-    videoWrap.className = "konami-video";
-
-    const video = document.createElement("iframe");
-    video.src = "https://www.youtube.com/embed/5IsSpAOD6K8?autoplay=1&start=12";
-    video.title = "Talking Heads — Once in a Lifetime";
-    video.allow =
-      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-    video.allowFullscreen = true;
-    video.loading = "lazy";
-    video.referrerPolicy = "strict-origin-when-cross-origin";
-    videoWrap.appendChild(video);
-
-    const actions = document.createElement("div");
-    actions.className = "konami-actions";
-
-    const close = document.createElement("button");
-    close.type = "button";
-    close.className = "konami-action konami-close";
-    close.textContent = "Exit video";
-    close.addEventListener("click", removeOverlay);
-    actions.appendChild(close);
-
-    panel.appendChild(title);
-    panel.appendChild(intro);
-    panel.appendChild(videoWrap);
-    panel.appendChild(actions);
-
-    overlay.appendChild(panel);
-
-    const getFocusableButtons = () =>
-      Array.from(panel.querySelectorAll("button:not([disabled])"));
-
-    overlay.addEventListener("keydown", (event) => {
-      if (event.key !== "Tab") return;
-      event.preventDefault();
-      const focusable = getFocusableButtons();
-      if (!focusable.length) return;
-      const currentIndex = focusable.indexOf(document.activeElement);
-      let nextIndex = currentIndex;
-      if (currentIndex === -1) {
-        nextIndex = 0;
-      } else if (event.shiftKey) {
-        nextIndex = (currentIndex - 1 + focusable.length) % focusable.length;
-      } else {
-        nextIndex = (currentIndex + 1) % focusable.length;
-      }
-      focusable[nextIndex].focus();
-    });
-    overlay.addEventListener("focusin", (event) => {
-      const focusable = getFocusableButtons();
-      if (!focusable.length) return;
-      if (!focusable.includes(event.target)) {
-        focusable[0].focus();
-      }
-    });
-    overlay.addEventListener("click", removeOverlay);
-
-    document.body.appendChild(overlay);
-    document.body.classList.add("konami-active");
-    buffer.length = 0;
-
-    requestAnimationFrame(() => {
-      const focusable = getFocusableButtons();
-      if (focusable.length) {
-        focusable[0].focus();
-      } else {
-        close.focus();
-      }
-    });
-  };
-
-  document.addEventListener("keydown", (event) => {
-    if (event.metaKey || event.ctrlKey || event.altKey) return;
-
-    const target = event.target;
-    if (
-      target instanceof HTMLElement &&
-      (target.isContentEditable ||
-        ["INPUT", "TEXTAREA"].includes(target.tagName) ||
-        target.getAttribute("role") === "textbox")
-    ) {
-      return;
-    }
-
-    if (
-      event.key === "Escape" &&
-      document.body.classList.contains("konami-active")
-    ) {
-      event.preventDefault();
-      removeOverlay();
-      return;
-    }
-
-    const key =
-      event.key.length === 1
-        ? event.key.toLowerCase()
-        : event.key.toLowerCase();
-    buffer.push(key);
-    if (buffer.length > sequence.length) {
-      buffer.shift();
-    }
-
-    if (
-      buffer.length === sequence.length &&
-      sequence.every((expected, index) => buffer[index] === expected)
-    ) {
-      spawnOverlay();
-    }
-  });
-}
 
 /**
  * Initialize the scrolling announcement banner below the header.
@@ -1941,7 +1775,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   initAsciiLogoScaler();
   initAnnouncementBanner();
   initThemeToggle();
-  initKonamiCode();
   initHistoryBackLinks();
   initShareLink();
 
