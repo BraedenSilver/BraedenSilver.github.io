@@ -880,6 +880,11 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .awkward-killroy--cyclops .eye.cyclops {
+  --eye-size: clamp(
+    calc(var(--awkward-eye-size-default) * 1.2),
+    calc(var(--awkward-eye-size-default) * 1.4),
+    calc(var(--awkward-eye-size-default) * 1.6)
+  );
   left: 50%;
   top: var(--eye-top, var(--awkward-eye-top-default));
   transform: translateX(-50%);
