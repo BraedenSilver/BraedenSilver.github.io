@@ -1,37 +1,32 @@
 body.joejoejoe-page {
-  --joejoe-button-bg: #111;
-  --joejoe-button-text: #fff;
-  --joejoe-button-shadow: rgba(0, 0, 0, 0.25);
-  padding: clamp(1.5rem, 4vw, 3rem);
-  padding-bottom: clamp(1.5rem, 4vw, 3rem);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at top, rgba(255, 234, 167, 0.45), transparent 55%),
-    radial-gradient(circle at bottom, rgba(129, 236, 236, 0.35), transparent 55%),
-    var(--color-bg);
-}
-
-body.joejoejoe-page::before,
-body.joejoejoe-page::after {
-  content: none;
+  --joejoe-panel-bg: var(--color-surface);
+  --joejoe-panel-border: var(--color-border);
+  --joejoe-panel-shadow: var(--color-shadow);
+  --joejoe-stage-bg: var(--color-panel-muted);
+  --joejoe-button-bg: var(--color-strong-bg);
+  --joejoe-button-text: var(--color-strong-text);
+  --joejoe-button-shadow: var(--color-shadow);
 }
 
 body.joejoejoe-page .footer-static {
   display: none;
 }
 
-body.joejoejoe-page main {
-  width: min(100%, 1200px);
+html.theme-dark body.joejoejoe-page {
+  --joejoe-panel-bg: var(--color-panel-muted);
+  --joejoe-stage-bg: var(--color-blog-filter-bg);
 }
 
 .joejoejoe {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: clamp(1.5rem, 3vw, 2.75rem);
   align-items: center;
-  justify-content: center;
+  justify-items: center;
+  padding: clamp(1.5rem, 3vw, 2.75rem);
+  border: 2px solid var(--joejoe-panel-border);
+  border-radius: 24px;
+  background: var(--joejoe-panel-bg);
+  box-shadow: 10px 10px 0 var(--joejoe-panel-shadow);
 }
 
 .joejoe-controls {
@@ -43,58 +38,50 @@ body.joejoejoe-page main {
 
 .joejoe-button {
   appearance: none;
-  border: none;
+  border: 2px solid var(--joejoe-panel-border);
   border-radius: 999px;
   padding: 0.85rem 1.85rem;
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
   background: var(--joejoe-button-bg);
   color: var(--joejoe-button-text);
-  box-shadow: 0 12px 24px -18px var(--joejoe-button-shadow);
+  box-shadow: 4px 4px 0 var(--joejoe-button-shadow);
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease,
+    color 0.15s ease;
 }
 
+.joejoe-button:hover,
 .joejoe-button:focus-visible {
-  outline: 4px solid rgba(255, 255, 255, 0.75);
-  outline-offset: 3px;
-}
-
-.joejoe-button:hover {
-  transform: translateY(-2px) scale(1.01);
-  box-shadow: 0 18px 28px -16px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.05);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--joejoe-button-shadow);
 }
 
 .joejoe-button:active {
-  transform: translateY(0);
-  box-shadow: 0 8px 16px -12px rgba(0, 0, 0, 0.35);
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--joejoe-button-shadow);
 }
 
 .joejoe-button[disabled] {
-  opacity: 0.6;
+  opacity: 0.65;
   cursor: not-allowed;
   transform: none;
+  box-shadow: 2px 2px 0 var(--joejoe-button-shadow);
 }
 
 .joejoe-stage {
   width: 100%;
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(10px);
-  border-radius: 32px;
+  background: var(--joejoe-stage-bg);
+  border: 2px solid var(--joejoe-panel-border);
+  border-radius: 20px;
   padding: clamp(1.5rem, 4vw, 3.5rem);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: clamp(1.5rem, 4vw, 3rem);
-  box-shadow: 0 24px 60px -35px rgba(0, 0, 0, 0.4);
   position: relative;
   isolation: isolate;
-}
-
-html.theme-dark .joejoe-stage {
-  background: rgba(33, 33, 33, 0.82);
 }
 
 .joejoe-loading {
@@ -168,12 +155,13 @@ html.theme-dark .joejoe-stage {
 }
 
 @media (max-width: 720px) {
-  body.joejoejoe-page {
-    padding: 1.25rem;
+  .joejoejoe {
+    padding: 1.5rem;
+    border-radius: 20px;
   }
 
   .joejoe-stage {
-    border-radius: 24px;
+    border-radius: 18px;
   }
 
   .joejoe-button {
