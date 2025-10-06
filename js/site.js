@@ -1094,6 +1094,53 @@ function unregisterAnnouncementMarquee(track) {
   announcementMarqueeRegistry.delete(track);
 }
 
+function measureAnnouncementTrackWidth(track) {
+  if (!track) {
+    return 0;
+  }
+
+  let width = track.scrollWidth;
+  if (!Number.isFinite(width)) {
+    width = 0;
+  }
+
+  const firstChild = track.firstElementChild;
+  const lastChild = track.lastElementChild;
+
+  if (firstChild && lastChild) {
+    try {
+      const firstRect = firstChild.getBoundingClientRect();
+      const lastRect = lastChild.getBoundingClientRect();
+      if (
+        firstRect &&
+        lastRect &&
+        Number.isFinite(firstRect.left) &&
+        Number.isFinite(lastRect.right)
+      ) {
+        const rectWidth = lastRect.right - firstRect.left;
+        if (Number.isFinite(rectWidth)) {
+          width = Math.max(width, rectWidth);
+        }
+      }
+    } catch {
+      // Ignore measurement errors and fall back to scrollWidth only.
+    }
+  }
+
+  if (width <= 0) {
+    try {
+      const trackRect = track.getBoundingClientRect();
+      if (trackRect && Number.isFinite(trackRect.width)) {
+        width = Math.max(width, trackRect.width);
+      }
+    } catch {
+      // Ignore measurement errors and fall back to known values.
+    }
+  }
+
+  return width;
+}
+
 function startAnnouncementMarquee(track) {
   const entry = announcementMarqueeRegistry.get(track);
   if (!entry) return;
@@ -1121,7 +1168,7 @@ function startAnnouncementMarquee(track) {
   }
 
   const marqueeWidth = marquee.clientWidth;
-  const trackWidth = track.scrollWidth;
+  const trackWidth = measureAnnouncementTrackWidth(track);
   if (marqueeWidth <= 0 || trackWidth <= 0) {
     track.style.transform = "";
     return;
@@ -1158,7 +1205,7 @@ function startAnnouncementMarquee(track) {
     }
 
     const measuredMarqueeWidth = marquee.clientWidth;
-    const measuredTrackWidth = track.scrollWidth;
+    const measuredTrackWidth = measureAnnouncementTrackWidth(track);
     if (measuredMarqueeWidth > 0) {
       state.marqueeWidth = measuredMarqueeWidth;
     }
