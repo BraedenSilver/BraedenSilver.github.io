@@ -1965,6 +1965,8 @@ window.addEventListener("DOMContentLoaded", async () => {
         ? window.matchMedia("(prefers-reduced-motion: reduce)")
         : null;
 
+    const tiltTimeouts = new WeakMap();
+
     function movePupils(x, y) {
       eyes.forEach((eye) => {
         const pupil = eye.querySelector(".pupil");
@@ -2138,9 +2140,23 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     eyes.forEach((eye) => {
       eye.addEventListener("click", () => {
+        const container = eye.closest(".footer-eyes");
+        if (container) {
+          const existing = tiltTimeouts.get(container);
+          if (typeof existing === "number") {
+            window.clearTimeout(existing);
+          }
+          container.classList.add("wink-tilt");
+          const timeoutId = window.setTimeout(() => {
+            container.classList.remove("wink-tilt");
+            tiltTimeouts.delete(container);
+          }, 1500);
+          tiltTimeouts.set(container, timeoutId);
+        }
+
         if (eye.classList.contains("wink")) return;
         eye.classList.add("wink");
-        setTimeout(() => eye.classList.remove("wink"), 1500);
+        window.setTimeout(() => eye.classList.remove("wink"), 1500);
       });
     });
   })();
