@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Joejoejoe Playground | Braeden Silver</title>
+    <meta
+      name="description"
+      content="Generate bright, playful Joejoejoe characters in random sizes and colors for personal branding experiments."
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/assets/site.css" />
+    <link rel="stylesheet" href="/assets/joejoejoe.css" />
+  </head>
+  <body class="joejoe-page joejoejoe-page" data-section="joejoejoe">
+    <main class="joejoejoe" id="joejoe-playground" aria-live="polite">
+      <div class="joejoe-controls">
+        <button type="button" class="joejoe-button" data-randomize>
+          Randomize the Joejoes
+        </button>
+        <button type="button" class="joejoe-button" data-screenshot>
+          Download Screenshot
+        </button>
+      </div>
+      <div class="joejoe-stage" data-joejoe-stage>
+        <p class="joejoe-loading" data-loading-message>
+          Building your Joejoes…
+        </p>
+      </div>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaPRlKqDpiRnbV0wOYAV2XpV8Q5y83EJ6AGNvGoF1jCT3VkOITkkpFmSPrbr30YIOCwRvDDDeIZPA7eGRIDNg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/js/site.js" defer></script>
+    <script src="/js/joejoejoe.js" defer></script>
+  </body>
+</html>

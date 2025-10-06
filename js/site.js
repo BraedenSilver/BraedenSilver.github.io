@@ -37,6 +37,13 @@ const SITE_CONTENT = Object.freeze({
       groups: ["primary"],
     },
     {
+      href: "/pages/easter-eggs/joejoejoe/index.html",
+      section: "joejoejoe",
+      label: "Joejoejoe",
+      groups: ["primary", "easter-egg"],
+      description: "Randomize bright Joejoejoe characters.",
+    },
+    {
       href: "/pages/contact.html",
       section: "contact",
       label: "Contact",
@@ -44,6 +51,14 @@ const SITE_CONTENT = Object.freeze({
     },
   ],
 });
+
+const EASTER_EGG_GROUP = "easter-egg";
+
+function getEasterEggPages() {
+  return SITE_CONTENT.navItems.filter((item) =>
+    Array.isArray(item.groups) && item.groups.includes(EASTER_EGG_GROUP),
+  );
+}
 
 const DEFAULT_ANNOUNCEMENT = Object.freeze({
   messages: ["Total Site Overhaul is underway"],
@@ -1413,7 +1428,272 @@ function initThemeToggle() {
   });
 }
 
-// Hidden Easter egg: unlock a music video when the Konami code is entered.
+// Hidden Easter egg: unlock the Super Secret Menu via the Konami code.
+function initKonamiCode() {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  const eggs = getEasterEggPages();
+  if (!eggs.length) {
+    return;
+  }
+
+  const sequence = [
+    "arrowup",
+    "arrowup",
+    "arrowdown",
+    "arrowdown",
+    "arrowleft",
+    "arrowright",
+    "arrowleft",
+    "arrowright",
+    "b",
+    "a",
+  ];
+
+  const buffer = [];
+  const eyeSequence = ["left", "right", "left", "right"];
+  const eyeBuffer = [];
+  let eyeResetTimeout = null;
+  let previousFocus = null;
+
+  const resetEyeBuffer = () => {
+    eyeBuffer.length = 0;
+    if (eyeResetTimeout !== null) {
+      if (typeof window !== "undefined") {
+        window.clearTimeout(eyeResetTimeout);
+      }
+      eyeResetTimeout = null;
+    }
+  };
+
+  const removeOverlay = () => {
+    const overlay = document.getElementById("konami-overlay");
+    if (!overlay) return;
+    overlay.remove();
+    document.body.classList.remove("konami-active");
+
+    if (
+      previousFocus &&
+      typeof previousFocus.focus === "function" &&
+      document.contains(previousFocus)
+    ) {
+      previousFocus.focus();
+    }
+
+    previousFocus = null;
+    buffer.length = 0;
+    resetEyeBuffer();
+  };
+
+  const buildMenuLink = (egg) => {
+    const link = document.createElement("a");
+    link.className = "konami-link";
+    link.href = egg.href;
+    link.setAttribute("data-easter-egg", egg.section || "");
+
+    const label = document.createElement("span");
+    label.className = "konami-link-label";
+    label.textContent = egg.label;
+    link.appendChild(label);
+
+    if (egg.description) {
+      const hint = document.createElement("span");
+      hint.className = "konami-link-hint";
+      hint.textContent = egg.description;
+      link.appendChild(hint);
+    }
+
+    return link;
+  };
+
+  const spawnOverlay = () => {
+    if (document.getElementById("konami-overlay")) return;
+
+    previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+
+    const overlay = document.createElement("div");
+    overlay.id = "konami-overlay";
+    overlay.className = "konami-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-labelledby", "konami-title");
+
+    const panel = document.createElement("div");
+    panel.className = "konami-panel";
+    panel.addEventListener("click", (event) => event.stopPropagation());
+
+    const title = document.createElement("h2");
+    title.id = "konami-title";
+    title.textContent = "Super Secret Menu";
+
+    const intro = document.createElement("p");
+    intro.className = "konami-intro";
+    intro.textContent = "Pick an easter egg destination below.";
+
+    const menu = document.createElement("div");
+    menu.className = "konami-links";
+    eggs.forEach((egg) => menu.appendChild(buildMenuLink(egg)));
+
+    const actions = document.createElement("div");
+    actions.className = "konami-actions";
+
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "konami-action konami-close";
+    close.textContent = "Close menu";
+    close.addEventListener("click", removeOverlay);
+    actions.appendChild(close);
+
+    panel.appendChild(title);
+    panel.appendChild(intro);
+    panel.appendChild(menu);
+    panel.appendChild(actions);
+
+    overlay.appendChild(panel);
+
+    const getFocusableControls = () =>
+      Array.from(
+        panel.querySelectorAll(
+          'a[href]:not([tabindex="-1"]), button:not([disabled])',
+        ),
+      );
+
+    overlay.addEventListener("keydown", (event) => {
+      if (event.key !== "Tab") return;
+      const focusable = getFocusableControls();
+      if (!focusable.length) return;
+      event.preventDefault();
+      const currentIndex = focusable.indexOf(document.activeElement);
+      let nextIndex = currentIndex;
+      if (currentIndex === -1) {
+        nextIndex = 0;
+      } else if (event.shiftKey) {
+        nextIndex = (currentIndex - 1 + focusable.length) % focusable.length;
+      } else {
+        nextIndex = (currentIndex + 1) % focusable.length;
+      }
+      focusable[nextIndex].focus();
+    });
+
+    overlay.addEventListener("focusin", (event) => {
+      const focusable = getFocusableControls();
+      if (!focusable.length) return;
+      if (!focusable.includes(event.target)) {
+        focusable[0].focus();
+      }
+    });
+
+    overlay.addEventListener("click", removeOverlay);
+
+    document.body.appendChild(overlay);
+    document.body.classList.add("konami-active");
+    buffer.length = 0;
+    resetEyeBuffer();
+
+    requestAnimationFrame(() => {
+      const focusable = getFocusableControls();
+      if (focusable.length) {
+        focusable[0].focus();
+      } else {
+        close.focus();
+      }
+    });
+  };
+
+  const scheduleEyeReset = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    if (eyeResetTimeout !== null) {
+      window.clearTimeout(eyeResetTimeout);
+    }
+    eyeResetTimeout = window.setTimeout(() => {
+      eyeResetTimeout = null;
+      eyeBuffer.length = 0;
+    }, 4000);
+  };
+
+  const registerEyeInput = (side) => {
+    if (document.body.classList.contains("konami-active")) {
+      return;
+    }
+
+    eyeBuffer.push(side);
+    if (eyeBuffer.length > eyeSequence.length) {
+      eyeBuffer.shift();
+    }
+
+    scheduleEyeReset();
+
+    if (
+      eyeBuffer.length === eyeSequence.length &&
+      eyeSequence.every((expected, index) => eyeBuffer[index] === expected)
+    ) {
+      spawnOverlay();
+    }
+  };
+
+  document.addEventListener("keydown", (event) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+    const target = event.target;
+    if (
+      target instanceof HTMLElement &&
+      (target.isContentEditable ||
+        ["INPUT", "TEXTAREA"].includes(target.tagName) ||
+        target.getAttribute("role") === "textbox")
+    ) {
+      return;
+    }
+
+    if (
+      event.key === "Escape" &&
+      document.body.classList.contains("konami-active")
+    ) {
+      event.preventDefault();
+      removeOverlay();
+      return;
+    }
+
+    const key = event.key.toLowerCase();
+    buffer.push(key);
+    if (buffer.length > sequence.length) {
+      buffer.shift();
+    }
+
+    if (
+      buffer.length === sequence.length &&
+      sequence.every((expected, index) => buffer[index] === expected)
+    ) {
+      spawnOverlay();
+    }
+  });
+
+  const eyes = document.querySelectorAll(".footer-eyes .eye.left, .footer-eyes .eye.right");
+  if (eyes.length) {
+    eyes.forEach((eye) => {
+      const side = eye.classList.contains("left")
+        ? "left"
+        : eye.classList.contains("right")
+          ? "right"
+          : "";
+      if (!side) return;
+
+      const trigger = () => registerEyeInput(side);
+
+      if (typeof window !== "undefined" && "PointerEvent" in window) {
+        eye.addEventListener("pointerdown", trigger);
+      } else {
+        eye.addEventListener("click", trigger);
+      }
+    });
+  }
+}
 
 /**
  * Initialize the scrolling announcement banner below the header.
@@ -1777,6 +2057,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   initThemeToggle();
   initHistoryBackLinks();
   initShareLink();
+  initKonamiCode();
 
   await Promise.all([
     initContentRenderers(),
