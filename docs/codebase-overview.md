@@ -14,7 +14,7 @@ This document walks through every major file and folder in the repository, summa
 
 The `assets/` directory holds shared visual resources.
 
-- `site.css` defines the light and dark theme palettes, layout primitives, navigation styles, blog list components, and utility classes used across all pages. It also includes styles for announcement banners, quick links, filters, and the animated footer "Kilroy" eyes. 【F:assets/site.css†L1-L120】
+- `site.css` defines the light and dark theme palettes, layout primitives, navigation styles, blog list components, and utility classes used across all pages. It also includes styles for announcement banners, quick links, filters, and the animated footer "Joejoe" eyes. 【F:assets/site.css†L1-L120】
 - `arrowleft.gif` and `arrowright.gif` power marquee-style link affordances.
 - `qr-braedensilver.svg` renders the QR code embedded on the contact page.
 

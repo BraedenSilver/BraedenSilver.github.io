@@ -1,0 +1,187 @@
+Joejoe Code Reference
+=====================
+
+CSS Tokens (assets/site.css)
+----------------------------
+:root {
+  --color-joejoe-skin: #f92672;
+  --color-joejoe-border: #000;
+  --color-joejoe-pupil: #000;
+  --color-joejoe-sclera: #fff;
+}
+
+html.theme-dark {
+  --color-joejoe-skin: #f92672;
+  --color-joejoe-border: #000;
+  --color-joejoe-pupil: #000;
+  --color-joejoe-sclera: #fff;
+}
+
+Footer Peek Styles (assets/site.css)
+------------------------------------
+.joejoe-peek {
+  position: absolute;
+  bottom: -30px;
+  right: 10px;
+  width: 160px;
+  height: 120px;
+  overflow: visible;
+}
+
+.joejoe-peek .head {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  border: 2px solid var(--color-joejoe-border);
+  border-radius: 50%;
+  background: var(--color-joejoe-skin);
+  box-shadow: 4px 4px 0 var(--color-shadow);
+}
+
+.footer-eyes .eye {
+  --eye-size: 28px;
+  --eye-border: 2px;
+  width: var(--eye-size);
+  height: var(--eye-size);
+  border-radius: 50%;
+  background: var(--color-joejoe-sclera);
+  border: var(--eye-border) solid var(--color-joejoe-border);
+  position: absolute;
+  overflow: hidden;
+  transition: all 150ms ease;
+}
+
+.footer-eyes .eye.left {
+  left: 24px;
+  --eye-top: 38px;
+  top: var(--eye-top);
+}
+
+.footer-eyes .eye.right {
+  right: 24px;
+  --eye-top: 38px;
+  top: var(--eye-top);
+}
+
+.footer-eyes .pupil {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-joejoe-pupil);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate3d(0, 0, 0);
+  transition: transform var(--pupil-transition-duration, 80ms) ease;
+  will-change: transform;
+}
+
+.footer-eyes .eye.wink {
+  height: 0;
+  top: calc(var(--eye-top) + var(--eye-size) / 2 - var(--eye-border) / 2);
+  border: none;
+  border-top: var(--eye-border) solid var(--color-joejoe-border);
+  border-radius: 0;
+}
+
+.footer-eyes .eye.wink .pupil {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .joejoe-peek {
+    right: 10px;
+    left: auto;
+    transform: none;
+  }
+}
+
+Footer Peek Markup (partials/footer.html)
+-----------------------------------------
+<div class="joejoe-peek footer-eyes" aria-hidden="true">
+  <div class="head">
+    <div class="eye left"><div class="pupil"></div></div>
+    <div class="eye right"><div class="pupil"></div></div>
+  </div>
+</div>
+
+Footer Template (js/site.js)
+----------------------------
+<div class="joejoe-peek footer-eyes" aria-hidden="true">
+  <div class="head">
+    <div class="eye left"><div class="pupil"></div></div>
+    <div class="eye right"><div class="pupil"></div></div>
+  </div>
+</div>
+
+Joejoe Showcase Layout (assets/site.css)
+----------------------------------------
+body.joejoe-page .joejoe-peek {
+  display: none;
+}
+
+body.joejoe-page main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.joejoe-full {
+  position: relative;
+  width: 320px;
+  height: 320px;
+}
+
+.joejoe-full .head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 5px solid var(--color-joejoe-border);
+  border-radius: 50%;
+  background: var(--color-joejoe-skin);
+}
+
+.joejoe-full.footer-eyes .eye {
+  position: absolute;
+  --eye-size: 75px;
+  --eye-border: 5px;
+  width: var(--eye-size);
+  height: var(--eye-size);
+  border: var(--eye-border) solid var(--color-joejoe-border);
+  border-radius: 50%;
+  background: var(--color-joejoe-sclera);
+  overflow: hidden;
+  transition: all 150ms ease;
+}
+
+.joejoe-full.footer-eyes .eye.left {
+  left: 64px;
+  --eye-top: 101px;
+  top: var(--eye-top);
+}
+
+.joejoe-full.footer-eyes .eye.right {
+  right: 64px;
+  --eye-top: 101px;
+  top: var(--eye-top);
+}
+
+.joejoe-full.footer-eyes .pupil {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-joejoe-pupil);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate3d(0, 0, 0);
+  transition: transform 60ms linear;
+  will-change: transform;
+}
