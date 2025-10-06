@@ -55,6 +55,21 @@ const FALLBACK_VISITOR_MESSAGE = "Thank you for visiting BraedenSilver.com";
 const HOLIDAY_CONFIG_URL = "/data/holiday-banners.json";
 const BANNER_TIME_ZONE = "America/Chicago";
 
+const MOON_PHASES = Object.freeze([
+  { name: "New Moon", emoji: "🌑" },
+  { name: "Waxing Crescent", emoji: "🌒" },
+  { name: "First Quarter", emoji: "🌓" },
+  { name: "Waxing Gibbous", emoji: "🌔" },
+  { name: "Full Moon", emoji: "🌕" },
+  { name: "Waning Gibbous", emoji: "🌖" },
+  { name: "Last Quarter", emoji: "🌗" },
+  { name: "Waning Crescent", emoji: "🌘" },
+]);
+
+const SYNODIC_MONTH_DAYS = 29.53058867;
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+const REFERENCE_NEW_MOON_TIMESTAMP = Date.UTC(2000, 0, 6, 18, 14);
+
 const ASCII_LOGO_WIDE = String.raw`
 ██████╗ ██████╗  █████╗ ███████╗██████╗ ███████╗███╗   ██╗███████╗██╗██╗     ██╗   ██╗███████╗██████╗     ██████╗ ██████╗ ███╗   ███╗
 ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║██╔════╝██║██║     ██║   ██║██╔════╝██╔══██╗   ██╔════╝██╔═══██╗████╗ ████║
@@ -425,6 +440,68 @@ function appendDateMessage(messages, todayComponents) {
   return result;
 }
 
+function getMoonPhaseInfo(todayComponents, timeZone) {
+  const referenceDate =
+    createDateAtNoonInTimeZone(todayComponents, timeZone) || new Date();
+  const safeDate = ensureValidDate(referenceDate);
+  const time = safeDate.getTime();
+
+  if (!Number.isFinite(time)) {
+    return null;
+  }
+
+  const daysSinceNewMoon =
+    (time - REFERENCE_NEW_MOON_TIMESTAMP) / MILLISECONDS_PER_DAY;
+
+  if (!Number.isFinite(daysSinceNewMoon)) {
+    return null;
+  }
+
+  const normalizedDays =
+    ((daysSinceNewMoon % SYNODIC_MONTH_DAYS) + SYNODIC_MONTH_DAYS) %
+    SYNODIC_MONTH_DAYS;
+  const phaseFraction = normalizedDays / SYNODIC_MONTH_DAYS;
+
+  if (!Number.isFinite(phaseFraction)) {
+    return null;
+  }
+
+  const index =
+    Math.floor(phaseFraction * MOON_PHASES.length + 0.5) % MOON_PHASES.length;
+
+  const phase = MOON_PHASES[index];
+  if (!phase) {
+    return null;
+  }
+
+  return phase;
+}
+
+function getMoonPhaseBannerText(todayComponents, timeZone) {
+  const info = getMoonPhaseInfo(todayComponents, timeZone);
+  if (!info) {
+    return null;
+  }
+
+  const emoji = String(info.emoji || "").trim();
+  const name = String(info.name || "").trim();
+
+  if (!emoji || !name) {
+    return null;
+  }
+
+  return `${emoji} ${name}`;
+}
+
+function appendMoonPhaseMessage(messages, todayComponents, timeZone) {
+  const result = Array.isArray(messages) ? messages.slice() : [];
+  const moonMessage = getMoonPhaseBannerText(todayComponents, timeZone);
+  if (moonMessage) {
+    result.push(moonMessage);
+  }
+  return result;
+}
+
 async function resolveAnnouncementBanner() {
   const today = getDateComponentsForTimeZone(BANNER_TIME_ZONE);
   let fallbackMessages = Array.isArray(DEFAULT_ANNOUNCEMENT.messages)
@@ -443,8 +520,13 @@ async function resolveAnnouncementBanner() {
     ? Math.max(1, DEFAULT_ANNOUNCEMENT.repeat)
     : 1;
   const fallbackMessagesWithDate = appendDateMessage(fallbackMessages, today);
-  const fallback = fallbackMessagesWithDate.length
-    ? { messages: fallbackMessagesWithDate, repeat: fallbackRepeat }
+  const fallbackMessagesComplete = appendMoonPhaseMessage(
+    fallbackMessagesWithDate,
+    today,
+    BANNER_TIME_ZONE,
+  );
+  const fallback = fallbackMessagesComplete.length
+    ? { messages: fallbackMessagesComplete, repeat: fallbackRepeat }
     : null;
 
   try {
@@ -479,7 +561,12 @@ async function resolveAnnouncementBanner() {
       baseMessages.push(FALLBACK_VISITOR_MESSAGE);
     }
 
-    const messages = appendDateMessage(baseMessages, today);
+    const messagesWithDate = appendDateMessage(baseMessages, today);
+    const messages = appendMoonPhaseMessage(
+      messagesWithDate,
+      today,
+      BANNER_TIME_ZONE,
+    );
 
     const matchingEvents = events.filter((event) =>
       eventMatchesToday(event, today),
@@ -659,7 +746,7 @@ function selectWideLogo() {
   return Math.random() < 0.05 ? ASCII_LOGO_WIDE_ALT : ASCII_LOGO_WIDE;
 }
 
-// Compose the full header markup, including ASCII art and theme toggle.
+// Compose the full header markup, including ASCII art and navigation.
 function renderHeader(announcement) {
   const wideLogo = selectWideLogo();
   return `
@@ -680,11 +767,6 @@ function renderHeader(announcement) {
     <nav>
       ${renderNavLinks()}
     </nav>
-    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Activate dark mode" aria-pressed="false">
-      <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
-      <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
-      <span class="visually-hidden">Toggle theme</span>
-    </button>
   </div>
 </header>
 ${renderAnnouncementBanner(announcement)}
@@ -727,6 +809,11 @@ function renderFooter(yearText) {
       </p>
       <button type="button" class="footer-share" data-share-button>
         Copy page link
+      </button>
+      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Activate dark mode" aria-pressed="false">
+        <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
+        <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
+        <span class="visually-hidden">Toggle theme</span>
       </button>
       <span class="footer-share-feedback" data-share-feedback aria-live="polite"></span>
     </div>
