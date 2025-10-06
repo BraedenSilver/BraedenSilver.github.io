@@ -71,7 +71,7 @@
           return;
         }
         const total = 10;
-        const RARE_FEATURE_CHANCE = 1 / 100;
+        const RARE_FEATURE_CHANCE = 0.05;
         const fragment = document.createDocumentFragment();
         for (let i = 0; i < total; i += 1) {
           const el = document.createElement("div");
@@ -309,6 +309,141 @@
             }
           });
         });
+
+        const BLINK_MIN_DELAY_MS = 2800;
+        const BLINK_MAX_DELAY_MS = 6400;
+        // Match the footer wink timing so the blink looks identical.
+        const BLINK_DURATION_MS = 1500;
+        // Periodically toggle the same `.wink` class the footer uses.
+        // Keep track of the timers that trigger each Kilroy's blinks.
+        const killroyBlinkCleanup = new WeakMap();
+
+        function startKillroyBlinking(killroy) {
+          if (killroyBlinkCleanup.has(killroy)) {
+            return;
+          }
+
+          const eyes = Array.from(killroy.querySelectorAll(".eye"));
+          if (!eyes.length) {
+            return;
+          }
+
+          // Hold the pending timeout so we can cancel or reschedule it.
+          let blinkTimeoutId = null;
+
+          function clearPendingBlink() {
+            if (blinkTimeoutId !== null) {
+              window.clearTimeout(blinkTimeoutId);
+              blinkTimeoutId = null;
+            }
+          }
+
+          function scheduleNextBlink() {
+            if (!killroyBlinkCleanup.has(killroy)) {
+              return;
+            }
+            // Randomize the next blink to keep the timing organic.
+            const delay =
+              BLINK_MIN_DELAY_MS +
+              Math.random() * (BLINK_MAX_DELAY_MS - BLINK_MIN_DELAY_MS);
+            clearPendingBlink();
+            // Kick off the blink after waiting for the chosen delay.
+            blinkTimeoutId = window.setTimeout(runBlink, delay);
+          }
+
+          function runBlink() {
+            blinkTimeoutId = null;
+            if (!killroyBlinkCleanup.has(killroy)) {
+              return;
+            }
+            if (!killroy.isConnected) {
+              return;
+            }
+
+            // Toggle the wink class on every eye to mirror the footer animation.
+            eyes.forEach((eye) => {
+              if (eye.classList.contains("wink")) {
+                return;
+              }
+              eye.classList.add("wink");
+              window.setTimeout(() => {
+                eye.classList.remove("wink");
+              }, BLINK_DURATION_MS);
+            });
+
+            scheduleNextBlink();
+          }
+
+          const cleanup = () => {
+            clearPendingBlink();
+            // Ensure any partially blinked eyes pop back open.
+            eyes.forEach((eye) => eye.classList.remove("wink"));
+          };
+
+          killroyBlinkCleanup.set(killroy, cleanup);
+          scheduleNextBlink();
+        }
+
+        function stopKillroyBlinking(killroy) {
+          const cleanup = killroyBlinkCleanup.get(killroy);
+          if (cleanup) {
+            cleanup();
+            killroyBlinkCleanup.delete(killroy);
+          }
+        }
+
+        const reduceMotionQuery =
+          typeof window.matchMedia === "function"
+            ? window.matchMedia("(prefers-reduced-motion: reduce)")
+            : null;
+
+        const killroys = Array.from(field.querySelectorAll(".awkward-killroy"));
+        if (!killroys.length) {
+          return;
+        }
+
+        const isDocumentVisible = () =>
+          typeof document.visibilityState === "string"
+            ? document.visibilityState === "visible"
+            : true;
+
+        const enableBlinking = () => {
+          killroys.forEach((killroy) => startKillroyBlinking(killroy));
+        };
+
+        const disableBlinking = () => {
+          killroys.forEach((killroy) => stopKillroyBlinking(killroy));
+        };
+
+        if ((!reduceMotionQuery || !reduceMotionQuery.matches) && isDocumentVisible()) {
+          enableBlinking();
+        }
+
+        const handleVisibilityChange = () => {
+          if (!isDocumentVisible()) {
+            disableBlinking();
+          } else if (!reduceMotionQuery || !reduceMotionQuery.matches) {
+            enableBlinking();
+          }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        if (reduceMotionQuery) {
+          const handleReduceMotionChange = (event) => {
+            if (event.matches) {
+              disableBlinking();
+            } else if (isDocumentVisible()) {
+              enableBlinking();
+            }
+          };
+
+          if (typeof reduceMotionQuery.addEventListener === "function") {
+            reduceMotionQuery.addEventListener("change", handleReduceMotionChange);
+          } else if (typeof reduceMotionQuery.addListener === "function") {
+            reduceMotionQuery.addListener(handleReduceMotionChange);
+          }
+        }
       })();
     </script>
   </body>
