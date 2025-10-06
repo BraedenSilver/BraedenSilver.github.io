@@ -1,6 +1,8 @@
 // site.js — handles shared layout injection, "last updated" stamps,
 // and small UI effects used throughout the site.
 
+const EASTER_EGG_GROUP = "easter-egg";
+
 const SITE_CONTENT = Object.freeze({
   navItems: [
     {
@@ -42,10 +44,15 @@ const SITE_CONTENT = Object.freeze({
       label: "Contact",
       groups: ["primary"],
     },
+    {
+      href: "/pages/easter-eggs/joejoejoe/index.html",
+      section: "joejoejoe",
+      label: "Joejoejoe Playground",
+      description: "Spin up randomized Joejoe mascots.",
+      groups: [EASTER_EGG_GROUP],
+    },
   ],
 });
-
-const EASTER_EGG_GROUP = "easter-egg";
 
 function getEasterEggPages() {
   return SITE_CONTENT.navItems.filter((item) =>
