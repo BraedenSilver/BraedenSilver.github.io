@@ -9,8 +9,7 @@ const VERSION = (function () {
 })();
 
 // Describe the content sources for each supported section.
-const AWKWARD_SURPRISE_URL = "/pages/easter-egg/awkward.html";
-const AWKWARD_SURPRISE_CHANCE = 1 / 500;
+const RANDOM_FALLBACK_URL = "/404.html";
 
 const SECTION_CONFIG = {
   blog: {
@@ -23,7 +22,6 @@ const SECTION_CONFIG = {
     noneMatchMessage: "No posts match the selected tags yet.",
     fallbackDescription: "Notes from the lab bench.",
     schemaType: "BlogPosting",
-    awkwardUrl: AWKWARD_SURPRISE_URL,
   },
   projects: {
     label: "Projects",
@@ -35,7 +33,6 @@ const SECTION_CONFIG = {
     noneMatchMessage: "No projects match the selected tags yet.",
     fallbackDescription: "Hands-on builds and experiments.",
     schemaType: "CreativeWork",
-    awkwardUrl: AWKWARD_SURPRISE_URL,
   },
   research: {
     label: "Research",
@@ -47,7 +44,6 @@ const SECTION_CONFIG = {
     noneMatchMessage: "No research entries match the selected tags yet.",
     fallbackDescription: "Longer-form investigations and papers.",
     schemaType: "ScholarlyArticle",
-    awkwardUrl: AWKWARD_SURPRISE_URL,
   },
 };
 
@@ -652,14 +648,10 @@ async function renderSectionIndex(section, options = {}) {
 
   const state = { activeTags: new Set(), lastRenderedEntries: [] };
 
-  const awkwardUrl =
-    typeof options.awkwardUrl === "string" && options.awkwardUrl
-      ? options.awkwardUrl
-      : config.awkwardUrl || AWKWARD_SURPRISE_URL;
-  const awkwardChance =
-    typeof options.awkwardChance === "number" && options.awkwardChance >= 0
-      ? options.awkwardChance
-      : AWKWARD_SURPRISE_CHANCE;
+  const randomFallbackUrl =
+    typeof options.randomFallbackUrl === "string" && options.randomFallbackUrl
+      ? options.randomFallbackUrl
+      : config.randomFallbackUrl || RANDOM_FALLBACK_URL;
 
   const sortedEntries = entries
     .slice()
@@ -767,16 +759,13 @@ async function renderSectionIndex(section, options = {}) {
         state.lastRenderedEntries && state.lastRenderedEntries.length
           ? state.lastRenderedEntries
           : enrichedEntries;
-      const showAwkward =
-        pool.length === 0 || Math.random() < Math.min(awkwardChance, 1);
-      if (showAwkward) {
-        window.location.href = awkwardUrl;
+      if (!pool.length) {
+        window.location.href = randomFallbackUrl;
         return;
       }
-      const choice =
-        pool[Math.floor(Math.random() * Math.max(1, pool.length))];
+      const choice = pool[Math.floor(Math.random() * pool.length)];
       if (!choice || !choice.id) {
-        window.location.href = awkwardUrl;
+        window.location.href = randomFallbackUrl;
         return;
       }
       const url = `${config.detailPath}?id=${encodeURIComponent(choice.id)}`;
