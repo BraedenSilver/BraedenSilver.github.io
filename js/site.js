@@ -56,6 +56,40 @@ const HOLIDAY_CONFIG_URL = "/data/holiday-banners.json";
 const BANNER_TIME_ZONE = "America/Chicago";
 const ANNOUNCEMENT_SPEED_PX_PER_SECOND = 72;
 
+const HOME_LATEST_MEDIA_QUERY = "(max-width: 719px)";
+const HOME_LATEST_DEFAULT_LIMIT = 4;
+const HOME_LATEST_MOBILE_LIMIT = 1;
+
+// Determine how many highlighted entries to surface on the BraedenSilver.com
+// home page. Desktop layouts continue to feature four items in each section,
+// while mobile viewports (when first loading the landing page) only surface
+// the single most recent entry per category. Section index pages (like
+// /pages/blog/index.html) still render their full manifest lists via
+// renderSectionIndex in js/blog.js.
+function getHomeLatestLimit() {
+  if (typeof document === "undefined") {
+    return HOME_LATEST_DEFAULT_LIMIT;
+  }
+
+  const isHomePage = document.body?.dataset?.section === "home";
+  if (!isHomePage) {
+    return HOME_LATEST_DEFAULT_LIMIT;
+  }
+
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return HOME_LATEST_DEFAULT_LIMIT;
+  }
+
+  try {
+    return window.matchMedia(HOME_LATEST_MEDIA_QUERY).matches
+      ? HOME_LATEST_MOBILE_LIMIT
+      : HOME_LATEST_DEFAULT_LIMIT;
+  } catch (error) {
+    console.warn("Failed to evaluate mobile media query", error);
+    return HOME_LATEST_DEFAULT_LIMIT;
+  }
+}
+
 const MOON_PHASES = Object.freeze([
   { name: "New Moon", emoji: "🌑" },
   { name: "Waxing Crescent", emoji: "🌒" },
@@ -1782,10 +1816,11 @@ const CONTENT_RENDERERS = Object.freeze({
         if (typeof mod.renderLatestEntries !== "function") {
           throw new Error("renderLatestEntries is not available");
         }
+        const limit = getHomeLatestLimit();
         return mod.renderLatestEntries("blog", {
           rootId: "home-latest-blog",
-          limit: 4,
-          maxItems: 4,
+          limit,
+          maxItems: limit,
           errorMessage: "Latest posts are temporarily unavailable.",
         });
       }),
@@ -1801,10 +1836,11 @@ const CONTENT_RENDERERS = Object.freeze({
         if (typeof mod.renderLatestEntries !== "function") {
           throw new Error("renderLatestEntries is not available");
         }
+        const limit = getHomeLatestLimit();
         return mod.renderLatestEntries("research", {
           rootId: "home-latest-research",
-          limit: 4,
-          maxItems: 4,
+          limit,
+          maxItems: limit,
           errorMessage: "Latest research highlights are unavailable right now.",
         });
       }),
@@ -1820,10 +1856,11 @@ const CONTENT_RENDERERS = Object.freeze({
         if (typeof mod.renderLatestEntries !== "function") {
           throw new Error("renderLatestEntries is not available");
         }
+        const limit = getHomeLatestLimit();
         return mod.renderLatestEntries("projects", {
           rootId: "home-latest-projects",
-          limit: 4,
-          maxItems: 4,
+          limit,
+          maxItems: limit,
           errorMessage: "Latest projects are temporarily unavailable.",
         });
       }),
