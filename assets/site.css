@@ -416,11 +416,18 @@ html.theme-dark .theme-toggle__icon--moon {
   .blog-filter-clear:focus-visible,
   .announcement-close,
   details#sources > ol,
+  .footer-eyes .head,
+  .footer-eyes .awkward-killroy__head,
   .footer-eyes .eye,
   .footer-eyes .pupil,
   .kilroy-full.footer-eyes .eye,
   .kilroy-full.footer-eyes .pupil {
     transition: none !important;
+  }
+
+  .awkward-killroy--oracle .eye.third {
+    animation: none !important;
+    background-position: 50% 50% !important;
   }
 
 }
@@ -785,6 +792,22 @@ html.theme-dark .theme-toggle__icon--moon {
   box-shadow: 4px 4px 0 var(--color-shadow);
 }
 
+.footer-eyes {
+  --kilroy-wink-tilt-angle: -8deg;
+  --kilroy-head-tilt: 0deg;
+}
+
+.footer-eyes .head,
+.footer-eyes .awkward-killroy__head {
+  transform: rotate(var(--kilroy-head-tilt, 0deg));
+  transform-origin: 50% 50%;
+  transition: transform 180ms ease;
+}
+
+.footer-eyes.wink-tilt {
+  --kilroy-head-tilt: var(--kilroy-wink-tilt-angle, -8deg);
+}
+
 .footer-eyes .eye {
   width: var(--eye-size, 28px);
   height: var(--eye-size, 28px);
@@ -833,6 +856,41 @@ html.theme-dark .theme-toggle__icon--moon {
 
 .footer-eyes .eye.wink .pupil {
   display: none;
+}
+
+.awkward-killroy--oracle .eye.third {
+  left: 50%;
+  top: var(--eye-top, var(--awkward-eye-top-default));
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    #ff3d7f,
+    #ffb347,
+    #fff176,
+    #9cff57,
+    #57e4ff,
+    #8c57ff,
+    #ff57c8,
+    #ff3d7f
+  );
+  background-size: 320% 320%;
+  animation: awkward-third-eye-rainbow 4.8s linear infinite;
+}
+
+.awkward-killroy--oracle .eye.third .pupil {
+  mix-blend-mode: multiply;
+}
+
+@keyframes awkward-third-eye-rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 body.kilroy-page .kilroy-peek {
@@ -1470,6 +1528,7 @@ details#sources[open] > ol {
       var(--awkward-shadow-offset, var(--awkward-shadow-offset-default)) 0
       var(--color-shadow);
   overflow: hidden;
+  pointer-events: none;
 }
 
 .awkward-killroy .eye {
@@ -1479,6 +1538,8 @@ details#sources[open] > ol {
     solid var(--color-kilroy-border);
   background: var(--awkward-sclera, var(--color-kilroy-sclera));
   z-index: 1;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .awkward-killroy .eye.left {

@@ -70,16 +70,27 @@
         if (!field) {
           return;
         }
-        const total = 7;
+        const total = 10;
+        const RARE_THIRD_EYE_CHANCE = 1 / 100;
         const fragment = document.createDocumentFragment();
         for (let i = 0; i < total; i += 1) {
           const el = document.createElement("div");
-          el.className = "awkward-killroy footer-eyes";
-          el.innerHTML =
-            '<div class="awkward-killroy__head">' +
-            '  <div class="eye left"><div class="pupil"></div></div>' +
-            '  <div class="eye right"><div class="pupil"></div></div>' +
-            "</div>";
+          const hasOracleEye = Math.random() < RARE_THIRD_EYE_CHANCE;
+          el.className = `awkward-killroy footer-eyes${
+            hasOracleEye ? " awkward-killroy--oracle" : ""
+          }`;
+          const headParts = [
+            '<div class="awkward-killroy__head">',
+            '  <div class="eye left"><div class="pupil"></div></div>',
+            '  <div class="eye right"><div class="pupil"></div></div>',
+          ];
+          if (hasOracleEye) {
+            headParts.push(
+              '  <div class="eye third"><div class="pupil"></div></div>',
+            );
+          }
+          headParts.push("</div>");
+          el.innerHTML = headParts.join("");
           fragment.appendChild(el);
         }
         field.appendChild(fragment);
@@ -225,6 +236,30 @@
             el.style.setProperty("--eye-border", `${outlineWidth}px`);
             el.style.setProperty("--awkward-border-width", `${outlineWidth}px`);
             el.style.setProperty("--awkward-shadow-offset", `${shadowOffset}px`);
+
+            if (el.classList.contains("awkward-killroy--oracle")) {
+              const thirdEye = el.querySelector(".eye.third");
+              if (thirdEye) {
+                const thirdEyeSizeFactor = randomInRange(0.16, 0.2);
+                const thirdEyeSize = Math.round(finalSize * thirdEyeSizeFactor);
+                const thirdEyeVerticalOffset = Math.round(
+                  thirdEyeSize * randomInRange(0.55, 0.68),
+                );
+                const thirdEyeTop = Math.max(
+                  outlineWidth * 2,
+                  eyeTop - thirdEyeVerticalOffset,
+                );
+                const thirdEyePupilSize = Math.round(
+                  thirdEyeSize * FOOTER_PUPIL_RATIO,
+                );
+                thirdEye.style.setProperty("--eye-size", `${thirdEyeSize}px`);
+                thirdEye.style.setProperty("--eye-top", `${thirdEyeTop}px`);
+                thirdEye.style.setProperty(
+                  "--pupil-size",
+                  `${thirdEyePupilSize}px`,
+                );
+              }
+            }
           });
         });
       })();
