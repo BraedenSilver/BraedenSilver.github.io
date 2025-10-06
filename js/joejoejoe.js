@@ -137,10 +137,6 @@
   function setButtonAccent(color, textColor) {
     document.body.style.setProperty('--joejoe-button-bg', color);
     document.body.style.setProperty('--joejoe-button-text', textColor);
-    document.body.style.setProperty(
-      '--joejoe-button-shadow',
-      textColor === '#111' ? 'rgba(0, 0, 0, 0.25)' : 'rgba(0, 0, 0, 0.35)',
-    );
   }
 
   function randomizeJoejoes() {

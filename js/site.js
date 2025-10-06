@@ -37,13 +37,6 @@ const SITE_CONTENT = Object.freeze({
       groups: ["primary"],
     },
     {
-      href: "/pages/easter-eggs/joejoejoe/index.html",
-      section: "joejoejoe",
-      label: "Joejoejoe",
-      groups: ["primary", "easter-egg"],
-      description: "Randomize bright Joejoejoe characters.",
-    },
-    {
       href: "/pages/contact.html",
       section: "contact",
       label: "Contact",
