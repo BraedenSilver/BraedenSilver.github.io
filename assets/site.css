@@ -794,7 +794,7 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .footer-eyes {
-  --kilroy-wink-tilt-angle: -8deg;
+  --kilroy-wink-tilt-angle: 0deg;
   --kilroy-head-tilt: 0deg;
 }
 
