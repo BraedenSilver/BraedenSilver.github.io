@@ -654,9 +654,9 @@ function renderAnnouncementBanner(announcement) {
 </div>`;
 }
 
-// 1% of visits get the alternate ASCII art for variety.
+// 5% of visits get the alternate ASCII art for variety.
 function selectWideLogo() {
-  return Math.random() < 0.01 ? ASCII_LOGO_WIDE_ALT : ASCII_LOGO_WIDE;
+  return Math.random() < 0.05 ? ASCII_LOGO_WIDE_ALT : ASCII_LOGO_WIDE;
 }
 
 // Compose the full header markup, including ASCII art and theme toggle.
