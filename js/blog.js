@@ -59,6 +59,8 @@ const manifestCache = new Map();
 const entryCache = new Map();
 
 const AVERAGE_READING_SPEED_WPM = 200;
+const hasOwn = (obj, key) =>
+  !!obj && Object.prototype.hasOwnProperty.call(obj, key);
 
 // Estimate reading time based on a simple word-count heuristic.
 function estimateReadingTime(text) {
@@ -169,6 +171,58 @@ function formatDate(d) {
   } catch (err) {
     return d;
   }
+}
+
+function readUpdatedFlag(entry) {
+  if (!entry) return false;
+  const value = entry.updated;
+  // When content JSON uses literal booleans (true/false), fetch(...).json()
+  // preserves the type so we can return the value directly here.
+  if (typeof value === "boolean") return value;
+  if (value && typeof value === "object") {
+    if ("enabled" in value) return Boolean(value.enabled);
+    if ("value" in value) return Boolean(value.value);
+    if ("flag" in value) return Boolean(value.flag);
+    if ("active" in value) return Boolean(value.active);
+    if ("show" in value) return Boolean(value.show);
+  }
+  return false;
+}
+
+function readUpdatedDate(entry) {
+  if (!entry) return "";
+  const direct = entry.updated_date ?? entry.updatedDate ?? entry.updated_at;
+  if (typeof direct === "string" && direct.trim()) {
+    return direct.trim();
+  }
+  const value = entry.updated;
+  if (typeof value === "string" && value.trim()) {
+    return value.trim();
+  }
+  if (value && typeof value === "object") {
+    const candidates = [value.date, value.text, value.value];
+    for (const candidate of candidates) {
+      if (typeof candidate === "string" && candidate.trim()) {
+        return candidate.trim();
+      }
+    }
+  }
+  return "";
+}
+
+function getUpdatedMetadata(entry) {
+  const hasUpdate = readUpdatedFlag(entry);
+  const raw = readUpdatedDate(entry);
+  if (!hasUpdate || !raw) {
+    return { display: "", iso: "" };
+  }
+  const trimmed = raw.trim();
+  const lower = trimmed.toLowerCase();
+  const display = lower.startsWith("updated")
+    ? trimmed
+    : `Updated - ${trimmed}`;
+  const iso = ISO_DATE_RE.test(trimmed) ? trimmed : "";
+  return { display, iso };
 }
 
 // Build a <ul> list for tag metadata on cards or detail pages.
@@ -357,6 +411,8 @@ function createEntryCard(section, entry) {
   const metaBits = [];
   if (entry.date) metaBits.push(formatDate(entry.date));
   if (entry.reading_time) metaBits.push(entry.reading_time);
+  const updatedMeta = getUpdatedMetadata(entry);
+  if (updatedMeta.display) metaBits.push(updatedMeta.display);
   if (metaBits.length) {
     const meta = document.createElement("p");
     meta.className = "blog-meta";
@@ -608,6 +664,10 @@ function updateMetaTags(entry, canonicalUrl, config, blocks) {
     keywords: entry.tags || [],
     url: canonicalUrl,
   };
+  const entryUpdatedMeta = getUpdatedMetadata(entry);
+  if (entryUpdatedMeta.iso) {
+    ld.dateModified = entryUpdatedMeta.iso;
+  }
   if (entry.hero) {
     ld.image = entry.hero;
   }
@@ -667,6 +727,12 @@ async function renderSectionIndex(section, options = {}) {
           if (detail.tags && detail.tags.length) enriched.tags = detail.tags;
           if (detail.hero) enriched.hero = detail.hero;
           if (detail.date && !enriched.date) enriched.date = detail.date;
+          if (hasOwn(detail, "updated")) enriched.updated = detail.updated;
+          if (hasOwn(detail, "updated_date")) {
+            enriched.updated_date = detail.updated_date;
+          } else if (hasOwn(detail, "updatedDate")) {
+            enriched.updated_date = detail.updatedDate;
+          }
           const readingTime = estimateReadingTime(
             bodyToPlainText(detail.body || detail.html),
           );
@@ -846,6 +912,8 @@ async function renderSectionEntry(section, options = {}) {
   const metaBits = [];
   if (working.date) metaBits.push(formatDate(working.date));
   if (working.reading_time) metaBits.push(working.reading_time);
+  const detailUpdatedMeta = getUpdatedMetadata(working);
+  if (detailUpdatedMeta.display) metaBits.push(detailUpdatedMeta.display);
   if (metaBits.length) {
     const meta = document.createElement("p");
     meta.className = "blog-meta";
