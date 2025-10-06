@@ -794,7 +794,7 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .footer-eyes {
-  --kilroy-wink-tilt-angle: -8deg;
+  --kilroy-wink-tilt-angle: 0deg;
   --kilroy-head-tilt: 0deg;
 }
 
@@ -822,6 +822,9 @@ html.theme-dark .theme-toggle__icon--moon {
   border: var(--eye-border, 2px) solid var(--color-kilroy-border);
   position: absolute;
   overflow: hidden;
+  /* Let the eyelids close toward the center instead of folding upward only. */
+  --blink-clip: 0%;
+  clip-path: inset(var(--blink-clip) 0 var(--blink-clip) 0 round 50%);
   transition: all 150ms ease;
 }
 
@@ -842,13 +845,6 @@ html.theme-dark .theme-toggle__icon--moon {
   top: var(--eye-top, 38px);
 }
 
-.footer-eyes .eye {
-  --wink-top: calc(
-    var(--eye-top, 38px) +
-      var(--eye-size, 28px) / 2
-  );
-}
-
 .footer-eyes .pupil {
   width: 12px;
   height: 12px;
@@ -863,11 +859,7 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .footer-eyes .eye.wink {
-  height: 0;
-  top: var(--wink-top);
-  border: none;
-  border-top: var(--eye-border, 2px) solid var(--color-kilroy-border);
-  border-radius: 0;
+  --blink-clip: 49.5%;
 }
 
 .footer-eyes .eye.wink .pupil {
