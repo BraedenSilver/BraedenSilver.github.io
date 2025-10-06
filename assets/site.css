@@ -1414,7 +1414,7 @@ details#sources[open] > ol {
 .awkward-killroy-field {
   position: relative;
   margin: 3rem 0;
-  min-height: clamp(320px, 60vh, 640px);
+  min-height: clamp(520px, 75vh, 960px);
   border: 2px dashed var(--color-border);
   border-radius: 24px;
   overflow: hidden;
@@ -1428,11 +1428,7 @@ details#sources[open] > ol {
     calc(var(--awkward-size-default) * 0.24),
     40px
   );
-  --awkward-eye-border-default: clamp(
-    2px,
-    calc(var(--awkward-size-default) * 0.018),
-    4px
-  );
+  --awkward-eye-border-default: 2.5px;
   --awkward-eye-offset-default: clamp(
     22px,
     calc(var(--awkward-size-default) * 0.21),
@@ -1443,11 +1439,7 @@ details#sources[open] > ol {
     calc(var(--awkward-size-default) * 0.35),
     60px
   );
-  --awkward-border-width-default: clamp(
-    2px,
-    calc(var(--awkward-size-default) * 0.016),
-    3px
-  );
+  --awkward-border-width-default: 2.5px;
   --awkward-shadow-offset-default: clamp(
     4px,
     calc(var(--awkward-size-default) * 0.035),
@@ -1500,6 +1492,14 @@ details#sources[open] > ol {
 }
 
 .awkward-killroy .pupil {
+  width: var(
+    --pupil-size,
+    calc(var(--eye-size, var(--awkward-eye-size-default)) * 0.4286)
+  );
+  height: var(
+    --pupil-size,
+    calc(var(--eye-size, var(--awkward-eye-size-default)) * 0.4286)
+  );
   background: var(--awkward-pupil, var(--color-kilroy-pupil));
 }
 

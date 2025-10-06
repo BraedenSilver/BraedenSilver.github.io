@@ -138,11 +138,13 @@
           }
 
           const spacings = [28, 24, 20, 16, 12, 8];
+          const FOOTER_PUPIL_RATIO = 12 / 28;
 
           field.querySelectorAll(".awkward-killroy").forEach((el) => {
             el.style.removeProperty("--awkward-border");
             el.style.removeProperty("--awkward-shadow");
             el.style.removeProperty("--awkward-pupil");
+            el.style.removeProperty("--pupil-size");
 
             const hue = randomInRange(0, 360);
             const saturation = randomInRange(62, 88);
@@ -168,13 +170,6 @@
             const absoluteMinSize = Math.min(
               sizeUpperBound,
               Math.max(72, minSize * 0.75)
-            );
-
-            const scleraLightness = Math.min(97, lightness + randomInRange(24, 32));
-            const scleraColor = toHsl(
-              hue,
-              Math.max(6, saturation - 46),
-              scleraLightness
             );
 
             const radius = () => size / 2;
@@ -207,8 +202,8 @@
             const eyeOffset = Math.round(finalSize * eyeOffsetFactor);
             const eyeTop = Math.round(finalSize * eyeTopFactor);
             const eyeSize = Math.round(finalSize * eyeSizeFactor);
-            const eyeBorder = Math.min(4, Math.max(2, Math.round(finalSize * 0.018)));
-            const borderWidth = Math.min(3, Math.max(2, Math.round(finalSize * 0.016)));
+            const pupilSize = Math.round(eyeSize * FOOTER_PUPIL_RATIO);
+            const outlineWidth = 2.5;
             const shadowOffset = Math.min(8, Math.max(4, Math.round(finalSize * 0.035)));
 
             const finalRadius = finalSize / 2;
@@ -218,7 +213,7 @@
             const yPercent = (position.y / fieldHeight) * 100;
 
             el.style.setProperty("--awkward-skin", toHsl(hue, saturation, lightness));
-            el.style.setProperty("--awkward-sclera", scleraColor);
+            el.style.setProperty("--awkward-sclera", "#fff");
             el.style.setProperty("--killroy-x", `${xPercent.toFixed(2)}%`);
             el.style.setProperty("--killroy-y", `${yPercent.toFixed(2)}%`);
             el.style.setProperty("--killroy-rotate", `${rotate.toFixed(1)}deg`);
@@ -226,8 +221,9 @@
             el.style.setProperty("--eye-offset", `${eyeOffset}px`);
             el.style.setProperty("--eye-top", `${eyeTop}px`);
             el.style.setProperty("--eye-size", `${eyeSize}px`);
-            el.style.setProperty("--eye-border", `${eyeBorder}px`);
-            el.style.setProperty("--awkward-border-width", `${borderWidth}px`);
+            el.style.setProperty("--pupil-size", `${pupilSize}px`);
+            el.style.setProperty("--eye-border", `${outlineWidth}px`);
+            el.style.setProperty("--awkward-border-width", `${outlineWidth}px`);
             el.style.setProperty("--awkward-shadow-offset", `${shadowOffset}px`);
           });
         });
