@@ -819,9 +819,13 @@ html.theme-dark .theme-toggle__icon--moon {
 
 .footer-eyes .eye.wink {
   height: 0;
-  top: calc(var(--eye-top) + var(--eye-size) / 2 - var(--eye-border) / 2);
+  top: calc(
+    var(--eye-top, 38px) +
+      var(--eye-size, 28px) / 2 -
+      var(--eye-border, 2px) / 2
+  );
   border: none;
-  border-top: var(--eye-border) solid var(--color-kilroy-border);
+  border-top: var(--eye-border, 2px) solid var(--color-kilroy-border);
   border-radius: 0;
 }
 
