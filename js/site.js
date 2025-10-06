@@ -54,6 +54,7 @@ const FALLBACK_VISITOR_MESSAGE = "Thank you for visiting BraedenSilver.com";
 
 const HOLIDAY_CONFIG_URL = "/data/holiday-banners.json";
 const BANNER_TIME_ZONE = "America/Chicago";
+const ANNOUNCEMENT_SPEED_PX_PER_SECOND = 72;
 
 const MOON_PHASES = Object.freeze([
   { name: "New Moon", emoji: "🌑" },
@@ -1002,6 +1003,198 @@ function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+const announcementMarqueeRegistry = new Map();
+let announcementMarqueeListenersRegistered = false;
+let announcementMarqueeRefreshHandle = null;
+
+function ensureAnnouncementMarqueeListeners() {
+  if (announcementMarqueeListenersRegistered) return;
+  if (typeof window === "undefined") return;
+
+  announcementMarqueeListenersRegistered = true;
+  window.addEventListener("resize", queueAnnouncementMarqueeRefresh);
+
+  if (typeof window.matchMedia === "function") {
+    try {
+      const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const handler = () => queueAnnouncementMarqueeRefresh();
+      if (typeof query.addEventListener === "function") {
+        query.addEventListener("change", handler);
+      } else if (typeof query.addListener === "function") {
+        query.addListener(handler);
+      }
+    } catch {
+      // Ignore unsupported matchMedia usage.
+    }
+  }
+}
+
+function queueAnnouncementMarqueeRefresh() {
+  if (typeof window === "undefined") return;
+  if (announcementMarqueeRefreshHandle != null) return;
+
+  if (typeof window.requestAnimationFrame !== "function") {
+    announcementMarqueeRegistry.forEach((_, track) => {
+      startAnnouncementMarquee(track);
+    });
+    return;
+  }
+
+  announcementMarqueeRefreshHandle = window.requestAnimationFrame(() => {
+    announcementMarqueeRefreshHandle = null;
+    announcementMarqueeRegistry.forEach((_, track) => {
+      startAnnouncementMarquee(track);
+    });
+  });
+}
+
+function registerAnnouncementMarquee(marquee, track) {
+  if (!marquee || !track) return;
+
+  const existing = announcementMarqueeRegistry.get(track);
+  if (existing) {
+    existing.marquee = marquee;
+  } else {
+    announcementMarqueeRegistry.set(track, { marquee, state: null });
+  }
+
+  ensureAnnouncementMarqueeListeners();
+  startAnnouncementMarquee(track);
+}
+
+function stopAnnouncementMarquee(track) {
+  const entry = announcementMarqueeRegistry.get(track);
+  if (!entry) {
+    if (track) {
+      track.style.removeProperty("transform");
+      track.style.removeProperty("animation");
+    }
+    return;
+  }
+
+  const { state } = entry;
+  if (
+    state &&
+    typeof window !== "undefined" &&
+    typeof window.cancelAnimationFrame === "function" &&
+    state.rafId != null
+  ) {
+    window.cancelAnimationFrame(state.rafId);
+  }
+
+  entry.state = null;
+  if (track) {
+    track.style.removeProperty("transform");
+    track.style.removeProperty("animation");
+  }
+}
+
+function unregisterAnnouncementMarquee(track) {
+  stopAnnouncementMarquee(track);
+  announcementMarqueeRegistry.delete(track);
+}
+
+function startAnnouncementMarquee(track) {
+  const entry = announcementMarqueeRegistry.get(track);
+  if (!entry) return;
+
+  const canAnimate =
+    typeof window !== "undefined" &&
+    typeof window.requestAnimationFrame === "function";
+
+  stopAnnouncementMarquee(track);
+
+  const marquee = entry.marquee;
+  if (!marquee || !track || !marquee.isConnected || !track.isConnected) {
+    announcementMarqueeRegistry.delete(track);
+    return;
+  }
+
+  if (!canAnimate) {
+    return;
+  }
+
+  if (prefersReducedMotion()) {
+    track.style.animation = "none";
+    track.style.transform = "";
+    return;
+  }
+
+  const marqueeWidth = marquee.clientWidth;
+  const trackWidth = track.scrollWidth;
+  if (marqueeWidth <= 0 || trackWidth <= 0) {
+    track.style.transform = "";
+    return;
+  }
+
+  const state = {
+    marqueeWidth,
+    trackWidth,
+    position: marqueeWidth,
+    lastTimestamp: null,
+    rafId: null,
+  };
+
+  entry.state = state;
+
+  track.style.animation = "none";
+  track.style.transform = `translateX(${state.position}px)`;
+
+  const step = (timestamp) => {
+    if (entry.state !== state) {
+      return;
+    }
+
+    if (!marquee.isConnected || !track.isConnected) {
+      unregisterAnnouncementMarquee(track);
+      return;
+    }
+
+    if (prefersReducedMotion()) {
+      stopAnnouncementMarquee(track);
+      track.style.animation = "none";
+      track.style.transform = "";
+      return;
+    }
+
+    const measuredMarqueeWidth = marquee.clientWidth;
+    const measuredTrackWidth = track.scrollWidth;
+    if (measuredMarqueeWidth > 0) {
+      state.marqueeWidth = measuredMarqueeWidth;
+    }
+    if (measuredTrackWidth > 0) {
+      state.trackWidth = measuredTrackWidth;
+    }
+
+    if (state.trackWidth <= 0) {
+      stopAnnouncementMarquee(track);
+      return;
+    }
+
+    if (state.position > state.marqueeWidth) {
+      state.position = state.marqueeWidth;
+    }
+
+    if (state.lastTimestamp == null) {
+      state.lastTimestamp = timestamp;
+    } else {
+      const elapsed = timestamp - state.lastTimestamp;
+      state.lastTimestamp = timestamp;
+      const delta = (elapsed / 1000) * ANNOUNCEMENT_SPEED_PX_PER_SECOND;
+      state.position -= delta;
+      if (state.position <= -state.trackWidth) {
+        state.position = state.marqueeWidth;
+        state.lastTimestamp = timestamp;
+      }
+    }
+
+    track.style.transform = `translateX(${state.position}px)`;
+    state.rafId = window.requestAnimationFrame(step);
+  };
+
+  state.rafId = window.requestAnimationFrame(step);
+}
+
 /**
  * Scale the wide ASCII logo so it fits within its container.
  */
@@ -1339,6 +1532,7 @@ function initAnnouncementBanner() {
 
   const text = (banner.dataset.text || "").trim();
   if (!text) {
+    unregisterAnnouncementMarquee(track);
     banner.remove();
     return;
   }
@@ -1359,11 +1553,10 @@ function initAnnouncementBanner() {
     track.appendChild(span);
   }
 
-  // Restart the animation so it begins after the DOM is ready.
-  track.style.animation = "none";
-  // eslint-disable-next-line no-unused-expressions
-  track.offsetHeight;
-  track.style.animation = "";
+  const marquee = banner.querySelector(".announcement-marquee");
+  if (marquee) {
+    registerAnnouncementMarquee(marquee, track);
+  }
 
   const close = banner.querySelector(".announcement-close");
   if (close) {
@@ -1373,6 +1566,7 @@ function initAnnouncementBanner() {
       } catch {
         // Ignore storage failures and fall back to removing for this page load only.
       }
+      unregisterAnnouncementMarquee(track);
       banner.remove();
     });
   }
