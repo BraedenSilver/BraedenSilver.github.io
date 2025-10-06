@@ -828,6 +828,20 @@ html.theme-dark .theme-toggle__icon--moon {
   transition: all 150ms ease;
 }
 
+.footer-eyes .eye::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: calc(var(--eye-border, 2px) * 2.25);
+  background: var(--color-kilroy-border);
+  border-radius: 999px;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
 .footer-eyes .mouth {
   --mouth-wink-top: calc(
     var(--mouth-top, var(--awkward-mouth-top-default)) +
@@ -860,10 +874,15 @@ html.theme-dark .theme-toggle__icon--moon {
 
 .footer-eyes .eye.wink {
   --blink-clip: 49.5%;
+  background: transparent;
 }
 
 .footer-eyes .eye.wink .pupil {
   display: none;
+}
+
+.footer-eyes .eye.wink::after {
+  opacity: 1;
 }
 
 .footer-eyes .mouth.wink {
