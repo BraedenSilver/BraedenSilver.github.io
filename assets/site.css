@@ -419,6 +419,7 @@ html.theme-dark .theme-toggle__icon--moon {
   .footer-eyes .head,
   .footer-eyes .awkward-killroy__head,
   .footer-eyes .eye,
+  .footer-eyes .mouth,
   .footer-eyes .pupil,
   .kilroy-full.footer-eyes .eye,
   .kilroy-full.footer-eyes .pupil {
@@ -797,6 +798,11 @@ html.theme-dark .theme-toggle__icon--moon {
   --kilroy-head-tilt: 0deg;
 }
 
+.awkward-killroy.footer-eyes {
+  /* Awkward Kilroys already rotate on placement; keep them steady when winking. */
+  --kilroy-wink-tilt-angle: 0deg;
+}
+
 .footer-eyes .head,
 .footer-eyes .awkward-killroy__head {
   transform: rotate(var(--kilroy-head-tilt, 0deg));
@@ -819,6 +825,13 @@ html.theme-dark .theme-toggle__icon--moon {
   transition: all 150ms ease;
 }
 
+.footer-eyes .mouth {
+  --mouth-wink-top: calc(
+    var(--mouth-top, var(--awkward-mouth-top-default)) +
+      var(--mouth-size, var(--awkward-mouth-size-default)) / 2
+  );
+}
+
 .footer-eyes .eye.left {
   left: var(--eye-offset, 24px);
   top: var(--eye-top, 38px);
@@ -827,6 +840,13 @@ html.theme-dark .theme-toggle__icon--moon {
 .footer-eyes .eye.right {
   right: var(--eye-offset, 24px);
   top: var(--eye-top, 38px);
+}
+
+.footer-eyes .eye {
+  --wink-top: calc(
+    var(--eye-top, 38px) +
+      var(--eye-size, 28px) / 2
+  );
 }
 
 .footer-eyes .pupil {
@@ -844,11 +864,7 @@ html.theme-dark .theme-toggle__icon--moon {
 
 .footer-eyes .eye.wink {
   height: 0;
-  top: calc(
-    var(--eye-top, 38px) +
-      var(--eye-size, 28px) / 2 -
-      var(--eye-border, 2px) / 2
-  );
+  top: var(--wink-top);
   border: none;
   border-top: var(--eye-border, 2px) solid var(--color-kilroy-border);
   border-radius: 0;
@@ -856,6 +872,25 @@ html.theme-dark .theme-toggle__icon--moon {
 
 .footer-eyes .eye.wink .pupil {
   display: none;
+}
+
+.footer-eyes .mouth.wink {
+  height: 0;
+  top: var(--mouth-wink-top);
+  background: transparent;
+  border: none;
+  border-top: var(
+      --mouth-line-width,
+      var(--awkward-mouth-line-width-default)
+    )
+    solid var(--mouth-color, var(--color-kilroy-border));
+  border-radius: 0;
+}
+
+.awkward-killroy--cyclops .eye.cyclops {
+  left: 50%;
+  top: var(--eye-top, var(--awkward-eye-top-default));
+  transform: translateX(-50%);
 }
 
 .awkward-killroy--oracle .eye.third {
@@ -1503,6 +1538,17 @@ details#sources[open] > ol {
     calc(var(--awkward-size-default) * 0.035),
     8px
   );
+  --awkward-mouth-size-default: clamp(
+    24px,
+    calc(var(--awkward-size-default) * 0.2),
+    40px
+  );
+  --awkward-mouth-top-default: clamp(
+    68px,
+    calc(var(--awkward-size-default) * 0.64),
+    120px
+  );
+  --awkward-mouth-line-width-default: 3px;
   position: absolute;
   left: var(--killroy-x, 50%);
   top: var(--killroy-y, 50%);
@@ -1562,6 +1608,22 @@ details#sources[open] > ol {
     calc(var(--eye-size, var(--awkward-eye-size-default)) * 0.4286)
   );
   background: var(--awkward-pupil, var(--color-kilroy-pupil));
+}
+
+.awkward-killroy .mouth {
+  position: absolute;
+  left: 50%;
+  top: var(--mouth-top, var(--awkward-mouth-top-default));
+  width: var(--mouth-size, var(--awkward-mouth-size-default));
+  height: var(--mouth-size, var(--awkward-mouth-size-default));
+  border-radius: 50%;
+  background: var(--mouth-color, var(--color-kilroy-border));
+  transform: translateX(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 1;
+  border: none;
+  transition: all 150ms ease;
 }
 
 @media (max-width: 600px) {

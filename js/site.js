@@ -1954,7 +1954,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   // Tiny googly eyes in footer
   (() => {
     const eyes = document.querySelectorAll(".footer-eyes .eye");
-    if (!eyes.length) return;
+    const interactiveParts = document.querySelectorAll(
+      ".footer-eyes .eye, .footer-eyes .mouth",
+    );
+    if (!interactiveParts.length) return;
 
     const pointerFineQuery =
       typeof window.matchMedia === "function"
@@ -2138,9 +2141,9 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
     }
 
-    eyes.forEach((eye) => {
-      eye.addEventListener("click", () => {
-        const container = eye.closest(".footer-eyes");
+    interactiveParts.forEach((feature) => {
+      feature.addEventListener("click", () => {
+        const container = feature.closest(".footer-eyes");
         if (container) {
           const existing = tiltTimeouts.get(container);
           if (typeof existing === "number") {
@@ -2154,9 +2157,9 @@ window.addEventListener("DOMContentLoaded", async () => {
           tiltTimeouts.set(container, timeoutId);
         }
 
-        if (eye.classList.contains("wink")) return;
-        eye.classList.add("wink");
-        window.setTimeout(() => eye.classList.remove("wink"), 1500);
+        if (feature.classList.contains("wink")) return;
+        feature.classList.add("wink");
+        window.setTimeout(() => feature.classList.remove("wink"), 1500);
       });
     });
   })();
