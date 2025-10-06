@@ -98,6 +98,47 @@
             : false;
 
         requestAnimationFrame(() => {
+          const fieldRect = field.getBoundingClientRect();
+          const fieldWidth = Math.max(fieldRect.width, 1);
+          const fieldHeight = Math.max(fieldRect.height, 1);
+          const placements = [];
+          const boundaryPadding = Math.max(
+            12,
+            Math.min(32, Math.min(fieldWidth, fieldHeight) * 0.08)
+          );
+
+          function findPosition(radius, spacing) {
+            const minX = radius + boundaryPadding;
+            const maxX = fieldWidth - radius - boundaryPadding;
+            const minY = radius + boundaryPadding;
+            const maxY = fieldHeight - radius - boundaryPadding;
+
+            if (minX >= maxX || minY >= maxY) {
+              return null;
+            }
+
+            const maxAttempts = 80;
+            for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+              const candidateX = randomInRange(minX, maxX);
+              const candidateY = randomInRange(minY, maxY);
+
+              const hasOverlap = placements.some((placed) => {
+                const dx = placed.x - candidateX;
+                const dy = placed.y - candidateY;
+                const distance = Math.hypot(dx, dy);
+                return distance < placed.radius + radius + spacing;
+              });
+
+              if (!hasOverlap) {
+                return { x: candidateX, y: candidateY };
+              }
+            }
+
+            return null;
+          }
+
+          const spacings = [28, 24, 20, 16, 12, 8];
+
           field.querySelectorAll(".awkward-killroy").forEach((el) => {
             el.style.removeProperty("--awkward-border");
             el.style.removeProperty("--awkward-shadow");
@@ -107,19 +148,27 @@
             const saturation = randomInRange(62, 88);
             const lightness = randomInRange(56, 78);
 
-            const x = randomInRange(12, 88);
-            const y = randomInRange(12, 88);
             const minSize = isCompactViewport ? 102 : 120;
             const maxSize = isCompactViewport ? 148 : 176;
-            const size = randomInRange(minSize, maxSize);
+            const maxDimension = Math.max(
+              0,
+              Math.min(fieldWidth, fieldHeight) - boundaryPadding * 2
+            );
+            const sizeUpperBound =
+              maxDimension > 0
+                ? Math.max(minSize, Math.min(maxSize, maxDimension))
+                : minSize;
+            const initialLowerBound = Math.min(minSize, sizeUpperBound);
+            let size = randomInRange(initialLowerBound, sizeUpperBound);
             const rotate = randomInRange(-7, 7);
+            const eyeOffsetFactor = randomInRange(0.19, 0.22);
+            const eyeTopFactor = randomInRange(0.32, 0.36);
+            const eyeSizeFactor = randomInRange(0.22, 0.25);
 
-            const eyeOffset = Math.round(size * randomInRange(0.19, 0.22));
-            const eyeTop = Math.round(size * randomInRange(0.32, 0.36));
-            const eyeSize = Math.round(size * randomInRange(0.22, 0.25));
-            const eyeBorder = Math.min(4, Math.max(2, Math.round(size * 0.018)));
-            const borderWidth = Math.min(3, Math.max(2, Math.round(size * 0.016)));
-            const shadowOffset = Math.min(8, Math.max(4, Math.round(size * 0.035)));
+            const absoluteMinSize = Math.min(
+              sizeUpperBound,
+              Math.max(72, minSize * 0.75)
+            );
 
             const scleraLightness = Math.min(97, lightness + randomInRange(24, 32));
             const scleraColor = toHsl(
@@ -128,12 +177,52 @@
               scleraLightness
             );
 
+            const radius = () => size / 2;
+            let position = null;
+
+            for (const spacing of spacings) {
+              position = findPosition(radius(), spacing);
+              if (position) {
+                break;
+              }
+              if (size > absoluteMinSize) {
+                size = Math.max(absoluteMinSize, size * 0.92);
+              }
+            }
+
+            if (!position) {
+              position = findPosition(radius(), 0);
+            }
+
+            if (!position && size > absoluteMinSize) {
+              size = absoluteMinSize;
+              position = findPosition(radius(), 0);
+            }
+
+            if (!position) {
+              position = { x: fieldWidth / 2, y: fieldHeight / 2 };
+            }
+
+            const finalSize = size;
+            const eyeOffset = Math.round(finalSize * eyeOffsetFactor);
+            const eyeTop = Math.round(finalSize * eyeTopFactor);
+            const eyeSize = Math.round(finalSize * eyeSizeFactor);
+            const eyeBorder = Math.min(4, Math.max(2, Math.round(finalSize * 0.018)));
+            const borderWidth = Math.min(3, Math.max(2, Math.round(finalSize * 0.016)));
+            const shadowOffset = Math.min(8, Math.max(4, Math.round(finalSize * 0.035)));
+
+            const finalRadius = finalSize / 2;
+            placements.push({ x: position.x, y: position.y, radius: finalRadius });
+
+            const xPercent = (position.x / fieldWidth) * 100;
+            const yPercent = (position.y / fieldHeight) * 100;
+
             el.style.setProperty("--awkward-skin", toHsl(hue, saturation, lightness));
             el.style.setProperty("--awkward-sclera", scleraColor);
-            el.style.setProperty("--killroy-x", `${x.toFixed(2)}%`);
-            el.style.setProperty("--killroy-y", `${y.toFixed(2)}%`);
+            el.style.setProperty("--killroy-x", `${xPercent.toFixed(2)}%`);
+            el.style.setProperty("--killroy-y", `${yPercent.toFixed(2)}%`);
             el.style.setProperty("--killroy-rotate", `${rotate.toFixed(1)}deg`);
-            el.style.setProperty("--awkward-size", `${size.toFixed(0)}px`);
+            el.style.setProperty("--awkward-size", `${finalSize.toFixed(0)}px`);
             el.style.setProperty("--eye-offset", `${eyeOffset}px`);
             el.style.setProperty("--eye-top", `${eyeTop}px`);
             el.style.setProperty("--eye-size", `${eyeSize}px`);

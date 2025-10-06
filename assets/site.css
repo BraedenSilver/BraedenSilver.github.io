@@ -357,7 +357,9 @@ html.theme-dark .theme-toggle__icon--moon {
   display: flex;
   gap: 3rem;
   white-space: nowrap;
-  animation: announcement-scroll 18s linear infinite;
+  will-change: transform;
+  animation: announcement-scroll var(--announcement-duration, 18s) linear
+    infinite;
 }
 
 .announcement-message span {
@@ -1458,7 +1460,7 @@ details#sources[open] > ol {
   height: var(--awkward-size, var(--awkward-size-default));
   transform: translate(-50%, -50%) rotate(var(--killroy-rotate, 0deg));
   pointer-events: none;
-  opacity: 0.94;
+  opacity: 1;
   display: flex;
   align-items: center;
   justify-content: center;
