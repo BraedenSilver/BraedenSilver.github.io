@@ -8,20 +8,189 @@
     return;
   }
 
-  const config = Object.freeze({
-    minCount: 9,
-    maxCount: 15,
+  const PUPIL_RANGE_FACTOR = 0.35;
+  const BORDER_COLOR = '#111';
+  const STAGE_SATURATION = 62;
+  const defaults = Object.freeze({
+    count: 12,
     minSize: 140,
     maxSize: 340,
-    pupilRangeFactor: 0.35,
-    borderColor: '#111',
+    canvasWidth: 960,
+    canvasHeight: 540,
+    stageHue: 210,
+    stageLightness: 88,
   });
+
+  const controls = {
+    count: document.querySelector('[data-control-count]'),
+    minSize: document.querySelector('[data-control-min-size]'),
+    maxSize: document.querySelector('[data-control-max-size]'),
+    canvasWidth: document.querySelector('[data-control-canvas-width]'),
+    canvasHeight: document.querySelector('[data-control-canvas-height]'),
+    stageHue: document.querySelector('[data-control-stage-hue]'),
+    stageLightness: document.querySelector('[data-control-stage-lightness]'),
+  };
+
+  const displays = {
+    count: document.querySelector('[data-display-count]'),
+    minSize: document.querySelector('[data-display-min-size]'),
+    maxSize: document.querySelector('[data-display-max-size]'),
+    canvasWidth: document.querySelector('[data-display-canvas-width]'),
+    canvasHeight: document.querySelector('[data-display-canvas-height]'),
+    stageHue: document.querySelector('[data-display-stage-hue]'),
+    stageLightness: document.querySelector('[data-display-stage-lightness]'),
+  };
+
+  const state = {
+    count: parseControlValue(controls.count, defaults.count),
+    minSize: parseControlValue(controls.minSize, defaults.minSize),
+    maxSize: parseControlValue(controls.maxSize, defaults.maxSize),
+    canvasWidth: parseControlValue(controls.canvasWidth, defaults.canvasWidth),
+    canvasHeight: parseControlValue(controls.canvasHeight, defaults.canvasHeight),
+    stageHue: parseControlValue(controls.stageHue, defaults.stageHue),
+    stageLightness: parseControlValue(controls.stageLightness, defaults.stageLightness),
+  };
 
   let isGenerating = false;
   let isCapturing = false;
+  let pendingGeneration = false;
+  let lastUpdatedControl = null;
 
   const randomizeDefaultLabel = randomizeButton.textContent.trim();
   const screenshotDefaultLabel = screenshotButton.textContent.trim();
+
+  const controlElements = Object.values(controls).filter(Boolean);
+
+  function parseControlValue(element, fallback) {
+    if (!element) {
+      return fallback;
+    }
+    const parsed = Number(element.value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  function clampFromInput(value, element) {
+    if (!element) {
+      return value;
+    }
+    let clamped = value;
+    const min = Number(element.min);
+    const max = Number(element.max);
+    if (Number.isFinite(min)) {
+      clamped = Math.max(min, clamped);
+    }
+    if (Number.isFinite(max)) {
+      clamped = Math.min(max, clamped);
+    }
+    return clamped;
+  }
+
+  function normalizeControlValue(element, fallback) {
+    const clamped = clampFromInput(parseControlValue(element, fallback), element);
+    if (!element) {
+      return clamped;
+    }
+
+    const step = element.step === 'any' ? NaN : Number(element.step);
+    const min = Number(element.min);
+    let normalized = clamped;
+
+    if (Number.isFinite(step) && step > 0) {
+      const offset = Number.isFinite(min) ? min : 0;
+      normalized = Math.round((clamped - offset) / step) * step + offset;
+    }
+
+    normalized = Number.isFinite(normalized) ? normalized : fallback;
+    element.value = String(normalized);
+    return normalized;
+  }
+
+  function syncStateFromControls() {
+    state.count = Math.max(1, Math.round(normalizeControlValue(controls.count, state.count)));
+    state.minSize = Math.round(normalizeControlValue(controls.minSize, state.minSize));
+    state.maxSize = Math.round(normalizeControlValue(controls.maxSize, state.maxSize));
+
+    if (state.minSize > state.maxSize) {
+      if (lastUpdatedControl === controls.minSize) {
+        state.maxSize = state.minSize;
+        if (controls.maxSize) {
+          controls.maxSize.value = String(state.maxSize);
+        }
+      } else {
+        state.minSize = state.maxSize;
+        if (controls.minSize) {
+          controls.minSize.value = String(state.minSize);
+        }
+      }
+    }
+
+    state.canvasWidth = Math.round(normalizeControlValue(controls.canvasWidth, state.canvasWidth));
+    state.canvasHeight = Math.round(
+      normalizeControlValue(controls.canvasHeight, state.canvasHeight),
+    );
+    state.stageHue = normalizeControlValue(controls.stageHue, state.stageHue);
+    state.stageLightness = normalizeControlValue(
+      controls.stageLightness,
+      state.stageLightness,
+    );
+  }
+
+  function updateStageStyles() {
+    stage.style.setProperty('--joejoe-stage-width', `${state.canvasWidth}px`);
+    stage.style.setProperty('--joejoe-stage-height', `${state.canvasHeight}px`);
+    const hue = Math.round(state.stageHue);
+    const lightness = Math.round(state.stageLightness);
+    stage.style.setProperty(
+      '--joejoe-stage-bg',
+      `hsl(${hue}deg, ${STAGE_SATURATION}%, ${lightness}%)`,
+    );
+  }
+
+  function updateDisplays() {
+    if (displays.count) {
+      displays.count.textContent = `${state.count}`;
+    }
+    if (displays.minSize) {
+      displays.minSize.textContent = `${state.minSize}px`;
+    }
+    if (displays.maxSize) {
+      displays.maxSize.textContent = `${state.maxSize}px`;
+    }
+    if (displays.canvasWidth) {
+      displays.canvasWidth.textContent = `${state.canvasWidth}px`;
+    }
+    if (displays.canvasHeight) {
+      displays.canvasHeight.textContent = `${state.canvasHeight}px`;
+    }
+    if (displays.stageHue) {
+      displays.stageHue.textContent = `${Math.round(state.stageHue)} deg`;
+    }
+    if (displays.stageLightness) {
+      displays.stageLightness.textContent = `${Math.round(state.stageLightness)}%`;
+    }
+  }
+
+  function requestRandomize() {
+    if (isGenerating) {
+      pendingGeneration = true;
+      return;
+    }
+    randomizeJoejoes();
+  }
+
+  function handleControlInput(event) {
+    lastUpdatedControl = event.currentTarget;
+    syncStateFromControls();
+    updateDisplays();
+    updateStageStyles();
+    requestRandomize();
+  }
+
+  if (controlElements.length) {
+    controlElements.forEach((element) => {
+      element.addEventListener('input', handleControlInput);
+    });
+  }
 
   function randomRange(min, max) {
     return Math.random() * (max - min) + min;
@@ -93,17 +262,19 @@
   }
 
   function createJoejoeElement() {
-    const size = randomInt(config.minSize, config.maxSize);
+    const minSize = Math.min(state.minSize, state.maxSize);
+    const maxSize = Math.max(state.minSize, state.maxSize);
+    const size = randomInt(minSize, maxSize);
     const colors = buildColorSet();
     const joejoe = document.createElement('div');
     joejoe.className = 'joejoe';
     joejoe.style.setProperty('--joejoe-size', `${size}px`);
     joejoe.style.setProperty('--joejoe-skin-color', colors.headColor);
-    joejoe.style.setProperty('--joejoe-border-color', config.borderColor);
+    joejoe.style.setProperty('--joejoe-border-color', BORDER_COLOR);
     const tilt = randomRange(-12, 12);
     joejoe.style.setProperty('--joejoe-head-tilt', `${tilt.toFixed(2)}deg`);
 
-    const pupilRange = size * 0.1 * config.pupilRangeFactor;
+    const pupilRange = size * 0.1 * PUPIL_RANGE_FACTOR;
     const offsetX = randomRange(-pupilRange, pupilRange);
     const offsetY = randomRange(-pupilRange * 0.75, pupilRange * 0.65);
     joejoe.style.setProperty('--pupil-offset-x', `${offsetX.toFixed(2)}px`);
@@ -140,16 +311,19 @@
   }
 
   function randomizeJoejoes() {
-    if (isGenerating) return;
+    if (isGenerating) {
+      pendingGeneration = true;
+      return;
+    }
     isGenerating = true;
 
     randomizeButton.disabled = true;
     screenshotButton.disabled = true;
     stage.setAttribute('aria-busy', 'true');
-    randomizeButton.textContent = 'Shuffling…';
+    randomizeButton.textContent = 'Shuffling...';
 
     requestAnimationFrame(() => {
-      const count = randomInt(config.minCount, config.maxCount);
+      const count = Math.max(1, Math.round(state.count));
       const fragment = document.createDocumentFragment();
       let accentApplied = false;
 
@@ -172,6 +346,11 @@
       screenshotButton.disabled = false;
       stage.removeAttribute('aria-busy');
       isGenerating = false;
+
+      if (pendingGeneration) {
+        pendingGeneration = false;
+        randomizeJoejoes();
+      }
     });
   }
 
@@ -184,7 +363,7 @@
 
     isCapturing = true;
     screenshotButton.disabled = true;
-    screenshotButton.textContent = 'Preparing screenshot…';
+    screenshotButton.textContent = 'Preparing screenshot...';
 
     try {
       const canvas = await window.html2canvas(stage, {
@@ -226,7 +405,14 @@
     }
   }
 
-  randomizeButton.addEventListener('click', randomizeJoejoes);
+  syncStateFromControls();
+  updateDisplays();
+  updateStageStyles();
+
+  randomizeButton.addEventListener('click', () => {
+    lastUpdatedControl = null;
+    requestRandomize();
+  });
   screenshotButton.addEventListener('click', captureScreenshot);
 
   randomizeJoejoes();

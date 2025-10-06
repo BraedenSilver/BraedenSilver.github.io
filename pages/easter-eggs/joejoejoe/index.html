@@ -54,12 +54,170 @@
         aria-label="Joejoejoe generator"
       >
         <div class="joejoe-controls">
-          <button type="button" class="joejoe-button" data-randomize>
-            Randomize the Joejoes
-          </button>
-          <button type="button" class="joejoe-button" data-screenshot>
-            Download Screenshot
-          </button>
+          <div class="joejoe-control-panel" data-control-panel>
+            <div class="joejoe-control">
+              <div class="joejoe-control__header">
+                <label for="joejoe-count" class="joejoe-control__label">
+                  Joejoe Count
+                </label>
+                <span class="joejoe-control__value" data-display-count>12</span>
+              </div>
+              <input
+                type="range"
+                id="joejoe-count"
+                min="3"
+                max="30"
+                value="12"
+                step="1"
+                data-control-count
+                aria-describedby="joejoe-count-help"
+              />
+              <p id="joejoe-count-help" class="joejoe-control__help">
+                Sets how many Joejoes are generated at a time.
+              </p>
+            </div>
+
+            <div class="joejoe-control">
+              <div class="joejoe-control__header">
+                <label for="joejoe-min-size" class="joejoe-control__label">
+                  Minimum Joejoe Size
+                </label>
+                <span class="joejoe-control__value" data-display-min-size>140px</span>
+              </div>
+              <input
+                type="range"
+                id="joejoe-min-size"
+                min="80"
+                max="360"
+                value="140"
+                step="10"
+                data-control-min-size
+                aria-describedby="joejoe-min-size-help"
+              />
+              <p id="joejoe-min-size-help" class="joejoe-control__help">
+                Controls the smallest Joejoe size allowed in the random range.
+              </p>
+            </div>
+
+            <div class="joejoe-control">
+              <div class="joejoe-control__header">
+                <label for="joejoe-max-size" class="joejoe-control__label">
+                  Maximum Joejoe Size
+                </label>
+                <span class="joejoe-control__value" data-display-max-size>340px</span>
+              </div>
+              <input
+                type="range"
+                id="joejoe-max-size"
+                min="120"
+                max="420"
+                value="340"
+                step="10"
+                data-control-max-size
+                aria-describedby="joejoe-max-size-help"
+              />
+              <p id="joejoe-max-size-help" class="joejoe-control__help">
+                Sets the upper limit for Joejoe sizes in each shuffle.
+              </p>
+            </div>
+
+            <div class="joejoe-control">
+              <div class="joejoe-control__header">
+                <label for="joejoe-stage-width" class="joejoe-control__label">
+                  Canvas Width
+                </label>
+                <span class="joejoe-control__value" data-display-canvas-width>960px</span>
+              </div>
+              <input
+                type="range"
+                id="joejoe-stage-width"
+                min="420"
+                max="1280"
+                value="960"
+                step="20"
+                data-control-canvas-width
+                aria-describedby="joejoe-stage-width-help"
+              />
+              <p id="joejoe-stage-width-help" class="joejoe-control__help">
+                Choose how wide the Joejoe canvas should be.
+              </p>
+            </div>
+
+            <div class="joejoe-control">
+              <div class="joejoe-control__header">
+                <label for="joejoe-stage-height" class="joejoe-control__label">
+                  Canvas Height
+                </label>
+                <span class="joejoe-control__value" data-display-canvas-height>540px</span>
+              </div>
+              <input
+                type="range"
+                id="joejoe-stage-height"
+                min="320"
+                max="960"
+                value="540"
+                step="20"
+                data-control-canvas-height
+                aria-describedby="joejoe-stage-height-help"
+              />
+              <p id="joejoe-stage-height-help" class="joejoe-control__help">
+                Adjusts the minimum height reserved for the Joejoe canvas.
+              </p>
+            </div>
+
+            <div class="joejoe-control">
+              <div class="joejoe-control__header">
+                <label for="joejoe-stage-hue" class="joejoe-control__label">
+                  Background Hue
+                </label>
+                <span class="joejoe-control__value" data-display-stage-hue>210 deg</span>
+              </div>
+              <input
+                type="range"
+                id="joejoe-stage-hue"
+                min="0"
+                max="360"
+                value="210"
+                step="1"
+                data-control-stage-hue
+                aria-describedby="joejoe-stage-hue-help"
+              />
+              <p id="joejoe-stage-hue-help" class="joejoe-control__help">
+                Tints the canvas background by sweeping through the color wheel.
+              </p>
+            </div>
+
+              <div class="joejoe-control">
+                <div class="joejoe-control__header">
+                  <label for="joejoe-stage-lightness" class="joejoe-control__label">
+                    Background Lightness
+                  </label>
+                  <span class="joejoe-control__value" data-display-stage-lightness>88%</span>
+                </div>
+                <input
+                  type="range"
+                  id="joejoe-stage-lightness"
+                  min="40"
+                  max="95"
+                  value="88"
+                  step="1"
+                  data-control-stage-lightness
+                  aria-describedby="joejoe-stage-lightness-help"
+                />
+                <p id="joejoe-stage-lightness-help" class="joejoe-control__help">
+                  Makes the canvas background lighter or darker.
+                </p>
+              </div>
+          </div>
+
+          <div class="joejoe-actions">
+            <button type="button" class="joejoe-button" data-randomize>
+              Randomize the Joejoes
+            </button>
+            <button type="button" class="joejoe-button" data-screenshot>
+              Download Screenshot
+            </button>
+          </div>
         </div>
         <div class="joejoe-stage" data-joejoe-stage>
           <p class="joejoe-loading" data-loading-message>

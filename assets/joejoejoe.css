@@ -33,20 +33,81 @@ html.theme-dark body.joejoejoe-page {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start;
   gap: 1rem;
+  width: 100%;
+}
+
+.joejoe-control-panel {
+  flex: 1 1 280px;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.joejoe-control {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.joejoe-control__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.joejoe-control__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.joejoe-control__value {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-strong-text);
+  font-size: 0.85rem;
+}
+
+.joejoe-control__help {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-muted-text);
+  line-height: 1.35;
+}
+
+.joejoe-control input[type='range'] {
+  width: 100%;
+}
+
+.joejoe-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  flex: 0 0 200px;
+}
+
+.joejoe-actions .joejoe-button {
+  width: auto;
+  min-width: 160px;
+  max-width: 210px;
 }
 
 .joejoe-button {
   appearance: none;
   border: 2px solid var(--joejoe-panel-border);
   border-radius: 999px;
-  padding: 0.85rem 1.85rem;
-  font-size: 1.05rem;
-  font-weight: 700;
+  padding: 0.65rem 1.6rem;
+  font-size: 0.95rem;
+  font-weight: 650;
   letter-spacing: 0.02em;
   background: var(--joejoe-button-bg);
   color: var(--joejoe-button-text);
-  box-shadow: 4px 4px 0 var(--joejoe-button-shadow);
+  box-shadow: 3px 3px 0 var(--joejoe-button-shadow);
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease,
     color 0.15s ease;
@@ -55,12 +116,12 @@ html.theme-dark body.joejoejoe-page {
 .joejoe-button:hover,
 .joejoe-button:focus-visible {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--joejoe-button-shadow);
+  box-shadow: 5px 5px 0 var(--joejoe-button-shadow);
 }
 
 .joejoe-button:active {
   transform: translate(1px, 1px);
-  box-shadow: 2px 2px 0 var(--joejoe-button-shadow);
+  box-shadow: 1px 1px 0 var(--joejoe-button-shadow);
 }
 
 .joejoe-button[disabled] {
@@ -71,8 +132,10 @@ html.theme-dark body.joejoejoe-page {
 }
 
 .joejoe-stage {
-  width: 100%;
-  background: var(--joejoe-stage-bg);
+  width: min(100%, var(--joejoe-stage-width, 100%));
+  min-height: var(--joejoe-stage-height, 0px);
+  margin: 0 auto;
+  background: var(--joejoe-stage-bg, var(--color-panel-muted));
   border: 2px solid var(--joejoe-panel-border);
   border-radius: 20px;
   padding: clamp(1.5rem, 4vw, 3.5rem);
@@ -82,6 +145,7 @@ html.theme-dark body.joejoejoe-page {
   gap: clamp(1.5rem, 4vw, 3rem);
   position: relative;
   isolation: isolate;
+  transition: background 0.25s ease, min-height 0.25s ease, width 0.25s ease;
 }
 
 .joejoe-loading {
@@ -160,12 +224,22 @@ html.theme-dark body.joejoejoe-page {
     border-radius: 20px;
   }
 
+  .joejoe-control-panel {
+    grid-template-columns: 1fr;
+  }
+
   .joejoe-stage {
     border-radius: 18px;
   }
 
-  .joejoe-button {
+  .joejoe-actions {
+    flex: 1 1 100%;
     width: 100%;
     max-width: 320px;
+  }
+
+  .joejoe-actions .joejoe-button {
+    width: 100%;
+    min-width: 0;
   }
 }
