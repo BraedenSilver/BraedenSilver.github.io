@@ -1,6 +1,17 @@
 {
   "entries": [
     {
+      "id": "secret-menu-refresh",
+      "title": "Secret Menu Refresh and Friendlier IEEE Directions",
+      "date": "2025-10-06",
+      "updated": false,
+      "updated_date": "",
+      "summary": "Gave the footer Easter eggs a new trigger sequence and rewrote the TXST IEEE project walkthrough so it sounds like a conversation, not a manual.",
+      "tags": [
+        "General"
+      ]
+    },
+    {
       "id": "github-workshop-plans",
       "title": "Prepping a GitHub Workshop for IEEE",
       "date": "2025-10-05",
