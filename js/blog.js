@@ -553,6 +553,7 @@ function renderBody(blocks) {
         img.alt = block.alt || "";
         img.loading = "lazy";
         img.decoding = "async";
+        img.fetchPriority = "low";
         figure.appendChild(img);
         if (block.caption) {
           const caption = document.createElement("figcaption");
@@ -933,8 +934,9 @@ async function renderSectionEntry(section, options = {}) {
           ? working.heroAlt
           : "";
     img.alt = heroAlt;
-    img.loading = "lazy";
+    img.loading = "eager";
     img.decoding = "async";
+    img.fetchPriority = "high";
     figure.appendChild(img);
     const caption = working.hero_caption || working.heroCaption;
     if (typeof caption === "string" && caption.trim()) {

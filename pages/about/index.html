@@ -13,7 +13,19 @@
       property="og:description"
       content="Read a handful of personal highlights that paint a fuller picture of Braeden Silver."
     />
-    <link rel="stylesheet" href="/assets/site.css" />
+    <link
+      rel="preload"
+      href="/assets/site.css"
+      as="style"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/assets/site.css" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="/js/site.js"
+      as="script"
+      fetchpriority="high"
+    />
   </head>
   <body data-section="about">
     <!-- ===== Shared layout containers (populated by js/site.js) ===== -->

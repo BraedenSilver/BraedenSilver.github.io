@@ -13,7 +13,19 @@
       property="og:description"
       content="Sign the guest book to share how you found Braeden Silver or leave a friendly note."
     />
-    <link rel="stylesheet" href="/assets/site.css" />
+    <link
+      rel="preload"
+      href="/assets/site.css"
+      as="style"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/assets/site.css" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="/js/site.js"
+      as="script"
+      fetchpriority="high"
+    />
   </head>
   <body data-section="guest-book">
     <!-- ===== Shared layout containers (populated by js/site.js) ===== -->
@@ -94,23 +106,37 @@
         <h2 id="guestbook-heading" class="visually-hidden">
           Guest book messages
         </h2>
-        <div class="guestbook-thread" data-nosnippet>
-          <script
-            src="https://giscus.app/client.js"
-            data-repo="BraedenSilver/BraedenSilver.github.io"
-            data-repo-id="R_kgDOM1hCqg"
-            data-category="General"
-            data-category-id="DIC_kwDOM1hCqs4CwPl_"
-            data-mapping="pathname"
-            data-strict="0"
-            data-reactions-enabled="1"
-            data-emit-metadata="0"
-            data-input-position="bottom"
-            data-theme="preferred_color_scheme"
-            data-lang="en"
-            crossorigin="anonymous"
-            async
-          ></script>
+        <div
+          class="guestbook-thread"
+          data-nosnippet
+          data-lazy-embed="giscus"
+          data-giscus-src="https://giscus.app/client.js"
+          data-giscus-repo="BraedenSilver/BraedenSilver.github.io"
+          data-giscus-repo-id="R_kgDOM1hCqg"
+          data-giscus-category="General"
+          data-giscus-category-id="DIC_kwDOM1hCqs4CwPl_"
+          data-giscus-mapping="pathname"
+          data-giscus-strict="0"
+          data-giscus-reactions-enabled="1"
+          data-giscus-emit-metadata="0"
+          data-giscus-input-position="bottom"
+          data-giscus-theme="preferred_color_scheme"
+          data-giscus-lang="en"
+          data-giscus-crossorigin="anonymous"
+        >
+          <div class="lazy-embed-placeholder" data-lazy-embed-placeholder>
+            <p data-lazy-embed-status role="status" aria-live="polite">
+              Guest book comments load after you scroll here to keep the page
+              speedy.
+            </p>
+            <button
+              type="button"
+              class="lazy-embed-button"
+              data-lazy-embed-trigger
+            >
+              Load guest book now
+            </button>
+          </div>
           <noscript>
             <p>Enable JavaScript to view and sign the guest book via Giscus.</p>
           </noscript>

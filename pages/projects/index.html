@@ -13,7 +13,19 @@
       property="og:description"
       content="Personal builds and experiments by Braeden Silver."
     />
-    <link rel="stylesheet" href="/assets/site.css" />
+    <link
+      rel="preload"
+      href="/assets/site.css"
+      as="style"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/assets/site.css" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="/js/site.js"
+      as="script"
+      fetchpriority="high"
+    />
   </head>
   <body data-section="projects" data-content-render="projects:index">
     <!-- ===== Shared layout containers (populated by js/site.js) ===== -->

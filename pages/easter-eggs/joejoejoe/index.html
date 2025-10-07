@@ -14,7 +14,25 @@
       content="Spin up randomized Joejoejoe mascots, remix their colors, and grab a quick screenshot to share."
     />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="/assets/site.css" />
+    <link
+      rel="preload"
+      href="/assets/site.css"
+      as="style"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/assets/site.css" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="/js/site.js"
+      as="script"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      href="/assets/joejoejoe.css"
+      as="style"
+      fetchpriority="high"
+    />
     <link rel="stylesheet" href="/assets/joejoejoe.css" />
   </head>
   <body class="joejoe-page joejoejoe-page" data-section="joejoejoe">
@@ -244,6 +262,8 @@
       integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
+      defer
+      fetchpriority="low"
     ></script>
     <script src="/js/site-bootstrap.js" defer></script>
     <script src="/js/joejoejoe.js" defer></script>

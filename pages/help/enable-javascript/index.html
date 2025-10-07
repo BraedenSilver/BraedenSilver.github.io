@@ -13,7 +13,19 @@
       property="og:description"
       content="Step-by-step instructions for enabling JavaScript and clearing your browser cache."
     />
-    <link rel="stylesheet" href="/assets/site.css" />
+    <link
+      rel="preload"
+      href="/assets/site.css"
+      as="style"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/assets/site.css" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="/js/site.js"
+      as="script"
+      fetchpriority="high"
+    />
   </head>
   <body>
     <!-- ===== Shared layout containers (populated by js/site.js) ===== -->
