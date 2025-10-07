@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>Braeden Silver Blog</title>
+  <link>https://braedensilver.com/pages/blog/index.html</link>
+  <description>Updates from Braeden Silver's projects, research, and lab notes.</description>
+  <language>en-US</language>
+  <generator>Custom feed generator</generator>
+  <lastBuildDate>Mon, 06 Oct 2025 00:00:00 GMT</lastBuildDate>
+  <item>
+    <title>Secret Menu Refresh and Friendlier IEEE Directions</title>
+    <link>https://braedensilver.com/pages/blog/post.html?id=secret-menu-refresh</link>
+    <guid>https://braedensilver.com/pages/blog/post.html?id=secret-menu-refresh</guid>
+    <pubDate>Mon, 06 Oct 2025 00:00:00 GMT</pubDate>
+    <description><![CDATA[Gave the footer Easter eggs a new trigger sequence and rewrote the TXST IEEE project walkthrough so it sounds like a conversation, not a manual.]]></description>
+  </item>
+  <item>
+    <title>Prepping a GitHub Workshop for IEEE</title>
+    <link>https://braedensilver.com/pages/blog/post.html?id=github-workshop-plans</link>
+    <guid>https://braedensilver.com/pages/blog/post.html?id=github-workshop-plans</guid>
+    <pubDate>Sun, 05 Oct 2025 00:00:00 GMT</pubDate>
+    <description><![CDATA[Shared a new GitHub Pages project with our IEEE team and polished the site with a version counter and smarter banner updates.]]></description>
+  </item>
+  <item>
+    <title>Dark Mode, Guestbook Experiments, and More Maintenance</title>
+    <link>https://braedensilver.com/pages/blog/post.html?id=maintenance-and-dark-mode</link>
+    <guid>https://braedensilver.com/pages/blog/post.html?id=maintenance-and-dark-mode</guid>
+    <pubDate>Sat, 04 Oct 2025 00:00:00 GMT</pubDate>
+    <description><![CDATA[Tried out a giscus-powered guestbook, refreshed visuals with Monokai dark mode, and kept learning about SaaS while planning future creative work.]]></description>
+  </item>
+  <item>
+    <title>Why I&apos;m Starting This Blog</title>
+    <link>https://braedensilver.com/pages/blog/post.html?id=starting-the-blog</link>
+    <guid>https://braedensilver.com/pages/blog/post.html?id=starting-the-blog</guid>
+    <pubDate>Fri, 03 Oct 2025 00:00:00 GMT</pubDate>
+    <description><![CDATA[Setting an intention to share daily notes on projects, lessons, and curiosities across engineering, art, and play.]]></description>
+  </item>
+</channel>
+</rss>
