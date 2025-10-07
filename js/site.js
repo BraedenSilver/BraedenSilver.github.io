@@ -1,6 +1,10 @@
 // site.js — handles shared layout injection, "last updated" stamps,
 // and small UI effects used throughout the site.
 
+if (typeof document !== "undefined" && document.documentElement) {
+  document.documentElement.classList.add("js-enabled");
+}
+
 const EASTER_EGG_GROUP = "easter-egg";
 
 const SITE_CONTENT = Object.freeze({
@@ -17,6 +21,7 @@ const SITE_CONTENT = Object.freeze({
       label: "Blog",
       groups: ["primary", "content"],
       description: "Updates and reflections from recent work.",
+      requiresEntries: true,
     },
     {
       href: "/pages/projects/index.html",
@@ -24,6 +29,7 @@ const SITE_CONTENT = Object.freeze({
       label: "Projects",
       groups: ["primary", "content"],
       description: "Hands-on builds and experiments.",
+      requiresEntries: true,
     },
     {
       href: "/pages/research/index.html",
@@ -31,6 +37,7 @@ const SITE_CONTENT = Object.freeze({
       label: "Research",
       groups: ["primary", "content"],
       description: "Long-form investigations and notes.",
+      requiresEntries: true,
     },
     {
       href: "/pages/guest-book.html",
@@ -54,6 +61,94 @@ const SITE_CONTENT = Object.freeze({
   ],
 });
 
+const CONTENT_MANIFESTS = Object.freeze({
+  blog: "/data/blog.index.json",
+  projects: "/data/projects.index.json",
+  research: "/data/research.index.json",
+});
+
+const CONTENT_MANIFEST_VERSION = (() => {
+  const stamp =
+    typeof document !== "undefined" ? (document.lastModified || "").trim() : "";
+  if (stamp) {
+    const normalized = stamp.replace(/\D/g, "").slice(0, 12);
+    if (normalized) {
+      return normalized;
+    }
+  }
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${now.getFullYear()}${month}${day}`;
+})();
+
+const contentAvailability = new Map();
+
+function setSectionHasEntries(section, hasEntries) {
+  if (!section) {
+    return;
+  }
+  contentAvailability.set(section, Boolean(hasEntries));
+}
+
+function sectionHasEntries(section) {
+  if (!section) {
+    return true;
+  }
+  if (!contentAvailability.has(section)) {
+    return true;
+  }
+  return contentAvailability.get(section);
+}
+
+function shouldDisplayNavItem(item) {
+  if (!item) {
+    return false;
+  }
+  if (!item.requiresEntries) {
+    return true;
+  }
+  if (!item.section) {
+    return true;
+  }
+  return sectionHasEntries(item.section);
+}
+
+async function resolveContentAvailability() {
+  const manifestEntries = Object.entries(CONTENT_MANIFESTS);
+  if (!manifestEntries.length) {
+    return;
+  }
+
+  if (typeof fetch !== "function") {
+    manifestEntries.forEach(([section]) => setSectionHasEntries(section, true));
+    return;
+  }
+
+  await Promise.all(
+    manifestEntries.map(async ([section, url]) => {
+      try {
+        const response = await fetch(
+          `${url}?v=${CONTENT_MANIFEST_VERSION}`,
+          { cache: "force-cache" },
+        );
+        if (!response.ok) {
+          throw new Error(`Failed to load ${section} manifest`);
+        }
+        const data = await response.json();
+        const entries = Array.isArray(data.entries) ? data.entries : [];
+        const hasEntries = entries.some(
+          (entry) => entry && entry.id && entry.title,
+        );
+        setSectionHasEntries(section, hasEntries);
+      } catch (error) {
+        console.warn(`Content manifest unavailable for ${section}`, error);
+        setSectionHasEntries(section, true);
+      }
+    }),
+  );
+}
+
 function getEasterEggPages() {
   return SITE_CONTENT.navItems.filter((item) =>
     Array.isArray(item.groups) && item.groups.includes(EASTER_EGG_GROUP),
@@ -74,6 +169,9 @@ const ANNOUNCEMENT_SPEED_PX_PER_SECOND = 72;
 const HOME_LATEST_MEDIA_QUERY = "(max-width: 719px)";
 const HOME_LATEST_DEFAULT_LIMIT = 4;
 const HOME_LATEST_MOBILE_LIMIT = 1;
+const DEFAULT_SOCIAL_IMAGE = "";
+const DEFAULT_SOCIAL_DESCRIPTION =
+  "Braeden Silver builds approachable hardware and shares the process in public.";
 
 // Determine how many highlighted entries to surface on the BraedenSilver.com
 // home page. Desktop layouts continue to feature four items in each section,
@@ -683,7 +781,7 @@ function getNavItemsByGroup(group) {
       : typeof item.group === "string"
         ? [item.group]
         : ["primary"];
-    return groups.includes(group);
+    return groups.includes(group) && shouldDisplayNavItem(item);
   });
 }
 
@@ -1336,32 +1434,144 @@ function initAsciiLogoScaler() {
   }
 }
 
+function ensureMetaTag(name, content, { attribute = "property" } = {}) {
+  if (typeof document === "undefined") return null;
+  const head = document.head;
+  if (!head || !name || !content) return null;
+  const attr = attribute === "name" ? "name" : "property";
+  let el = head.querySelector(`meta[${attr}="${name}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute(attr, name);
+    head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+  return el;
+}
+
+function applyLastModifiedMetadata(isoString) {
+  if (!isoString) return;
+  ensureMetaTag("last-modified", isoString, { attribute: "name" });
+  ensureMetaTag("article:modified_time", isoString);
+  ensureMetaTag("og:updated_time", isoString);
+}
+
 /**
  * Stamp the page's last-modified date in the footer using only static data.
  * Attempts to read the "Last-Modified" HTTP header for the current page and
  * falls back to `document.lastModified` if that header isn't available.
  */
 async function updateLastUpdated() {
-  const t = document.getElementById("last-updated");
-  if (!t) return;
+  const target = document.getElementById("last-updated");
+  if (!target) return;
+
+  const formatOptions = { year: "numeric", month: "short", day: "numeric" };
+
+  const timeCtor =
+    typeof window !== "undefined" && "HTMLTimeElement" in window
+      ? window.HTMLTimeElement
+      : null;
+
+  const applyDate = (value) => {
+    if (!(value instanceof Date)) return false;
+    const time = value.getTime();
+    if (!Number.isFinite(time)) return false;
+    const iso = new Date(time).toISOString();
+    const readable = value.toLocaleDateString(undefined, formatOptions);
+    if (timeCtor && target instanceof timeCtor) {
+      target.textContent = readable;
+      target.dateTime = iso;
+    } else {
+      target.textContent = readable;
+      target.setAttribute("data-last-updated-iso", iso);
+    }
+    applyLastModifiedMetadata(iso);
+    return true;
+  };
 
   try {
-    const r = await fetch(location.href, { method: "HEAD" });
-    const header = r.headers.get("Last-Modified");
-    if (header) {
-      const opts = { year: "numeric", month: "short", day: "numeric" };
-      t.textContent = new Date(header).toLocaleDateString(undefined, opts);
+    const response = await fetch(location.href, { method: "HEAD" });
+    const header = response.headers.get("Last-Modified");
+    if (header && applyDate(new Date(header))) {
       return;
     }
   } catch {
     /* ignore network errors and fall back */
   }
 
-  const opts = { year: "numeric", month: "short", day: "numeric" };
-  t.textContent = new Date(document.lastModified).toLocaleDateString(
-    undefined,
-    opts,
-  );
+  const fallback = new Date(document.lastModified || Date.now());
+  if (!applyDate(fallback)) {
+    applyLastModifiedMetadata(new Date().toISOString());
+  }
+}
+
+function ensureDefaultSocialMeta() {
+  if (typeof document === "undefined") return;
+  const head = document.head;
+  if (!head) return;
+
+  const descriptionMeta = head.querySelector('meta[name="description"]');
+  const description =
+    (descriptionMeta?.getAttribute("content") || "").trim() ||
+    DEFAULT_SOCIAL_DESCRIPTION;
+
+  let socialImage = DEFAULT_SOCIAL_IMAGE;
+  if (typeof window !== "undefined" && socialImage && !/^https?:/i.test(socialImage)) {
+    socialImage = `${window.location.origin}${socialImage}`;
+  }
+  const hasSocialImage = Boolean(socialImage);
+
+  if (!descriptionMeta) {
+    const meta = document.createElement("meta");
+    meta.name = "description";
+    meta.content = description;
+    head.appendChild(meta);
+  } else if (!descriptionMeta.getAttribute("content")) {
+    descriptionMeta.setAttribute("content", description);
+  }
+
+  let canonical = head.querySelector('link[rel="canonical"]');
+  let canonicalHref = canonical?.href || "";
+  if (!canonicalHref && typeof window !== "undefined") {
+    canonicalHref = `${window.location.origin}${window.location.pathname}`;
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    canonical.href = canonicalHref;
+    head.appendChild(canonical);
+  }
+
+  ensureMetaTag("og:site_name", "Braeden Silver");
+  ensureMetaTag("og:type", "website");
+  if (canonicalHref) {
+    ensureMetaTag("og:url", canonicalHref);
+  }
+  if (!head.querySelector('meta[property="og:title"]')) {
+    ensureMetaTag("og:title", document.title || "Braeden Silver");
+  }
+  if (!head.querySelector('meta[property="og:description"]')) {
+    ensureMetaTag("og:description", description);
+  }
+  if (hasSocialImage && !head.querySelector('meta[property="og:image"]')) {
+    ensureMetaTag("og:image", socialImage);
+  }
+
+  ensureMetaTag("twitter:card", "summary_large_image", { attribute: "name" });
+  ensureMetaTag("twitter:title", document.title || "Braeden Silver", {
+    attribute: "name",
+  });
+  ensureMetaTag("twitter:description", description, { attribute: "name" });
+  if (hasSocialImage && !head.querySelector('meta[name="twitter:image"]')) {
+    ensureMetaTag("twitter:image", socialImage, { attribute: "name" });
+  }
+
+  if (!head.querySelector('link[rel="alternate"][type="application/rss+xml"]')) {
+    const feedLink = document.createElement("link");
+    feedLink.rel = "alternate";
+    feedLink.type = "application/rss+xml";
+    feedLink.href = "/rss.xml";
+    feedLink.title = "Braeden Silver Blog Feed";
+    head.appendChild(feedLink);
+  }
 }
 
 const FOOTER_VERSION_ENDPOINT =
@@ -2048,9 +2258,18 @@ async function initContentRenderers() {
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
-  const announcement = await resolveAnnouncementBanner();
+  const [announcement] = await Promise.all([
+    resolveAnnouncementBanner().catch((error) => {
+      console.warn("Failed to resolve announcement banner", error);
+      return null;
+    }),
+    resolveContentAvailability().catch((error) => {
+      console.warn("Failed to resolve content availability", error);
+    }),
+  ]);
   injectSharedLayout(announcement);
   highlightCurrentNav();
+  ensureDefaultSocialMeta();
 
   initAsciiLogoScaler();
   initAnnouncementBanner();

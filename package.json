@@ -1,0 +1,7 @@
+{
+  "name": "braedensilver-site",
+  "private": true,
+  "scripts": {
+    "build:feeds": "node scripts/generate-feeds.js"
+  }
+}

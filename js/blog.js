@@ -1017,6 +1017,16 @@ export async function renderLatestEntries(section, options = {}) {
   const latest = entries.slice(0, limit);
 
   if (!latest.length) {
+    const isHomePage =
+      typeof document !== "undefined" &&
+      document.body?.dataset?.section === "home";
+    if (isHomePage) {
+      const homeSection = root.closest(".home-section");
+      if (homeSection) {
+        homeSection.remove();
+        return;
+      }
+    }
     const emptyMessage =
       options.emptyMessage || config.emptyMessage || "No entries yet.";
     root.textContent = emptyMessage;

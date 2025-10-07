@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /pages/projects/
+Disallow: /pages/research/
+Sitemap: https://braedensilver.com/sitemap.xml
