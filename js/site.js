@@ -271,7 +271,13 @@ function loadModule(name) {
   }
   if (!moduleCache.has(name)) {
     try {
-      moduleCache.set(name, Promise.resolve(MODULE_IMPORTERS[name]()));
+      const loadPromise = Promise.resolve(MODULE_IMPORTERS[name]()).catch(
+        (error) => {
+          moduleCache.delete(name);
+          throw error;
+        },
+      );
+      moduleCache.set(name, loadPromise);
     } catch (error) {
       moduleCache.delete(name);
       return Promise.reject(error);
@@ -1036,6 +1042,13 @@ function readStoredTheme() {
 function getPreferredTheme() {
   const stored = readStoredTheme();
   if (stored) return stored;
+  if (systemDarkQuery) {
+    try {
+      return systemDarkQuery.matches ? Theme.DARK : Theme.LIGHT;
+    } catch (error) {
+      console.warn("Failed to read system color scheme preference", error);
+    }
+  }
   return Theme.LIGHT;
 }
 
@@ -1109,7 +1122,7 @@ if (typeof window !== "undefined") {
       applyTheme(event.newValue, { persist: false });
     } else if (event.newValue === null) {
       hasExplicitThemePreference = false;
-      applyTheme(Theme.LIGHT, { persist: false });
+      applyTheme(getPreferredTheme(), { persist: false });
     }
     updateThemeToggleButton();
   });
@@ -2002,12 +2015,47 @@ async function copyTextToClipboard(text) {
   const textArea = document.createElement("textarea");
   textArea.value = text;
   textArea.setAttribute("readonly", "");
+  textArea.setAttribute("aria-hidden", "true");
+  textArea.setAttribute("tabindex", "-1");
   textArea.style.position = "absolute";
   textArea.style.left = "-9999px";
+  textArea.style.opacity = "0";
+  textArea.style.pointerEvents = "none";
   document.body.appendChild(textArea);
+
+  const activeElement = document.activeElement;
+  const selection =
+    typeof window !== "undefined" && typeof window.getSelection === "function"
+      ? window.getSelection()
+      : null;
+  const storedRange =
+    selection && selection.rangeCount > 0
+      ? selection.getRangeAt(0).cloneRange()
+      : null;
+
   textArea.select();
   const succeeded = document.execCommand("copy");
   textArea.remove();
+
+  if (selection) {
+    selection.removeAllRanges();
+    if (storedRange) {
+      selection.addRange(storedRange);
+    }
+  }
+
+  if (
+    activeElement &&
+    typeof activeElement.focus === "function" &&
+    document.contains(activeElement)
+  ) {
+    try {
+      activeElement.focus({ preventScroll: true });
+    } catch {
+      activeElement.focus();
+    }
+  }
+
   if (!succeeded) {
     throw new Error("copy-failed");
   }
@@ -2257,7 +2305,14 @@ async function initContentRenderers() {
   }
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
+let siteInitialized = false;
+
+async function initializeSite() {
+  if (siteInitialized) {
+    return;
+  }
+  siteInitialized = true;
+
   const [announcement] = await Promise.all([
     resolveAnnouncementBanner().catch((error) => {
       console.warn("Failed to resolve announcement banner", error);
@@ -2496,4 +2551,14 @@ window.addEventListener("DOMContentLoaded", async () => {
       });
     });
   })();
-});
+}
+
+const startSite = () => {
+  void initializeSite();
+};
+
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", startSite, { once: true });
+} else {
+  startSite();
+}
