@@ -13,7 +13,19 @@
       property="og:description"
       content="Contact information for Braeden Silver including email and social links"
     />
-    <link rel="stylesheet" href="/assets/site.css" />
+    <link
+      rel="preload"
+      href="/assets/site.css"
+      as="style"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/assets/site.css" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="/js/site.js"
+      as="script"
+      fetchpriority="high"
+    />
   </head>
   <body data-section="contact">
     <!-- ===== Shared layout containers (populated by js/site.js) ===== -->
@@ -64,8 +76,11 @@
         <img
           src="/assets/qr-braedensilver.svg"
           alt="QR code linking to braedensilver.com"
-          loading="lazy"
           decoding="async"
+          width="200"
+          height="200"
+          fetchpriority="high"
+          loading="eager"
         />
         <figcaption>Scan to open braedensilver.com on your phone.</figcaption>
       </figure>

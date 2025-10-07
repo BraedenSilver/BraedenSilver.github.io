@@ -13,7 +13,19 @@
       property="og:description"
       content="A quietly updated log of things I build, fix, and learn."
     />
-    <link rel="stylesheet" href="/assets/site.css" />
+    <link
+      rel="preload"
+      href="/assets/site.css"
+      as="style"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/assets/site.css" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="/js/site.js"
+      as="script"
+      fetchpriority="high"
+    />
   </head>
   <body data-section="blog" data-content-render="blog:index">
     <!-- ===== Shared layout containers (populated by js/site.js) ===== -->

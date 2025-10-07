@@ -826,8 +826,10 @@ function renderQuickLinks(rootId = "home-quick-links") {
               alt=""
               class="arrow"
               aria-hidden="true"
-              loading="lazy"
               decoding="async"
+              width="60"
+              height="40"
+              fetchpriority="low"
             />
             <span class="quick-link-content">
               <span class="quick-link-label">${escapeHtml(item.label)}</span>
@@ -838,8 +840,10 @@ function renderQuickLinks(rootId = "home-quick-links") {
               alt=""
               class="arrow"
               aria-hidden="true"
-              loading="lazy"
               decoding="async"
+              width="60"
+              height="40"
+              fetchpriority="low"
             />
           </a>
         </li>`;
@@ -2116,6 +2120,151 @@ function initShareLink() {
   });
 }
 
+const GISCUS_DATA_MAPPINGS = Object.freeze([
+  ["giscusRepo", "repo"],
+  ["giscusRepoId", "repo-id"],
+  ["giscusCategory", "category"],
+  ["giscusCategoryId", "category-id"],
+  ["giscusMapping", "mapping"],
+  ["giscusStrict", "strict"],
+  ["giscusReactionsEnabled", "reactions-enabled"],
+  ["giscusEmitMetadata", "emit-metadata"],
+  ["giscusInputPosition", "input-position"],
+  ["giscusTheme", "theme"],
+  ["giscusLang", "lang"],
+]);
+
+function updateLazyEmbedStatus(container, message, isError = false) {
+  const status = container?.querySelector("[data-lazy-embed-status]");
+  if (status) {
+    status.textContent = message;
+    status.classList.toggle("is-error", Boolean(isError && message));
+  }
+}
+
+function setLazyEmbedLoadingState(container, isLoading) {
+  if (!container) return;
+  container.classList.toggle("is-loading", Boolean(isLoading));
+  if (isLoading) {
+    container.setAttribute("aria-busy", "true");
+  } else {
+    container.removeAttribute("aria-busy");
+  }
+}
+
+function loadGiscusEmbed(container) {
+  if (!container) return;
+  const state = container.dataset.lazyEmbedLoaded;
+  if (state === "pending" || state === "true") {
+    return;
+  }
+
+  container.dataset.lazyEmbedLoaded = "pending";
+  setLazyEmbedLoadingState(container, true);
+  updateLazyEmbedStatus(container, "Loading guest book…");
+
+  const trigger = container.querySelector("[data-lazy-embed-trigger]");
+  if (trigger) {
+    trigger.disabled = true;
+  }
+
+  const script = document.createElement("script");
+  script.src = container.dataset.giscusSrc || "https://giscus.app/client.js";
+  script.async = true;
+  const crossOrigin = container.dataset.giscusCrossorigin || "anonymous";
+  script.crossOrigin = crossOrigin;
+
+  GISCUS_DATA_MAPPINGS.forEach(([dataKey, attrName]) => {
+    const value = container.dataset[dataKey];
+    if (value !== undefined) {
+      script.setAttribute(`data-${attrName}`, value);
+    }
+  });
+
+  script.addEventListener("load", () => {
+    container.dataset.lazyEmbedLoaded = "true";
+    setLazyEmbedLoadingState(container, false);
+    const placeholder = container.querySelector("[data-lazy-embed-placeholder]");
+    placeholder?.remove();
+  });
+
+  script.addEventListener("error", () => {
+    delete container.dataset.lazyEmbedLoaded;
+    setLazyEmbedLoadingState(container, false);
+    updateLazyEmbedStatus(
+      container,
+      "Guest book failed to load. Try again?",
+      true,
+    );
+    if (trigger) {
+      trigger.disabled = false;
+      try {
+        trigger.focus({ preventScroll: true });
+      } catch {
+        trigger.focus();
+      }
+    }
+    script.remove();
+  });
+
+  container.appendChild(script);
+}
+
+function loadLazyEmbed(container) {
+  if (!container) return;
+  const type = container.dataset.lazyEmbed;
+  if (!type) return;
+  if (type === "giscus") {
+    loadGiscusEmbed(container);
+  }
+}
+
+function initLazyEmbeds() {
+  if (typeof document === "undefined") return;
+  const containers = document.querySelectorAll("[data-lazy-embed]");
+  if (!containers.length) return;
+
+  const handleTrigger = (event) => {
+    const container = event.currentTarget?.closest("[data-lazy-embed]");
+    if (!container) return;
+    event.preventDefault();
+    loadLazyEmbed(container);
+  };
+
+  containers.forEach((container) => {
+    const trigger = container.querySelector("[data-lazy-embed-trigger]");
+    if (trigger) {
+      trigger.addEventListener("click", handleTrigger);
+      trigger.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+          event.preventDefault();
+          loadLazyEmbed(container);
+        }
+      });
+    }
+  });
+
+  if (typeof window !== "undefined" && "IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            obs.unobserve(entry.target);
+            loadLazyEmbed(entry.target);
+          }
+        });
+      },
+      { rootMargin: "200px 0px" },
+    );
+    containers.forEach((container) => observer.observe(container));
+    return;
+  }
+
+  window.setTimeout(() => {
+    containers.forEach((container) => loadLazyEmbed(container));
+  }, 1200);
+}
+
 // Map each data-content-render token to its associated loader and fallback handler.
 const CONTENT_RENDERERS = Object.freeze({
   "blog:index": {
@@ -2331,6 +2480,7 @@ async function initializeSite() {
   initThemeToggle();
   initHistoryBackLinks();
   initShareLink();
+  initLazyEmbeds();
   initKonamiCode();
 
   await Promise.all([

@@ -2,7 +2,19 @@
 <html lang="en">
   <head>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="/assets/site.css" />
+    <link
+      rel="preload"
+      href="/assets/site.css"
+      as="style"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/assets/site.css" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="/js/site.js"
+      as="script"
+      fetchpriority="high"
+    />
     <meta charset="utf-8" />
     <title>
       Braeden Silver | Electrical & Computer Engineering Projects and Bio

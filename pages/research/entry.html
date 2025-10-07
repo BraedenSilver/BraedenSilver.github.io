@@ -10,7 +10,19 @@
       property="og:description"
       content="Research entry from Braeden Silver."
     />
-    <link rel="stylesheet" href="/assets/site.css" />
+    <link
+      rel="preload"
+      href="/assets/site.css"
+      as="style"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/assets/site.css" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="/js/site.js"
+      as="script"
+      fetchpriority="high"
+    />
   </head>
   <body data-section="research" data-content-render="research:entry">
     <!-- ===== Shared layout containers (populated by js/site.js) ===== -->
