@@ -1,0 +1,245 @@
+body.orbby-playground-page {
+  --orbby-panel-bg: var(--color-surface);
+  --orbby-panel-border: var(--color-border);
+  --orbby-panel-shadow: var(--color-shadow);
+  --orbby-stage-bg: var(--color-panel-muted);
+  --orbby-button-bg: var(--color-strong-bg);
+  --orbby-button-text: var(--color-strong-text);
+  --orbby-button-shadow: var(--color-shadow);
+}
+
+body.orbby-playground-page .footer-static {
+  display: none;
+}
+
+html.theme-dark body.orbby-playground-page {
+  --orbby-panel-bg: var(--color-panel-muted);
+  --orbby-stage-bg: var(--color-blog-filter-bg);
+}
+
+.orbby-playground {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+  align-items: center;
+  justify-items: center;
+  padding: clamp(1.5rem, 3vw, 2.75rem);
+  border: 2px solid var(--orbby-panel-border);
+  border-radius: 24px;
+  background: var(--orbby-panel-bg);
+  box-shadow: 10px 10px 0 var(--orbby-panel-shadow);
+}
+
+.orbby-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.orbby-control-panel {
+  flex: 1 1 280px;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.orbby-control {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.orbby-control__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.orbby-control__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.orbby-control__value {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-strong-text);
+  font-size: 0.85rem;
+}
+
+.orbby-control__help {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-muted-text);
+  line-height: 1.35;
+}
+
+.orbby-control input[type='range'] {
+  width: 100%;
+}
+
+.orbby-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  flex: 0 0 200px;
+}
+
+.orbby-actions .orbby-button {
+  width: auto;
+  min-width: 160px;
+  max-width: 210px;
+}
+
+.orbby-button {
+  appearance: none;
+  border: 2px solid var(--orbby-panel-border);
+  border-radius: 999px;
+  padding: 0.65rem 1.6rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  background: var(--orbby-button-bg);
+  color: var(--orbby-button-text);
+  box-shadow: 3px 3px 0 var(--orbby-button-shadow);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease,
+    color 0.15s ease;
+}
+
+.orbby-button:hover,
+.orbby-button:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--orbby-button-shadow);
+}
+
+.orbby-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--orbby-button-shadow);
+}
+
+.orbby-button[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 2px 2px 0 var(--orbby-button-shadow);
+}
+
+.orbby-stage {
+  width: min(100%, var(--orbby-stage-width, 100%));
+  min-height: var(--orbby-stage-height, 0px);
+  margin: 0 auto;
+  background: var(--orbby-stage-bg, var(--color-panel-muted));
+  border: 2px solid var(--orbby-panel-border);
+  border-radius: 20px;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  position: relative;
+  isolation: isolate;
+  transition: background 0.25s ease, min-height 0.25s ease, width 0.25s ease;
+}
+
+.orbby-loading {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-muted-text);
+}
+
+.orbby {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--orbby-size, 320px);
+  height: var(--orbby-size, 320px);
+  --orbby-outline: 5px;
+  --orbby-eye-size: calc(var(--orbby-size) * 0.234375);
+  --orbby-eye-top: calc(var(--orbby-size) * 0.315625);
+  --orbby-eye-inset: calc(var(--orbby-size) * 0.2);
+  --orbby-pupil-size: calc(var(--orbby-size) * 0.1);
+  --orbby-head-tilt: 0deg;
+  --pupil-offset-x: 0px;
+  --pupil-offset-y: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.orbby .head {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: var(--orbby-outline) solid var(--orbby-border-color, var(--color-orbby-border));
+  background: var(--orbby-skin-color, var(--color-orbby-skin));
+  box-shadow: 4px 4px 0 var(--color-shadow);
+  transform: rotate(var(--orbby-head-tilt));
+  transform-origin: center;
+  transition: transform 220ms ease;
+}
+
+.orbby .eye {
+  position: absolute;
+  width: var(--orbby-eye-size);
+  height: var(--orbby-eye-size);
+  border-radius: 50%;
+  border: var(--orbby-outline) solid var(--orbby-border-color, var(--color-orbby-border));
+  background: var(--color-orbby-sclera);
+  overflow: hidden;
+}
+
+.orbby .eye.left {
+  left: var(--orbby-eye-inset);
+  top: var(--orbby-eye-top);
+}
+
+.orbby .eye.right {
+  right: var(--orbby-eye-inset);
+  top: var(--orbby-eye-top);
+}
+
+.orbby .pupil {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--orbby-pupil-size);
+  height: var(--orbby-pupil-size);
+  border-radius: 50%;
+  background: var(--color-orbby-pupil);
+  transform: translate(-50%, -50%) translate(var(--pupil-offset-x), var(--pupil-offset-y));
+  transition: transform 160ms ease;
+}
+
+@media (max-width: 720px) {
+  .orbby-playground {
+    padding: 1.5rem;
+    border-radius: 20px;
+  }
+
+  .orbby-control-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .orbby-stage {
+    border-radius: 18px;
+  }
+
+  .orbby-actions {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .orbby-actions .orbby-button {
+    width: 100%;
+    min-width: 0;
+  }
+}

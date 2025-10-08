@@ -20,10 +20,10 @@ html {
   --color-blog-filter-bg: #f6f5ff;
   --color-project-filter-bg: #ffe9d6;
   --color-logo: var(--color-text);
-  --color-joejoe-skin: #f92672;
-  --color-joejoe-border: #000;
-  --color-joejoe-pupil: #000;
-  --color-joejoe-sclera: #fff;
+  --color-orbby-skin: #f92672;
+  --color-orbby-border: #000;
+  --color-orbby-pupil: #000;
+  --color-orbby-sclera: #fff;
 }
 
 html.theme-dark {
@@ -44,10 +44,10 @@ html.theme-dark {
   --color-blog-filter-bg: #2f3126;
   --color-project-filter-bg: #3b3221;
   --color-logo: #f4bf75;
-  --color-joejoe-skin: #f92672;
-  --color-joejoe-border: #000;
-  --color-joejoe-pupil: #000;
-  --color-joejoe-sclera: #fff;
+  --color-orbby-skin: #f92672;
+  --color-orbby-border: #000;
+  --color-orbby-pupil: #000;
+  --color-orbby-sclera: #fff;
 }
 
 *, *::before, *::after {
@@ -419,8 +419,8 @@ html.theme-dark .theme-toggle__icon--moon {
   .footer-eyes .head,
   .footer-eyes .eye,
   .footer-eyes .pupil,
-  .joejoe-full.footer-eyes .eye,
-  .joejoe-full.footer-eyes .pupil {
+  .orbby-full.footer-eyes .eye,
+  .orbby-full.footer-eyes .pupil {
     transition: none !important;
   }
 
@@ -773,7 +773,7 @@ html.theme-dark .theme-toggle__icon--moon {
   min-width: auto;
 }
 
-.joejoe-peek {
+.orbby-peek {
   position: absolute;
   bottom: -30px;
   right: 10px;
@@ -782,15 +782,15 @@ html.theme-dark .theme-toggle__icon--moon {
   overflow: visible;
 }
 
-.joejoe-peek .head {
+.orbby-peek .head {
   position: absolute;
   top: 0;
   right: 0;
   width: 120px;
   height: 120px;
-  border: 2px solid var(--color-joejoe-border);
+  border: 2px solid var(--color-orbby-border);
   border-radius: 50%;
-  background: var(--color-joejoe-skin);
+  background: var(--color-orbby-skin);
   box-shadow: 4px 4px 0 var(--color-shadow);
 }
 
@@ -800,8 +800,8 @@ html.theme-dark .theme-toggle__icon--moon {
   width: var(--eye-size);
   height: var(--eye-size);
   border-radius: 50%;
-  background: var(--color-joejoe-sclera);
-  border: var(--eye-border) solid var(--color-joejoe-border);
+  background: var(--color-orbby-sclera);
+  border: var(--eye-border) solid var(--color-orbby-border);
   position: absolute;
   overflow: hidden;
   transition: all 150ms ease;
@@ -823,7 +823,7 @@ html.theme-dark .theme-toggle__icon--moon {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--color-joejoe-pupil);
+  background: var(--color-orbby-pupil);
   position: absolute;
   left: 50%;
   top: 50%;
@@ -836,7 +836,7 @@ html.theme-dark .theme-toggle__icon--moon {
   height: 0;
   top: calc(var(--eye-top) + var(--eye-size) / 2 - var(--eye-border) / 2);
   border: none;
-  border-top: var(--eye-border) solid var(--color-joejoe-border);
+  border-top: var(--eye-border) solid var(--color-orbby-border);
   border-radius: 0;
 }
 
@@ -844,7 +844,7 @@ html.theme-dark .theme-toggle__icon--moon {
   display: none;
 }
 
-body.joejoe-page .joejoe-peek {
+body.orbby-page .orbby-peek {
   display: none;
 }
 
@@ -875,14 +875,14 @@ body.joejoe-page .joejoe-peek {
     text-align: right;
   }
 
-  .joejoe-peek {
+  .orbby-peek {
     right: 10px;
     left: auto;
     transform: none;
   }
 }
 
-body.joejoe-page main {
+body.orbby-page main {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -891,53 +891,53 @@ body.joejoe-page main {
   text-align: center;
 }
 
-.joejoe-full {
+.orbby-full {
   position: relative;
   width: 320px;
   height: 320px;
 }
 
-.joejoe-full .head {
+.orbby-full .head {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  border: 5px solid var(--color-joejoe-border);
+  border: 5px solid var(--color-orbby-border);
   border-radius: 50%;
-  background: var(--color-joejoe-skin);
+  background: var(--color-orbby-skin);
 }
 
-.joejoe-full.footer-eyes .eye {
+.orbby-full.footer-eyes .eye {
   position: absolute;
   --eye-size: 75px;
   --eye-border: 5px;
   width: var(--eye-size);
   height: var(--eye-size);
-  border: var(--eye-border) solid var(--color-joejoe-border);
+  border: var(--eye-border) solid var(--color-orbby-border);
   border-radius: 50%;
-  background: var(--color-joejoe-sclera);
+  background: var(--color-orbby-sclera);
   overflow: hidden;
   transition: all 150ms ease;
 }
 
-.joejoe-full.footer-eyes .eye.left {
+.orbby-full.footer-eyes .eye.left {
   left: 64px;
   --eye-top: 101px;
   top: var(--eye-top);
 }
 
-.joejoe-full.footer-eyes .eye.right {
+.orbby-full.footer-eyes .eye.right {
   right: 64px;
   --eye-top: 101px;
   top: var(--eye-top);
 }
 
-.joejoe-full.footer-eyes .pupil {
+.orbby-full.footer-eyes .pupil {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--color-joejoe-pupil);
+  background: var(--color-orbby-pupil);
   position: absolute;
   left: 50%;
   top: 50%;

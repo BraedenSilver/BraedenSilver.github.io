@@ -52,10 +52,10 @@ const SITE_CONTENT = Object.freeze({
       groups: ["primary"],
     },
     {
-      href: "/pages/easter-eggs/joejoejoe/index.html",
-      section: "joejoejoe",
-      label: "Joejoejoe Playground",
-      description: "Spin up randomized Joejoe mascots.",
+      href: "/pages/easter-eggs/orbby/index.html",
+      section: "orbby",
+      label: "Orbby Playground",
+      description: "Spin up randomized Orbby mascots.",
       groups: [EASTER_EGG_GROUP],
     },
   ],
@@ -976,7 +976,7 @@ function renderFooter(yearText) {
       <span class="footer-share-feedback" data-share-feedback aria-live="polite"></span>
     </div>
 
-    <div class="joejoe-peek footer-eyes" aria-hidden="true">
+    <div class="orbby-peek footer-eyes" aria-hidden="true">
       <div class="head">
         <div class="eye left"><div class="pupil"></div></div>
         <div class="eye right"><div class="pupil"></div></div>
