@@ -139,6 +139,13 @@
       "message": "Happy St. Patrick's Day! \ud83c\udf40"
     },
     {
+      "name": "Triceratops Named",
+      "type": "fixed-date",
+      "month": 3,
+      "day": 21,
+      "message": "Saluting the day Triceratops got its name in 1889! \ud83e\udd95\ud83c\udf31"
+    },
+    {
       "name": "World Backup Day",
       "type": "fixed-date",
       "month": 3,
@@ -180,6 +187,13 @@
       "message": "Celebrating Yuri Gagarin \u2014 first human in space! \ud83d\ude80"
     },
     {
+      "name": "Spinosaurus Debut",
+      "type": "fixed-date",
+      "month": 4,
+      "day": 12,
+      "message": "Roaring back to 1915 when Spinosaurus made headlines! \ud83e\udd96\ud83c\udf0a"
+    },
+    {
       "name": "Thomas Jefferson's Birthday",
       "type": "fixed-date",
       "month": 4,
@@ -192,6 +206,13 @@
       "month": 4,
       "day": 15,
       "message": "Honoring Leonardo da Vinci and remembering the Titanic. \ud83c\udfa8\ud83d\udea2"
+    },
+    {
+      "name": "Tyrannosaurus rex Named",
+      "type": "fixed-date",
+      "month": 4,
+      "day": 15,
+      "message": "Roaring for Tyrannosaurus rex's 1905 debut! \ud83e\udd96\ud83c\udf89"
     },
     {
       "name": "Earth Day",

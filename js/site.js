@@ -952,10 +952,12 @@ function renderFooter(yearText) {
   <div class="footer-bar">
     <div class="footer-meta">
       <p class="last-updated">
-        Last updated: <span id="last-updated">See Git history</span>
-        <a
+        Last updated:
+        <time id="last-updated" datetime="">See Git history</time>
+        <button
+          type="button"
           class="footer-version"
-          href="https://github.com/BraedenSilver/BraedenSilver.github.io"
+          data-secret-trigger
         >
           Version
           <span
@@ -963,12 +965,27 @@ function renderFooter(yearText) {
             data-version-prefix="V0.1."
             data-version-fallback="194"
           >V0.1.194</span>
+        </button>
+        <a
+          class="footer-source-link"
+          href="https://github.com/BraedenSilver/BraedenSilver.github.io"
+        >
+          View source ↗
         </a>
       </p>
+    </div>
+
+    <div class="footer-share-group">
       <button type="button" class="footer-share" data-share-button>
         Copy page link
       </button>
-      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Activate dark mode" aria-pressed="false">
+      <button
+        type="button"
+        class="theme-toggle"
+        data-theme-toggle
+        aria-label="Activate dark mode"
+        aria-pressed="false"
+      >
         <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
         <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
         <span class="visually-hidden">Toggle theme</span>
@@ -1684,6 +1701,18 @@ function initKonamiCode() {
   const eyeBuffer = [];
   let eyeResetTimeout = null;
   let previousFocus = null;
+  let versionTapCount = 0;
+  let versionTapTimeout = null;
+
+  const resetVersionTap = () => {
+    versionTapCount = 0;
+    if (versionTapTimeout !== null) {
+      if (typeof window !== "undefined") {
+        window.clearTimeout(versionTapTimeout);
+      }
+      versionTapTimeout = null;
+    }
+  };
 
   const resetEyeBuffer = () => {
     eyeBuffer.length = 0;
@@ -1712,6 +1741,7 @@ function initKonamiCode() {
     previousFocus = null;
     buffer.length = 0;
     resetEyeBuffer();
+    resetVersionTap();
   };
 
   const buildMenuLink = (egg) => {
@@ -1821,6 +1851,7 @@ function initKonamiCode() {
     document.body.classList.add("konami-active");
     buffer.length = 0;
     resetEyeBuffer();
+    resetVersionTap();
 
     requestAnimationFrame(() => {
       const focusable = getFocusableControls();
@@ -1862,6 +1893,28 @@ function initKonamiCode() {
       eyeSequence.every((expected, index) => eyeBuffer[index] === expected)
     ) {
       spawnOverlay();
+    }
+  };
+
+  const registerVersionTap = () => {
+    if (document.body.classList.contains("konami-active")) {
+      return;
+    }
+
+    versionTapCount += 1;
+    if (versionTapCount >= 5) {
+      spawnOverlay();
+      return;
+    }
+
+    if (typeof window !== "undefined") {
+      if (versionTapTimeout !== null) {
+        window.clearTimeout(versionTapTimeout);
+      }
+      versionTapTimeout = window.setTimeout(() => {
+        versionTapTimeout = null;
+        versionTapCount = 0;
+      }, 1200);
     }
   };
 
@@ -1917,6 +1970,27 @@ function initKonamiCode() {
         eye.addEventListener("pointerdown", trigger);
       } else {
         eye.addEventListener("click", trigger);
+      }
+    });
+  }
+
+  const versionTrigger = document.querySelector("[data-secret-trigger]");
+  if (versionTrigger) {
+    const triggerVersionTap = () => registerVersionTap();
+
+    if (typeof window !== "undefined" && "PointerEvent" in window) {
+      versionTrigger.addEventListener("pointerdown", triggerVersionTap);
+    } else {
+      versionTrigger.addEventListener("click", triggerVersionTap);
+    }
+
+    versionTrigger.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        triggerVersionTap();
+      } else if (event.key === " ") {
+        event.preventDefault();
+        triggerVersionTap();
       }
     });
   }
