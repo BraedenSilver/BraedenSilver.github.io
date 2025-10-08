@@ -1,83 +1,106 @@
 {
-  "defaultMessages": ["Total Site Overhaul is underway"],
+  "defaultMessages": [
+    "Total Site Overhaul is underway"
+  ],
   "defaultRepeat": 1,
   "events": [
-    { "name": "New Year's Day", "type": "fixed-date", "month": 1, "day": 1 },
-    { "name": "Isaac Newton's Birthday", "type": "fixed-date", "month": 1, "day": 4 },
+    {
+      "name": "New Year's Day",
+      "type": "fixed-date",
+      "month": 1,
+      "day": 1,
+      "message": "Happy New Year's Day! \ud83c\udf89"
+    },
+    {
+      "name": "Isaac Newton's Birthday",
+      "type": "fixed-date",
+      "month": 1,
+      "day": 4,
+      "message": "Honoring Isaac Newton's birthday! \ud83c\udf4e"
+    },
     {
       "name": "Stephen Hawking & Elvis Presley's Birthday",
       "type": "fixed-date",
       "month": 1,
       "day": 8,
-      "message": "Celebrating Stephen Hawking and Elvis Presley's shared birthday!"
+      "message": "Celebrating Stephen Hawking and Elvis Presley's shared birthday! \ud83d\udef0\ufe0f\ud83c\udfb8"
     },
     {
       "name": "World Logic Day",
       "type": "fixed-date",
       "month": 1,
       "day": 14,
-      "message": "Happy World Logic Day — and cheers to Albert Schweitzer!"
+      "message": "Happy World Logic Day \u2014 and cheers to Albert Schweitzer! \ud83e\udde0"
     },
     {
       "name": "Martin Luther King Jr.'s Birthday",
       "type": "fixed-date",
       "month": 1,
       "day": 15,
-      "message": "Honoring Dr. Martin Luther King Jr.'s birthday."
+      "message": "Honoring Dr. Martin Luther King Jr.'s birthday. \ud83d\udd4a\ufe0f"
     },
     {
       "name": "Buzz Aldrin's Birthday",
       "type": "fixed-date",
       "month": 1,
       "day": 20,
-      "message": "Saluting Buzz Aldrin on his birthday!"
+      "message": "Saluting Buzz Aldrin on his birthday! \ud83d\ude80"
     },
     {
       "name": "Henry Every's Great Mughal Heist",
       "type": "fixed-date",
       "month": 1,
       "day": 26,
-      "message": "Remembering Henry Every's legendary Great Mughal heist of 1695."
+      "message": "Remembering Henry Every's legendary Great Mughal heist of 1695. \ud83c\udff4\u200d\u2620\ufe0f"
     },
     {
       "name": "Data Privacy Day",
       "type": "fixed-date",
       "month": 1,
-      "day": 28
+      "day": 28,
+      "message": "Stay safe online for Data Privacy Day. \ud83d\udd10"
     },
     {
       "name": "Open Source Day",
       "type": "fixed-date",
       "month": 2,
-      "day": 3
+      "day": 3,
+      "message": "Celebrating Open Source Day! \ud83d\udcbb"
     },
     {
       "name": "Thomas Edison's Birthday",
       "type": "fixed-date",
       "month": 2,
       "day": 11,
-      "message": "Happy Inventors' Day — celebrate Thomas Edison and creators everywhere!"
+      "message": "Happy Inventors' Day \u2014 celebrate Thomas Edison and creators everywhere! \ud83d\udca1"
     },
     {
       "name": "Lincoln & Darwin's Birthday",
       "type": "fixed-date",
       "month": 2,
       "day": 12,
-      "message": "Cheers to Abraham Lincoln and Charles Darwin sharing February 12th!"
+      "message": "Cheers to Abraham Lincoln and Charles Darwin sharing February 12th! \ud83c\udfa9\ud83e\uddec"
     },
-    { "name": "Valentine's Day", "type": "fixed-date", "month": 2, "day": 14 },
+    {
+      "name": "Valentine's Day",
+      "type": "fixed-date",
+      "month": 2,
+      "day": 14,
+      "message": "Happy Valentine's Day! \u2764\ufe0f"
+    },
     {
       "name": "Galileo & ENIAC Day",
       "type": "fixed-date",
       "month": 2,
       "day": 15,
-      "message": "Saluting Galileo Galilei and the unveiling of ENIAC!"
+      "message": "Saluting Galileo Galilei and the unveiling of ENIAC! \ud83d\udd2d\ud83d\udcbb"
     },
     {
       "name": "George Washington's Birthday",
       "type": "fixed-date",
       "month": 2,
-      "day": 22
+      "day": 22,
+      "message": "Celebrating George Washington's birthday. \ud83c\uddfa\ud83c\uddf8"
     },
     {
       "name": "Presidents Day",
@@ -85,120 +108,153 @@
       "month": 2,
       "weekday": 1,
       "occurrence": 3,
-      "message": "Honoring U.S. Presidents on Presidents Day."
+      "message": "Honoring U.S. Presidents on Presidents Day. \ud83c\uddfa\ud83c\uddf8"
     },
-    { "name": "Alexander Graham Bell's Birthday", "type": "fixed-date", "month": 3, "day": 3 },
+    {
+      "name": "Alexander Graham Bell's Birthday",
+      "type": "fixed-date",
+      "month": 3,
+      "day": 3,
+      "message": "Ringing in Alexander Graham Bell's birthday! \ud83d\udcde"
+    },
     {
       "name": "Anne Bonny's Birthday",
       "type": "fixed-date",
       "month": 3,
       "day": 8,
-      "message": "Celebrating Anne Bonny — pirate legend and icon!"
+      "message": "Celebrating Anne Bonny \u2014 pirate legend and icon! \ud83c\udff4\u200d\u2620\ufe0f"
     },
     {
       "name": "Pi Day",
       "type": "fixed-date",
       "month": 3,
       "day": 14,
-      "message": "Happy Pi Day and Albert Einstein's birthday!"
+      "message": "Happy Pi Day and Albert Einstein's birthday! \ud83e\udd67"
     },
-    { "name": "St. Patrick's Day", "type": "fixed-date", "month": 3, "day": 17 },
+    {
+      "name": "St. Patrick's Day",
+      "type": "fixed-date",
+      "month": 3,
+      "day": 17,
+      "message": "Happy St. Patrick's Day! \ud83c\udf40"
+    },
     {
       "name": "World Backup Day",
       "type": "fixed-date",
       "month": 3,
       "day": 31,
-      "message": "Don't forget to back up your data — it's World Backup Day!"
+      "message": "Don't forget to back up your data \u2014 it's World Backup Day! \ud83d\udcbe"
     },
     {
       "name": "Easter Sunday",
       "type": "computed",
       "rule": "western-easter",
-      "message": "Happy Easter Sunday!"
+      "message": "Happy Easter Sunday! \ud83d\udc23"
     },
     {
       "name": "Embrace the Chaos Day",
       "type": "fixed-date",
       "month": 4,
       "day": 1,
-      "message": "Embrace the Chaos — happy April Fools' Day!"
+      "message": "Embrace the Chaos \u2014 happy April Fools' Day! \ud83c\udfad"
     },
     {
       "name": "404 Day",
       "type": "fixed-date",
       "month": 4,
       "day": 4,
-      "message": "All systems go — it's 404 Day!"
+      "message": "All systems go \u2014 it's 404 Day! \ud83d\udedc"
     },
     {
       "name": "Titanic Sets Sail",
       "type": "fixed-date",
       "month": 4,
       "day": 10,
-      "message": "Remembering the Titanic's maiden voyage departure in 1912."
+      "message": "Remembering the Titanic's maiden voyage departure in 1912. \ud83d\udea2"
     },
     {
       "name": "Yuri Gagarin's Spaceflight",
       "type": "fixed-date",
       "month": 4,
       "day": 12,
-      "message": "Celebrating Yuri Gagarin — first human in space!"
+      "message": "Celebrating Yuri Gagarin \u2014 first human in space! \ud83d\ude80"
     },
     {
       "name": "Thomas Jefferson's Birthday",
       "type": "fixed-date",
       "month": 4,
-      "day": 13
+      "day": 13,
+      "message": "Celebrating Thomas Jefferson's birthday. \ud83d\udd8b\ufe0f"
     },
     {
       "name": "Leonardo da Vinci & Titanic Day",
       "type": "fixed-date",
       "month": 4,
       "day": 15,
-      "message": "Honoring Leonardo da Vinci and remembering the Titanic."
+      "message": "Honoring Leonardo da Vinci and remembering the Titanic. \ud83c\udfa8\ud83d\udea2"
     },
-    { "name": "Earth Day", "type": "fixed-date", "month": 4, "day": 22 },
+    {
+      "name": "Earth Day",
+      "type": "fixed-date",
+      "month": 4,
+      "day": 22,
+      "message": "Happy Earth Day! \ud83c\udf0e"
+    },
     {
       "name": "William Shakespeare's Birthday",
       "type": "fixed-date",
       "month": 4,
       "day": 23,
-      "message": "To be festive or not — happy birthday, William Shakespeare!"
+      "message": "To be festive or not \u2014 happy birthday, William Shakespeare! \ud83c\udfad"
     },
-    { "name": "Star Wars Day", "type": "fixed-date", "month": 5, "day": 4 },
-    { "name": "V-E Day", "type": "fixed-date", "month": 5, "day": 8 },
+    {
+      "name": "Star Wars Day",
+      "type": "fixed-date",
+      "month": 5,
+      "day": 4,
+      "message": "May the 4th be with you! \u2728"
+    },
+    {
+      "name": "V-E Day",
+      "type": "fixed-date",
+      "month": 5,
+      "day": 8,
+      "message": "Remembering V-E Day. \ud83d\udd4a\ufe0f"
+    },
     {
       "name": "Meme Day",
       "type": "fixed-date",
       "month": 5,
       "day": 9,
-      "message": "Happy Meme Day — may your jokes never die!"
+      "message": "Happy Meme Day \u2014 may your jokes never die! \ud83d\ude02"
     },
     {
       "name": "International Dinosaur Day",
       "type": "fixed-date",
       "month": 5,
       "day": 15,
-      "message": "Happy International Dinosaur Day — rawr means party on!"
+      "message": "Happy International Dinosaur Day \u2014 rawr means party on! \ud83e\udd96"
     },
     {
       "name": "Vasco da Gama Reaches India",
       "type": "fixed-date",
       "month": 5,
-      "day": 20
+      "day": 20,
+      "message": "Vasco da Gama reached India today in 1498. \u2693"
     },
     {
       "name": "World Goth Day",
       "type": "fixed-date",
       "month": 5,
-      "day": 22
+      "day": 22,
+      "message": "Celebrate World Goth Day. \ud83d\udda4"
     },
     {
       "name": "Blackbeard Blockades Charleston",
       "type": "fixed-date",
       "month": 5,
       "day": 23,
-      "message": "Blackbeard blockaded Charleston on this day in 1718."
+      "message": "Blackbeard blockaded Charleston on this day in 1718. \ud83c\udff4\u200d\u2620\ufe0f"
     },
     {
       "name": "Memorial Day",
@@ -206,182 +262,204 @@
       "month": 5,
       "weekday": 1,
       "occurrence": -1,
-      "message": "Honoring those who gave all this Memorial Day."
+      "message": "Honoring those who gave all this Memorial Day. \ud83d\udd6f\ufe0f"
     },
     {
       "name": "Queen Elizabeth II's Coronation",
       "type": "fixed-date",
       "month": 6,
-      "day": 2
+      "day": 2,
+      "message": "Honoring Queen Elizabeth II's coronation. \ud83d\udc51"
     },
     {
       "name": "Socrates' Birthday (Approx.)",
       "type": "fixed-date",
       "month": 6,
       "day": 4,
-      "message": "Reflecting on philosophy for Socrates' (approximate) birthday."
+      "message": "Reflecting on philosophy for Socrates' (approximate) birthday. \ud83c\udfdb\ufe0f"
     },
-    { "name": "D-Day", "type": "fixed-date", "month": 6, "day": 6 },
+    {
+      "name": "D-Day",
+      "type": "fixed-date",
+      "month": 6,
+      "day": 6,
+      "message": "Remembering the 1944 D-Day landings. \ud83d\udd6f\ufe0f"
+    },
     {
       "name": "Port Royal Earthquake",
       "type": "fixed-date",
       "month": 6,
       "day": 7,
-      "message": "Remembering the 1692 Port Royal earthquake."
+      "message": "Remembering the 1692 Port Royal earthquake. \ud83c\udf0a"
     },
     {
       "name": "Blackbeard Receives the King's Pardon",
       "type": "fixed-date",
       "month": 6,
       "day": 10,
-      "message": "Blackbeard accepted the King's Pardon on this day in 1718."
+      "message": "Blackbeard accepted the King's Pardon on this day in 1718. \ud83c\udff4\u200d\u2620\ufe0f"
     },
     {
       "name": "Treaty of Breda",
       "type": "fixed-date",
       "month": 6,
       "day": 18,
-      "message": "Treaty of Breda signed in 1667 — peace among privateers."
+      "message": "Treaty of Breda signed in 1667 \u2014 peace among privateers. \ud83e\udd1d"
     },
-    { "name": "Juneteenth", "type": "fixed-date", "month": 6, "day": 19 },
+    {
+      "name": "Juneteenth",
+      "type": "fixed-date",
+      "month": 6,
+      "day": 19,
+      "message": "Celebrating Juneteenth. \u270a\ud83c\udffe"
+    },
     {
       "name": "Summer Solstice",
       "type": "fixed-date",
       "month": 6,
-      "day": 21
+      "day": 21,
+      "message": "Happy Summer Solstice! \u2600\ufe0f"
     },
     {
       "name": "World UFO Day",
       "type": "fixed-date",
       "month": 7,
       "day": 2,
-      "message": "Keep watching the skies — it's World UFO Day!"
+      "message": "Keep watching the skies \u2014 it's World UFO Day! \ud83d\udef8"
     },
     {
       "name": "Independence Day",
       "type": "fixed-date",
       "month": 7,
-      "day": 4
+      "day": 4,
+      "message": "Happy Independence Day! \ud83c\udf86"
     },
     {
       "name": "Aristotle's Birthday (Approx.)",
       "type": "fixed-date",
       "month": 7,
       "day": 8,
-      "message": "Thinking big thoughts for Aristotle's (approximate) birthday."
+      "message": "Thinking big thoughts for Aristotle's (approximate) birthday. \ud83c\udfdb\ufe0f"
     },
     {
       "name": "Nikola Tesla's Birthday",
       "type": "fixed-date",
       "month": 7,
-      "day": 10
+      "day": 10,
+      "message": "Sparking ideas for Nikola Tesla's birthday! \u26a1"
     },
     {
       "name": "Black Sam Bellamy",
       "type": "fixed-date",
       "month": 7,
       "day": 11,
-      "message": "Remembering Black Sam Bellamy and the Whydah Gally."
+      "message": "Remembering Black Sam Bellamy and the Whydah Gally. \ud83c\udff4\u200d\u2620\ufe0f"
     },
     {
       "name": "Apollo 11 Moon Landing",
       "type": "fixed-date",
       "month": 7,
       "day": 20,
-      "message": "One giant leap — celebrating Apollo 11!"
+      "message": "One giant leap \u2014 celebrating Apollo 11! \ud83c\udf15"
     },
     {
       "name": "Amelia Earhart's Birthday",
       "type": "fixed-date",
       "month": 7,
-      "day": 24
+      "day": 24,
+      "message": "Honoring Amelia Earhart's birthday. \u2708\ufe0f"
     },
     {
       "name": "Shackleton's Expedition Departs",
       "type": "fixed-date",
       "month": 8,
       "day": 8,
-      "message": "Ernest Shackleton's Endurance expedition set sail today in 1914."
+      "message": "Ernest Shackleton's Endurance expedition set sail today in 1914. \ud83e\uddca"
     },
     {
       "name": "Capture of Stede Bonnet",
       "type": "fixed-date",
       "month": 8,
       "day": 22,
-      "message": "Stede Bonnet — the Gentleman Pirate — was captured on this day in 1718."
+      "message": "Stede Bonnet \u2014 the Gentleman Pirate \u2014 was captured on this day in 1718. \ud83c\udff4\u200d\u2620\ufe0f"
     },
     {
       "name": "Henry Morgan Sacks Panama City",
       "type": "fixed-date",
       "month": 8,
       "day": 23,
-      "message": "Henry Morgan sacked Panama City in 1671 (and the web went public in 1991!)."
+      "message": "Henry Morgan sacked Panama City in 1671 (and the web went public in 1991!). \ud83c\udff4\u200d\u2620\ufe0f"
     },
     {
       "name": "World Wide Web Day",
       "type": "fixed-date",
       "month": 8,
       "day": 23,
-      "message": "Happy World Wide Web Day — let's surf some history!"
+      "message": "Happy World Wide Web Day \u2014 let's surf some history! \ud83c\udf10"
     },
     {
       "name": "V-J Day",
       "type": "fixed-date",
       "month": 9,
-      "day": 2
+      "day": 2,
+      "message": "Remembering V-J Day. \ud83d\udd4a\ufe0f"
     },
     {
       "name": "Labor Day",
       "type": "nth-weekday",
       "month": 9,
       "weekday": 1,
-      "occurrence": 1
+      "occurrence": 1,
+      "message": "Happy Labor Day! \ud83d\udee0\ufe0f"
     },
     {
       "name": "9/11 Remembrance",
       "type": "fixed-date",
       "month": 9,
       "day": 11,
-      "message": "Honoring and remembering 9/11."
+      "message": "Honoring and remembering 9/11. \ud83d\udd6f\ufe0f"
     },
     {
       "name": "Programmers' Day",
       "type": "computed",
       "rule": "day-of-year",
       "dayOfYear": 256,
-      "message": "Happy Programmers' Day — the 256th day of the year!"
+      "message": "Happy Programmers' Day \u2014 the 256th day of the year! \ud83d\udcbb"
     },
     {
       "name": "Talk Like a Pirate Day",
       "type": "fixed-date",
       "month": 9,
       "day": 19,
-      "message": "Ahoy! It's Talk Like a Pirate Day!"
+      "message": "Ahoy! It's Talk Like a Pirate Day! \ud83c\udff4\u200d\u2620\ufe0f"
     },
     {
       "name": "Magellan Begins Circumnavigation",
       "type": "fixed-date",
       "month": 9,
-      "day": 20
+      "day": 20,
+      "message": "Magellan began circumnavigating the globe on this day in 1519. \ud83c\udf0d"
     },
     {
       "name": "Confucius' Birthday",
       "type": "fixed-date",
       "month": 9,
-      "day": 28
+      "day": 28,
+      "message": "Honoring Confucius' birthday. \ud83d\udcdc"
     },
     {
       "name": "International Coffee Day",
       "type": "fixed-date",
       "month": 10,
-      "day": 1
+      "day": 1,
+      "message": "Happy International Coffee Day! \u2615"
     },
     {
       "name": "Sputnik Launch",
       "type": "fixed-date",
       "month": 10,
       "day": 4,
-      "message": "Sputnik launched on this day in 1957."
+      "message": "Sputnik launched on this day in 1957. \ud83d\udef0\ufe0f"
     },
     {
       "name": "Columbus & Indigenous Peoples' Day",
@@ -389,63 +467,77 @@
       "month": 10,
       "weekday": 1,
       "occurrence": 2,
-      "message": "Honoring Indigenous Peoples' Day and reflecting on Columbus Day."
+      "message": "Honoring Indigenous Peoples' Day and reflecting on Columbus Day. \ud83e\udeb6"
     },
-    { "name": "Leif Erikson Day", "type": "fixed-date", "month": 10, "day": 9 },
+    {
+      "name": "Leif Erikson Day",
+      "type": "fixed-date",
+      "month": 10,
+      "day": 9,
+      "message": "Happy Leif Erikson Day! \ud83d\udef6"
+    },
     {
       "name": "International Day of Failure",
       "type": "fixed-date",
       "month": 10,
       "day": 13,
-      "message": "Embrace the learning — it's the International Day of Failure."
+      "message": "Embrace the learning \u2014 it's the International Day of Failure. \ud83d\udca1"
     },
     {
       "name": "Santos-Dumont's First Flight",
       "type": "fixed-date",
       "month": 10,
       "day": 23,
-      "message": "Celebrating Alberto Santos-Dumont's first powered flight in 1906."
+      "message": "Celebrating Alberto Santos-Dumont's first powered flight in 1906. \u2708\ufe0f"
     },
     {
       "name": "Blackbeard Captures La Concorde",
       "type": "fixed-date",
       "month": 10,
       "day": 26,
-      "message": "Blackbeard captured La Concorde (soon Queen Anne's Revenge) today in 1717."
+      "message": "Blackbeard captured La Concorde (soon Queen Anne's Revenge) today in 1717. \ud83c\udff4\u200d\u2620\ufe0f"
     },
     {
       "name": "Internet Day",
       "type": "fixed-date",
       "month": 10,
-      "day": 29
+      "day": 29,
+      "message": "Celebrating Internet Day! \ud83c\udf10"
     },
-    { "name": "Halloween", "type": "fixed-date", "month": 10, "day": 31 },
+    {
+      "name": "Halloween",
+      "type": "fixed-date",
+      "month": 10,
+      "day": 31,
+      "message": "Happy Halloween! \ud83c\udf83"
+    },
     {
       "name": "Marie Curie's Birthday",
       "type": "fixed-date",
       "month": 11,
-      "day": 7
+      "day": 7,
+      "message": "Celebrating Marie Curie's birthday. \u2697\ufe0f"
     },
     {
       "name": "Carl Sagan Day",
       "type": "fixed-date",
       "month": 11,
       "day": 9,
-      "message": "We are star stuff — celebrating Carl Sagan Day."
+      "message": "We are star stuff \u2014 celebrating Carl Sagan Day. \ud83c\udf0c"
     },
     {
       "name": "Veterans Day",
       "type": "fixed-date",
       "month": 11,
       "day": 11,
-      "message": "Honoring veterans and Armistice Day."
+      "message": "Honoring veterans and Armistice Day. \ud83c\udf96\ufe0f"
     },
     {
       "name": "Trial of Anne Bonny & Mary Read",
       "type": "fixed-date",
       "month": 11,
       "day": 15,
-      "message": "Anne Bonny and Mary Read stood trial on this day in 1720."
+      "message": "Anne Bonny and Mary Read stood trial on this day in 1720. \u2696\ufe0f"
     },
     {
       "name": "Thanksgiving",
@@ -453,50 +545,70 @@
       "month": 11,
       "weekday": 4,
       "occurrence": 4,
-      "message": "Happy Thanksgiving!"
+      "message": "Happy Thanksgiving! \ud83e\udd83"
     },
     {
       "name": "Pearl Harbor Remembrance Day",
       "type": "fixed-date",
       "month": 12,
       "day": 7,
-      "message": "Remembering Pearl Harbor, December 7, 1941."
+      "message": "Remembering Pearl Harbor, December 7, 1941. \ud83d\udd6f\ufe0f"
     },
     {
       "name": "Ada Lovelace Day",
       "type": "fixed-date",
       "month": 12,
       "day": 10,
-      "message": "Celebrating Ada Lovelace, pioneer of computing."
+      "message": "Celebrating Ada Lovelace, pioneer of computing. \ud83d\udc69\u200d\ud83d\udcbb"
     },
     {
       "name": "Roald Amundsen Reaches the South Pole",
       "type": "fixed-date",
       "month": 12,
       "day": 14,
-      "message": "Roald Amundsen reached the South Pole on this day in 1911."
+      "message": "Roald Amundsen reached the South Pole on this day in 1911. \ud83e\udded"
     },
     {
       "name": "Boston Tea Party",
       "type": "fixed-date",
       "month": 12,
-      "day": 16
+      "day": 16,
+      "message": "Remembering the Boston Tea Party. \u2615"
     },
     {
       "name": "Wright Brothers' First Flight",
       "type": "fixed-date",
       "month": 12,
       "day": 17,
-      "message": "Taking flight with the Wright brothers — first flight in 1903."
+      "message": "Taking flight with the Wright brothers \u2014 first flight in 1903. \ud83d\udee9\ufe0f"
     },
     {
       "name": "Winter Solstice",
       "type": "fixed-date",
       "month": 12,
-      "day": 21
+      "day": 21,
+      "message": "Welcoming the Winter Solstice. \u2744\ufe0f"
     },
-    { "name": "Christmas Eve", "type": "fixed-date", "month": 12, "day": 24 },
-    { "name": "Christmas Day", "type": "fixed-date", "month": 12, "day": 25 },
-    { "name": "New Year's Eve", "type": "fixed-date", "month": 12, "day": 31 }
+    {
+      "name": "Christmas Eve",
+      "type": "fixed-date",
+      "month": 12,
+      "day": 24,
+      "message": "Merry Christmas Eve! \ud83c\udf84"
+    },
+    {
+      "name": "Christmas Day",
+      "type": "fixed-date",
+      "month": 12,
+      "day": 25,
+      "message": "Merry Christmas! \ud83c\udf84"
+    },
+    {
+      "name": "New Year's Eve",
+      "type": "fixed-date",
+      "month": 12,
+      "day": 31,
+      "message": "Happy New Year's Eve! \ud83c\udf89"
+    }
   ]
 }
