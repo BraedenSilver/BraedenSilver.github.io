@@ -1,5 +1,5 @@
 (() => {
-  const stage = document.querySelector('[data-joejoe-stage]');
+  const stage = document.querySelector('[data-orbby-stage]');
   const randomizeButton = document.querySelector('[data-randomize]');
   const screenshotButton = document.querySelector('[data-screenshot]');
   const loadingMessage = document.querySelector('[data-loading-message]');
@@ -136,12 +136,12 @@
   }
 
   function updateStageStyles() {
-    stage.style.setProperty('--joejoe-stage-width', `${state.canvasWidth}px`);
-    stage.style.setProperty('--joejoe-stage-height', `${state.canvasHeight}px`);
+    stage.style.setProperty('--orbby-stage-width', `${state.canvasWidth}px`);
+    stage.style.setProperty('--orbby-stage-height', `${state.canvasHeight}px`);
     const hue = Math.round(state.stageHue);
     const lightness = Math.round(state.stageLightness);
     stage.style.setProperty(
-      '--joejoe-stage-bg',
+      '--orbby-stage-bg',
       `hsl(${hue}deg, ${STAGE_SATURATION}%, ${lightness}%)`,
     );
   }
@@ -175,7 +175,7 @@
       pendingGeneration = true;
       return;
     }
-    randomizeJoejoes();
+    randomizeOrbbies();
   }
 
   function handleControlInput(event) {
@@ -261,24 +261,24 @@
     };
   }
 
-  function createJoejoeElement() {
+  function createOrbbyElement() {
     const minSize = Math.min(state.minSize, state.maxSize);
     const maxSize = Math.max(state.minSize, state.maxSize);
     const size = randomInt(minSize, maxSize);
     const colors = buildColorSet();
-    const joejoe = document.createElement('div');
-    joejoe.className = 'joejoe';
-    joejoe.style.setProperty('--joejoe-size', `${size}px`);
-    joejoe.style.setProperty('--joejoe-skin-color', colors.headColor);
-    joejoe.style.setProperty('--joejoe-border-color', BORDER_COLOR);
+    const orbby = document.createElement('div');
+    orbby.className = 'orbby';
+    orbby.style.setProperty('--orbby-size', `${size}px`);
+    orbby.style.setProperty('--orbby-skin-color', colors.headColor);
+    orbby.style.setProperty('--orbby-border-color', BORDER_COLOR);
     const tilt = randomRange(-12, 12);
-    joejoe.style.setProperty('--joejoe-head-tilt', `${tilt.toFixed(2)}deg`);
+    orbby.style.setProperty('--orbby-head-tilt', `${tilt.toFixed(2)}deg`);
 
     const pupilRange = size * 0.1 * PUPIL_RANGE_FACTOR;
     const offsetX = randomRange(-pupilRange, pupilRange);
     const offsetY = randomRange(-pupilRange * 0.75, pupilRange * 0.65);
-    joejoe.style.setProperty('--pupil-offset-x', `${offsetX.toFixed(2)}px`);
-    joejoe.style.setProperty('--pupil-offset-y', `${offsetY.toFixed(2)}px`);
+    orbby.style.setProperty('--pupil-offset-x', `${offsetX.toFixed(2)}px`);
+    orbby.style.setProperty('--pupil-offset-y', `${offsetY.toFixed(2)}px`);
 
     const head = document.createElement('div');
     head.className = 'head';
@@ -296,21 +296,21 @@
     const rightEye = createEye('right');
 
     head.append(leftEye, rightEye);
-    joejoe.append(head);
+    orbby.append(head);
 
     return {
-      element: joejoe,
+      element: orbby,
       accentColor: colors.accentColor,
       accentTextColor: colors.accentTextColor,
     };
   }
 
   function setButtonAccent(color, textColor) {
-    document.body.style.setProperty('--joejoe-button-bg', color);
-    document.body.style.setProperty('--joejoe-button-text', textColor);
+    document.body.style.setProperty('--orbby-button-bg', color);
+    document.body.style.setProperty('--orbby-button-text', textColor);
   }
 
-  function randomizeJoejoes() {
+  function randomizeOrbbies() {
     if (isGenerating) {
       pendingGeneration = true;
       return;
@@ -328,7 +328,7 @@
       let accentApplied = false;
 
       for (let index = 0; index < count; index += 1) {
-        const { element, accentColor, accentTextColor } = createJoejoeElement();
+        const { element, accentColor, accentTextColor } = createOrbbyElement();
         fragment.appendChild(element);
         if (!accentApplied) {
           setButtonAccent(accentColor, accentTextColor);
@@ -349,7 +349,7 @@
 
       if (pendingGeneration) {
         pendingGeneration = false;
-        randomizeJoejoes();
+        randomizeOrbbies();
       }
     });
   }
@@ -382,7 +382,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `joejoe-playground-${Date.now()}.png`;
+            link.download = `orbby-playground-${Date.now()}.png`;
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -396,7 +396,7 @@
         );
       });
     } catch (error) {
-      console.error('Failed to capture Joejoe screenshot', error);
+      console.error('Failed to capture Orbby screenshot', error);
       window.alert('Sorry, I could not capture the screenshot. Please try again.');
     } finally {
       screenshotButton.textContent = screenshotDefaultLabel;
@@ -415,5 +415,5 @@
   });
   screenshotButton.addEventListener('click', captureScreenshot);
 
-  randomizeJoejoes();
+  randomizeOrbbies();
 })();
