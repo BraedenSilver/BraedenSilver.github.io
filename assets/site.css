@@ -714,6 +714,12 @@ html.theme-dark .theme-toggle__icon--moon {
 }
 
 .last-updated .footer-version {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
   font-size: inherit;
   color: inherit;
   text-decoration: underline;
@@ -723,10 +729,25 @@ html.theme-dark .theme-toggle__icon--moon {
   align-items: baseline;
   gap: 0.25rem;
   transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
+  cursor: pointer;
 }
 
 .last-updated .footer-version:hover,
 .last-updated .footer-version:focus-visible {
+  color: var(--color-text);
+  text-decoration-thickness: 2px;
+}
+
+.last-updated .footer-source-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+.last-updated .footer-source-link:hover,
+.last-updated .footer-source-link:focus-visible {
   color: var(--color-text);
   text-decoration-thickness: 2px;
 }
@@ -737,7 +758,8 @@ html.theme-dark .theme-toggle__icon--moon {
   background: var(--color-surface);
   color: inherit;
   font: inherit;
-  padding: 0.35rem 0.8rem 0.4rem;
+  font-size: 0.95rem;
+  padding: 0.25rem 0.7rem 0.3rem;
   border-radius: 999px;
   cursor: pointer;
   box-shadow: 4px 4px 0 var(--color-shadow);
@@ -771,6 +793,54 @@ html.theme-dark .theme-toggle__icon--moon {
 
 .footer-share-group .footer-share-feedback {
   min-width: auto;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding-bottom: calc(4rem + 16px);
+  }
+
+  .footer-bar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .footer-meta {
+    font-size: 0.95rem;
+    width: 100%;
+    gap: 0.35rem;
+  }
+
+  .footer-share-group {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .footer-share {
+    width: auto;
+    padding: 0.3rem 0.6rem 0.35rem;
+    justify-content: center;
+    justify-self: start;
+  }
+
+  .theme-toggle {
+    justify-self: end;
+  }
+
+  .footer-share-feedback {
+    font-size: 0.75rem;
+    grid-column: 1 / -1;
+  }
+
+  .orbby-peek {
+    display: none;
+  }
 }
 
 .orbby-peek {
