@@ -1,36 +1,24 @@
-<footer class="footer-fixed">
+<footer class="footer-fixed" aria-label="Site footer">
   <div class="footer-bar">
-    <div class="footer-meta">
-      <!-- Last updated text is filled in by JavaScript -->
-      <p class="last-updated">
-        Last updated:
-        <time id="last-updated" datetime="">See Git history</time>
-        <button
-          type="button"
-          class="footer-version"
-          data-secret-trigger
-        >
-          Version
-          <span
-            data-footer-version
-            data-version-prefix="V0.1."
-            data-version-fallback="194"
-            >V0.1.194</span
-          >
-        </button>
-        <a
-          class="footer-source-link"
-          href="https://github.com/BraedenSilver/BraedenSilver.github.io"
-        >
-          View source ↗
-        </a>
-      </p>
-    </div>
-
-    <div class="footer-share-group">
-      <!-- Share button triggers the clipboard helper in js/site.js -->
+    <nav class="footer-meta" aria-label="Footer">
+      <a
+        class="footer-last-updated"
+        data-last-updated-link
+        href="https://github.com/BraedenSilver/BraedenSilver.github.io"
+      >
+        <span class="footer-last-updated__label">Last updated:</span>
+        <time id="last-updated" datetime="">Loading…</time>
+      </a>
+      <span
+        class="footer-version"
+        data-footer-version
+        data-version-prefix="v0.1."
+        data-version-fallback="194"
+        data-secret-trigger
+        >v0.1.194</span
+      >
       <button type="button" class="footer-share" data-share-button>
-        Copy page link
+        Share
       </button>
       <button
         type="button"
@@ -49,20 +37,30 @@
           aria-hidden="true"
           >☀️</span
         >
-        <span class="visually-hidden">Toggle theme</span>
+        <span class="theme-toggle__label">Dark mode</span>
+      </button>
+      <button
+        type="button"
+        class="footer-easter"
+        data-easter-trigger
+        aria-haspopup="dialog"
+        aria-expanded="false"
+      >
+        Easter🥚
       </button>
       <span
         class="footer-share-feedback"
         data-share-feedback
         aria-live="polite"
       ></span>
-    </div>
+    </nav>
 
-    <!-- Right cluster: Orbby peek animation lives purely in CSS -->
-    <div class="orbby-peek footer-eyes" aria-hidden="true">
-      <div class="head">
-        <div class="eye left"><div class="pupil"></div></div>
-        <div class="eye right"><div class="pupil"></div></div>
+    <div class="footer-orbby" role="img" aria-label="Orbby mascot">
+      <div class="orbby-peek footer-eyes">
+        <div class="head">
+          <div class="eye left"><div class="pupil"></div></div>
+          <div class="eye right"><div class="pupil"></div></div>
+        </div>
       </div>
     </div>
   </div>
