@@ -983,26 +983,23 @@ function renderFooter(yearText) {
 <footer class="footer-fixed" aria-label="Site footer">
   <div class="footer-bar">
     <nav class="footer-meta" aria-label="Footer">
-      <span class="footer-last-updated">
+      <a
+        class="footer-last-updated"
+        data-last-updated-link
+        href="https://github.com/BraedenSilver/BraedenSilver.github.io"
+      >
         <span class="footer-last-updated__label">Last updated:</span>
         <time id="last-updated" datetime="">Loading…</time>
-      </span>
-      <a
+      </a>
+      <span
         class="footer-version"
         data-footer-version
         data-version-prefix="v0.1."
         data-version-fallback="194"
         data-secret-trigger
-        data-version-link
-        href="https://github.com/BraedenSilver/BraedenSilver.github.io"
-      >v0.1.194</a>
-      <button
-        type="button"
-        class="footer-share"
-        data-share-button
-        aria-label="Copy page link"
-      >
-        <span aria-hidden="true">📤</span>
+      >v0.1.194</span>
+      <button type="button" class="footer-share" data-share-button>
+        Share
       </button>
       <button
         type="button"
@@ -1013,6 +1010,7 @@ function renderFooter(yearText) {
       >
         <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
         <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
+        <span class="theme-toggle__label">Dark mode</span>
       </button>
       <button
         type="button"
@@ -1658,9 +1656,8 @@ function resolveSourceUrlFromMetadata() {
  */
 async function updateLastUpdated() {
   const timeTarget = document.getElementById("last-updated");
-  if (!timeTarget) return;
-
-  const versionLink = document.querySelector("[data-version-link]");
+  const linkTarget = document.querySelector("[data-last-updated-link]");
+  if (!timeTarget || !linkTarget) return;
 
   const formatOptions = { year: "numeric", month: "short", day: "numeric" };
 
@@ -1686,10 +1683,8 @@ async function updateLastUpdated() {
     return true;
   };
 
-  if (versionLink) {
-    const sourceUrl = resolveSourceUrlFromMetadata();
-    versionLink.setAttribute("href", sourceUrl);
-  }
+  const sourceUrl = resolveSourceUrlFromMetadata();
+  linkTarget.setAttribute("href", sourceUrl);
 
   const buildDate = getBuildLastUpdatedDate();
   if (buildDate && applyDate(buildDate)) {
@@ -2343,7 +2338,6 @@ function initShareLink() {
         feedback.textContent = "";
         feedback.classList.remove("is-error");
         clearTimer = null;
-        applyFooterOffset();
       }, 2000);
     }
   };

@@ -2595,7 +2595,7 @@ body.konami-active {
   align-items: center;
   justify-content: space-between;
   gap: 1.25rem;
-  padding: 0.55rem 1rem;
+  padding: 0.75rem 1rem;
   flex-wrap: wrap;
 }
 
@@ -2618,6 +2618,16 @@ body.konami-active {
   align-items: baseline;
   gap: 0.35rem;
   color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+.footer-last-updated:hover,
+.footer-last-updated:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+  color: inherit;
 }
 
 .footer-last-updated__label {
@@ -2630,23 +2640,10 @@ body.konami-active {
 }
 
 .footer-version {
-  display: inline-flex;
-  align-items: center;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  color: inherit;
-  text-decoration: none;
-  transition: text-decoration-thickness 0.2s ease;
 }
-
-.footer-version:hover,
-.footer-version:focus-visible {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.2em;
-}
-
 
 .footer-share,
 .footer-easter {
@@ -2655,22 +2652,21 @@ body.konami-active {
   background: var(--color-surface);
   color: inherit;
   font: inherit;
-  font-size: 1rem;
-  line-height: 1;
-  padding: 0.35rem 0.75rem;
+  font-size: 0.95rem;
+  padding: 0.25rem 0.7rem 0.3rem;
   border-radius: 999px;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
   box-shadow: 4px 4px 0 var(--color-shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease,
+    color 0.2s ease;
 }
 
 .footer-share:hover,
 .footer-share:focus-visible,
 .footer-easter:hover,
 .footer-easter:focus-visible {
+  background: var(--color-strong-bg);
+  color: var(--color-strong-text);
   transform: translate(-1px, -1px);
   box-shadow: 6px 6px 0 var(--color-shadow);
 }
@@ -2695,6 +2691,10 @@ body.konami-active {
 
 .footer-share-feedback.is-error {
   color: var(--color-error-text);
+  font-weight: 600;
+}
+
+.theme-toggle__label {
   font-weight: 600;
 }
 
@@ -2730,7 +2730,7 @@ body.konami-active {
 
 @media (max-width: 480px) {
   .footer-bar {
-    padding: 0.5rem 0.75rem;
+    padding: 0.65rem 0.75rem;
     align-items: flex-start;
   }
 
@@ -2756,112 +2756,4 @@ body.konami-active {
   .footer-easter {
     display: inline-flex;
   }
-}
-
-/* Blog cards use a single-anchor pattern: the entire card is clickable. */
-.blog-list {
-  display: grid;
-  gap: clamp(1.25rem, 2.8vw, 1.75rem);
-  margin-top: clamp(1.75rem, 3vw, 2.25rem);
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(min(100%, 340px), 1fr)
-  );
-  align-items: stretch;
-}
-
-.blog-mascot {
-  margin: clamp(2rem, 4vw, 2.75rem) 0 0;
-  display: flex;
-  justify-content: center;
-}
-
-.blog-mascot img {
-  max-width: min(360px, 100%);
-  height: auto;
-}
-
-.blog-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.75rem, 2vw, 1rem);
-  min-height: 100%;
-  padding: clamp(1.25rem, 2.5vw, 1.75rem);
-  border: 2px solid var(--color-border);
-  border-radius: 18px;
-  background: var(--color-surface);
-  box-shadow: 6px 6px 0 var(--color-shadow);
-  color: inherit;
-  text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease,
-    border-color 0.2s ease, background 0.2s ease;
-}
-
-.blog-card:hover,
-.blog-card:focus-visible {
-  transform: translate(-3px, -3px);
-  box-shadow: 10px 10px 0 var(--color-shadow);
-  border-color: transparent;
-}
-
-.blog-card:focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 6px;
-}
-
-.blog-card__title {
-  margin: 0;
-  font-size: clamp(1.35rem, 3.2vw, 1.9rem);
-  line-height: 1.2;
-}
-
-.blog-card__meta,
-.blog-meta {
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.6rem;
-  font-size: 0.95rem;
-  color: var(--color-muted-text);
-}
-
-.blog-card__summary,
-.blog-summary {
-  margin: 0;
-  line-height: 1.65;
-  color: inherit;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-height: calc(1.65em * 3);
-}
-
-.blog-card__tags,
-.blog-tags {
-  margin-top: auto;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0;
-  list-style: none;
-  padding-top: 0.5rem;
-}
-
-.blog-card__tag,
-.blog-tags li {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  background: var(--color-strong-bg);
-  color: var(--color-strong-text);
 }

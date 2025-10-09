@@ -1,27 +1,24 @@
 <footer class="footer-fixed" aria-label="Site footer">
   <div class="footer-bar">
     <nav class="footer-meta" aria-label="Footer">
-      <span class="footer-last-updated">
+      <a
+        class="footer-last-updated"
+        data-last-updated-link
+        href="https://github.com/BraedenSilver/BraedenSilver.github.io"
+      >
         <span class="footer-last-updated__label">Last updated:</span>
         <time id="last-updated" datetime="">Loading…</time>
-      </span>
-      <a
+      </a>
+      <span
         class="footer-version"
         data-footer-version
         data-version-prefix="v0.1."
         data-version-fallback="194"
         data-secret-trigger
-        data-version-link
-        href="https://github.com/BraedenSilver/BraedenSilver.github.io"
-        >v0.1.194</a
+        >v0.1.194</span
       >
-      <button
-        type="button"
-        class="footer-share"
-        data-share-button
-        aria-label="Copy page link"
-      >
-        <span aria-hidden="true">📤</span>
+      <button type="button" class="footer-share" data-share-button>
+        Share
       </button>
       <button
         type="button"
@@ -40,6 +37,7 @@
           aria-hidden="true"
           >☀️</span
         >
+        <span class="theme-toggle__label">Dark mode</span>
       </button>
       <button
         type="button"
