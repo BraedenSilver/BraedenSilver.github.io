@@ -492,14 +492,6 @@ html.theme-dark .theme-toggle__icon--moon {
   align-items: stretch;
 }
 
-.home-section__list,
-.blog-list,
-.projects-static-fallback__grid,
-.guestbook-fallback__list {
-  content-visibility: auto;
-  contain-intrinsic-size: 480px;
-}
-
 .home-section__list > p {
   margin: 0;
 }
