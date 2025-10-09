@@ -1047,6 +1047,44 @@ function updateFooterYearDisplay(yearText) {
   }
 }
 
+let footerResizeObserver = null;
+let footerResizeListenerAttached = false;
+
+function applyFooterOffset() {
+  const root = document.documentElement;
+  const footer = document.querySelector(".footer-fixed");
+  if (!root || !footer) return;
+
+  const rect = footer.getBoundingClientRect();
+  const height = Math.ceil(rect.height);
+  if (!Number.isFinite(height) || height <= 0) {
+    return;
+  }
+
+  root.style.setProperty("--footer-fixed-offset", `${height}px`);
+}
+
+function observeFooterOffset() {
+  const footer = document.querySelector(".footer-fixed");
+  if (!footer) {
+    return;
+  }
+
+  applyFooterOffset();
+
+  if (typeof ResizeObserver === "function") {
+    footerResizeObserver?.disconnect?.();
+    footerResizeObserver = new ResizeObserver(() => applyFooterOffset());
+    footerResizeObserver.observe(footer);
+    return;
+  }
+
+  if (typeof window !== "undefined" && !footerResizeListenerAttached) {
+    window.addEventListener("resize", applyFooterOffset);
+    footerResizeListenerAttached = true;
+  }
+}
+
 // Inject shared header/footer HTML into placeholder elements on every page.
 function injectSharedLayout(announcement) {
   const currentYear = getCurrentYearForFooter();
@@ -1063,6 +1101,7 @@ function injectSharedLayout(announcement) {
   }
 
   updateFooterYearDisplay(yearText);
+  observeFooterOffset();
 }
 
 // Keys and helpers for remembering the user's theme preference.
@@ -2289,6 +2328,7 @@ function initShareLink() {
     if (!feedback) return;
     feedback.textContent = message;
     feedback.classList.toggle("is-error", Boolean(isError && message));
+    applyFooterOffset();
     if (clearTimer) {
       clearTimeout(clearTimer);
       clearTimer = null;

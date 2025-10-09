@@ -24,6 +24,8 @@ html {
   --color-orbby-border: #000;
   --color-orbby-pupil: #000;
   --color-orbby-sclera: #fff;
+  --footer-fixed-offset: 6.5rem;
+  --footer-fixed-gap: 0.75rem;
 }
 
 html.theme-dark {
@@ -48,6 +50,8 @@ html.theme-dark {
   --color-orbby-border: #000;
   --color-orbby-pupil: #000;
   --color-orbby-sclera: #fff;
+  --footer-fixed-offset: 6.5rem;
+  --footer-fixed-gap: 0.75rem;
 }
 
 *, *::before, *::after {
@@ -61,10 +65,11 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   /*
-   * Reserve space for the fixed footer so page content can scroll fully into
-   * view while still allowing the static footer to rest at the very bottom.
+   * Reserve only the measured footer height plus a minimal content gap so the
+   * footer bar can sit flush with the page edge without covering interactive
+   * elements at the bottom of the viewport.
    */
-  padding-bottom: calc(5rem + 24px);
+  padding-bottom: calc(var(--footer-fixed-offset) + var(--footer-fixed-gap));
 }
 
 :where(a, button, [role="button"]):focus-visible {
@@ -88,14 +93,14 @@ body {
 @media (max-width: 600px) {
   body {
     padding: 10px;
-    padding-bottom: calc(5rem + 24px);
+    padding-bottom: calc(var(--footer-fixed-offset) + var(--footer-fixed-gap));
   }
 }
 
 main {
   width: min(100%, 1320px);
   margin: 0 auto;
-  padding-bottom: 4rem;
+  padding-bottom: var(--footer-fixed-gap);
 }
 
 .ascii-header {
@@ -1167,77 +1172,6 @@ details#sources[open] > ol {
 }
 
 
-.blog-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.blog-mascot {
-  margin: 2.5rem 0 0;
-  display: flex;
-  justify-content: center;
-}
-
-.blog-mascot img {
-  max-width: min(360px, 100%);
-  height: auto;
-}
-
-.blog-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  border: 2px solid var(--color-border);
-  padding: 1.25rem;
-  border-radius: 12px;
-  background: var(--color-surface);
-  box-shadow: 6px 6px 0 var(--color-shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-  color: inherit;
-  text-decoration: none;
-}
-
-.blog-card .blog-tags {
-  margin-top: auto;
-  padding-top: 1rem;
-  align-self: flex-start;
-}
-
-.blog-card:hover,
-.blog-card:focus-visible {
-  transform: translate(-2px, -2px);
-  box-shadow: 10px 10px 0 var(--color-shadow);
-}
-
-.blog-card:focus-visible {
-  outline: 3px solid #4c3cff;
-  outline-offset: 4px;
-}
-
-.blog-card h2 {
-  margin-top: 0;
-  margin-bottom: 0.4rem;
-  font-size: clamp(1.3rem, 4vw, 1.8rem);
-}
-
-.blog-card:hover h2,
-.blog-card:focus-visible h2 {
-  text-decoration: underline;
-}
-
-.blog-meta {
-  margin: 0 0 0.6rem;
-  font-size: 0.95rem;
-  color: var(--color-muted-text);
-}
-
-.blog-summary {
-  margin: 0 0 0.75rem;
-  line-height: 1.6;
-}
 
 .lazy-embed-placeholder {
   margin: 2rem 0;
@@ -1381,7 +1315,6 @@ details#sources[open] > ol {
   display: none;
 }
 
-.blog-tags,
 .blog-links ul {
   list-style: none;
   padding: 0;
@@ -1401,15 +1334,6 @@ details#sources[open] > ol {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-}
-
-.blog-tags li {
-  background: var(--color-strong-bg);
-  color: var(--color-strong-text);
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
 }
 
 .prose {

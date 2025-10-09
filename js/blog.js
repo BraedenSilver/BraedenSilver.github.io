@@ -229,11 +229,12 @@ function getUpdatedMetadata(entry) {
 function createTagList(tags) {
   if (!tags || !tags.length) return null;
   const ul = document.createElement("ul");
-  ul.className = "blog-tags";
+  ul.className = "blog-card__tags blog-tags";
   tags.forEach((tag) => {
     const clean = String(tag || "").trim();
     if (!clean) return;
     const li = document.createElement("li");
+    li.className = "blog-card__tag";
     li.textContent = clean;
     ul.appendChild(li);
   });
@@ -405,6 +406,7 @@ function createEntryCard(section, entry) {
 
   const h2 = document.createElement("h2");
   h2.id = headingId;
+  h2.className = "blog-card__title";
   h2.textContent = entry.title;
   card.appendChild(h2);
 
@@ -415,14 +417,14 @@ function createEntryCard(section, entry) {
   if (updatedMeta.display) metaBits.push(updatedMeta.display);
   if (metaBits.length) {
     const meta = document.createElement("p");
-    meta.className = "blog-meta";
+    meta.className = "blog-card__meta blog-meta";
     meta.textContent = metaBits.join(" · ");
     card.appendChild(meta);
   }
 
   if (entry.summary) {
     const summary = document.createElement("p");
-    summary.className = "blog-summary";
+    summary.className = "blog-card__summary blog-summary";
     summary.textContent = entry.summary;
     card.appendChild(summary);
   }
@@ -917,7 +919,7 @@ async function renderSectionEntry(section, options = {}) {
   if (detailUpdatedMeta.display) metaBits.push(detailUpdatedMeta.display);
   if (metaBits.length) {
     const meta = document.createElement("p");
-    meta.className = "blog-meta";
+    meta.className = "blog-card__meta blog-meta";
     meta.textContent = metaBits.join(" · ");
     frag.appendChild(meta);
   }
