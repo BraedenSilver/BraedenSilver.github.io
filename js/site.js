@@ -165,6 +165,38 @@ const FALLBACK_VISITOR_MESSAGE = "Thank you for visiting BraedenSilver.com";
 const HOLIDAY_CONFIG_URL = "/data/holiday-banners.json";
 const BANNER_TIME_ZONE = "America/Chicago";
 const ANNOUNCEMENT_SPEED_PX_PER_SECOND = 72;
+const DEFAULT_SOURCE_REPO_URL =
+  "https://github.com/BraedenSilver/BraedenSilver.github.io";
+
+let konamiOverlayOpener = null;
+
+function registerEasterEggOverlay(opener) {
+  if (typeof opener === "function") {
+    konamiOverlayOpener = opener;
+  }
+}
+
+function triggerEasterEggOverlay() {
+  if (typeof konamiOverlayOpener === "function") {
+    konamiOverlayOpener();
+    return true;
+  }
+  if (
+    typeof window !== "undefined" &&
+    typeof window.openEasterEggs === "function"
+  ) {
+    window.openEasterEggs();
+    return false;
+  }
+  return false;
+}
+
+if (
+  typeof window !== "undefined" &&
+  typeof window.openEasterEggs !== "function"
+) {
+  window.openEasterEggs = () => {};
+}
 
 const HOME_LATEST_MEDIA_QUERY = "(max-width: 719px)";
 const HOME_LATEST_DEFAULT_LIMIT = 3;
@@ -948,36 +980,29 @@ function renderFooter(yearText) {
   );
 
   return `
-<footer class="footer-fixed">
+<footer class="footer-fixed" aria-label="Site footer">
   <div class="footer-bar">
-    <div class="footer-meta">
-      <p class="last-updated">
-        Last updated:
-        <time id="last-updated" datetime="">See Git history</time>
-        <button
-          type="button"
-          class="footer-version"
-          data-secret-trigger
-        >
-          Version
-          <span
-            data-footer-version
-            data-version-prefix="V0.1."
-            data-version-fallback="194"
-          >V0.1.194</span>
-        </button>
-        <a
-          class="footer-source-link"
-          href="https://github.com/BraedenSilver/BraedenSilver.github.io"
-        >
-          View source ↗
-        </a>
-      </p>
-    </div>
-
-    <div class="footer-share-group">
-      <button type="button" class="footer-share" data-share-button>
-        Copy page link
+    <nav class="footer-meta" aria-label="Footer">
+      <span class="footer-last-updated">
+        <span class="footer-last-updated__label">Last updated:</span>
+        <time id="last-updated" datetime="">Loading…</time>
+      </span>
+      <a
+        class="footer-version"
+        data-footer-version
+        data-version-prefix="v0.1."
+        data-version-fallback="194"
+        data-secret-trigger
+        data-version-link
+        href="https://github.com/BraedenSilver/BraedenSilver.github.io"
+      >v0.1.194</a>
+      <button
+        type="button"
+        class="footer-share"
+        data-share-button
+        aria-label="Copy page link"
+      >
+        <span aria-hidden="true">📤</span>
       </button>
       <button
         type="button"
@@ -988,15 +1013,25 @@ function renderFooter(yearText) {
       >
         <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
         <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
-        <span class="visually-hidden">Toggle theme</span>
+      </button>
+      <button
+        type="button"
+        class="footer-easter"
+        data-easter-trigger
+        aria-haspopup="dialog"
+        aria-expanded="false"
+      >
+        Easter🥚
       </button>
       <span class="footer-share-feedback" data-share-feedback aria-live="polite"></span>
-    </div>
+    </nav>
 
-    <div class="orbby-peek footer-eyes" aria-hidden="true">
-      <div class="head">
-        <div class="eye left"><div class="pupil"></div></div>
-        <div class="eye right"><div class="pupil"></div></div>
+    <div class="footer-orbby" role="img" aria-label="Orbby mascot">
+      <div class="orbby-peek footer-eyes">
+        <div class="head">
+          <div class="eye left"><div class="pupil"></div></div>
+          <div class="eye right"><div class="pupil"></div></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1011,6 +1046,44 @@ function updateFooterYearDisplay(yearText) {
   const yearTargets = document.querySelectorAll("[data-current-year]");
   for (const target of yearTargets) {
     target.textContent = text;
+  }
+}
+
+let footerResizeObserver = null;
+let footerResizeListenerAttached = false;
+
+function applyFooterOffset() {
+  const root = document.documentElement;
+  const footer = document.querySelector(".footer-fixed");
+  if (!root || !footer) return;
+
+  const rect = footer.getBoundingClientRect();
+  const height = Math.ceil(rect.height);
+  if (!Number.isFinite(height) || height <= 0) {
+    return;
+  }
+
+  root.style.setProperty("--footer-fixed-offset", `${height}px`);
+}
+
+function observeFooterOffset() {
+  const footer = document.querySelector(".footer-fixed");
+  if (!footer) {
+    return;
+  }
+
+  applyFooterOffset();
+
+  if (typeof ResizeObserver === "function") {
+    footerResizeObserver?.disconnect?.();
+    footerResizeObserver = new ResizeObserver(() => applyFooterOffset());
+    footerResizeObserver.observe(footer);
+    return;
+  }
+
+  if (typeof window !== "undefined" && !footerResizeListenerAttached) {
+    window.addEventListener("resize", applyFooterOffset);
+    footerResizeListenerAttached = true;
   }
 }
 
@@ -1030,6 +1103,7 @@ function injectSharedLayout(announcement) {
   }
 
   updateFooterYearDisplay(yearText);
+  observeFooterOffset();
 }
 
 // Keys and helpers for remembering the user's theme preference.
@@ -1490,14 +1564,103 @@ function applyLastModifiedMetadata(isoString) {
   ensureMetaTag("og:updated_time", isoString);
 }
 
+function getBuildMetadata() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const data = window.DATA;
+  if (data && typeof data === "object") {
+    return data;
+  }
+  return null;
+}
+
+function parseBuildDate(value) {
+  if (!value) {
+    return null;
+  }
+  if (value instanceof Date) {
+    const time = value.getTime();
+    return Number.isFinite(time) ? new Date(time) : null;
+  }
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const fromNumber = new Date(value);
+    return Number.isFinite(fromNumber.getTime()) ? fromNumber : null;
+  }
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    const numeric = Number(trimmed);
+    if (Number.isFinite(numeric)) {
+      const numericDate = new Date(numeric);
+      if (Number.isFinite(numericDate.getTime())) {
+        return numericDate;
+      }
+    }
+    const parsed = new Date(trimmed);
+    return Number.isFinite(parsed.getTime()) ? parsed : null;
+  }
+  return null;
+}
+
+function getBuildLastUpdatedDate() {
+  const metadata = getBuildMetadata();
+  if (!metadata) {
+    return null;
+  }
+  const candidates = [
+    metadata.lastUpdatedIso,
+    metadata.lastUpdatedISO,
+    metadata.lastUpdated,
+    metadata.updatedAt,
+    metadata.updated_at,
+  ];
+  for (const candidate of candidates) {
+    const parsed = parseBuildDate(candidate);
+    if (parsed) {
+      return parsed;
+    }
+  }
+  return null;
+}
+
+function resolveSourceUrlFromMetadata() {
+  const metadata = getBuildMetadata();
+  if (!metadata) {
+    return DEFAULT_SOURCE_REPO_URL;
+  }
+
+  const commitUrl =
+    typeof metadata.sourceCommitUrl === "string"
+      ? metadata.sourceCommitUrl.trim()
+      : "";
+  if (commitUrl) {
+    return commitUrl;
+  }
+
+  const pathUrl =
+    typeof metadata.sourcePathUrl === "string"
+      ? metadata.sourcePathUrl.trim()
+      : "";
+  if (pathUrl) {
+    return pathUrl;
+  }
+
+  return DEFAULT_SOURCE_REPO_URL;
+}
+
 /**
  * Stamp the page's last-modified date in the footer using only static data.
  * Attempts to read the "Last-Modified" HTTP header for the current page and
  * falls back to `document.lastModified` if that header isn't available.
  */
 async function updateLastUpdated() {
-  const target = document.getElementById("last-updated");
-  if (!target) return;
+  const timeTarget = document.getElementById("last-updated");
+  if (!timeTarget) return;
+
+  const versionLink = document.querySelector("[data-version-link]");
 
   const formatOptions = { year: "numeric", month: "short", day: "numeric" };
 
@@ -1512,16 +1675,26 @@ async function updateLastUpdated() {
     if (!Number.isFinite(time)) return false;
     const iso = new Date(time).toISOString();
     const readable = value.toLocaleDateString(undefined, formatOptions);
-    if (timeCtor && target instanceof timeCtor) {
-      target.textContent = readable;
-      target.dateTime = iso;
+    if (timeCtor && timeTarget instanceof timeCtor) {
+      timeTarget.textContent = readable;
+      timeTarget.dateTime = iso;
     } else {
-      target.textContent = readable;
-      target.setAttribute("data-last-updated-iso", iso);
+      timeTarget.textContent = readable;
+      timeTarget.setAttribute("data-last-updated-iso", iso);
     }
     applyLastModifiedMetadata(iso);
     return true;
   };
+
+  if (versionLink) {
+    const sourceUrl = resolveSourceUrlFromMetadata();
+    versionLink.setAttribute("href", sourceUrl);
+  }
+
+  const buildDate = getBuildLastUpdatedDate();
+  if (buildDate && applyDate(buildDate)) {
+    return;
+  }
 
   try {
     const response = await fetch(location.href, { method: "HEAD" });
@@ -1729,6 +1902,7 @@ function initKonamiCode() {
     if (!overlay) return;
     overlay.remove();
     document.body.classList.remove("konami-active");
+    document.dispatchEvent(new CustomEvent("konami:close"));
 
     if (
       previousFocus &&
@@ -1849,6 +2023,7 @@ function initKonamiCode() {
 
     document.body.appendChild(overlay);
     document.body.classList.add("konami-active");
+    document.dispatchEvent(new CustomEvent("konami:open"));
     buffer.length = 0;
     resetEyeBuffer();
     resetVersionTap();
@@ -1862,6 +2037,8 @@ function initKonamiCode() {
       }
     });
   };
+
+  registerEasterEggOverlay(spawnOverlay);
 
   const scheduleEyeReset = () => {
     if (typeof window === "undefined") {
@@ -1984,15 +2161,20 @@ function initKonamiCode() {
       versionTrigger.addEventListener("click", triggerVersionTap);
     }
 
-    versionTrigger.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        triggerVersionTap();
-      } else if (event.key === " ") {
-        event.preventDefault();
-        triggerVersionTap();
-      }
-    });
+    const isKeyboardActivatable =
+      typeof versionTrigger.matches === "function" &&
+      (versionTrigger.matches("button") ||
+        versionTrigger.matches('[role="button"]') ||
+        versionTrigger.tabIndex >= 0);
+
+    if (isKeyboardActivatable) {
+      versionTrigger.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+          event.preventDefault();
+          triggerVersionTap();
+        }
+      });
+    }
   }
 }
 
@@ -2151,6 +2333,7 @@ function initShareLink() {
     if (!feedback) return;
     feedback.textContent = message;
     feedback.classList.toggle("is-error", Boolean(isError && message));
+    applyFooterOffset();
     if (clearTimer) {
       clearTimeout(clearTimer);
       clearTimer = null;
@@ -2160,7 +2343,8 @@ function initShareLink() {
         feedback.textContent = "";
         feedback.classList.remove("is-error");
         clearTimer = null;
-      }, 4000);
+        applyFooterOffset();
+      }, 2000);
     }
   };
 
@@ -2187,11 +2371,38 @@ function initShareLink() {
 
     try {
       await copyTextToClipboard(shareUrl);
-      setFeedback("Link copied to clipboard.");
+      setFeedback("Copied");
     } catch (error) {
       setFeedback(`Copy failed. Copy manually: ${shareUrl}`, true);
     }
   });
+}
+
+function initEasterButton() {
+  const button = document.querySelector("[data-easter-trigger]");
+  if (!button) {
+    return;
+  }
+
+  const updateExpanded = () => {
+    const isActive = document.body.classList.contains("konami-active");
+    button.setAttribute("aria-expanded", String(isActive));
+  };
+
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    const opened = triggerEasterEggOverlay();
+    if (!opened) {
+      updateExpanded();
+    } else if (typeof window !== "undefined") {
+      window.requestAnimationFrame(updateExpanded);
+    }
+  });
+
+  document.addEventListener("konami:open", updateExpanded);
+  document.addEventListener("konami:close", updateExpanded);
+
+  updateExpanded();
 }
 
 const GISCUS_DATA_MAPPINGS = Object.freeze([
@@ -2556,6 +2767,7 @@ async function initializeSite() {
   initShareLink();
   initLazyEmbeds();
   initKonamiCode();
+  initEasterButton();
 
   await Promise.all([
     initContentRenderers(),
@@ -2581,6 +2793,38 @@ async function initializeSite() {
         : null;
 
     const tiltTimeouts = new WeakMap();
+    const BLINK_MIN_DELAY = 6000;
+    const BLINK_MAX_DELAY = 10000;
+    let blinkTimeoutId = null;
+
+    function clearBlinkSchedule() {
+      if (blinkTimeoutId !== null) {
+        window.clearTimeout(blinkTimeoutId);
+        blinkTimeoutId = null;
+      }
+    }
+
+    function blinkEyes() {
+      eyes.forEach((eye) => eye.classList.add("blink"));
+      window.setTimeout(() => {
+        eyes.forEach((eye) => eye.classList.remove("blink"));
+      }, 160);
+    }
+
+    function queueBlink() {
+      clearBlinkSchedule();
+      if (prefersReducedMotion()) {
+        eyes.forEach((eye) => eye.classList.remove("blink"));
+        return;
+      }
+      const delay =
+        BLINK_MIN_DELAY +
+        Math.random() * Math.max(0, BLINK_MAX_DELAY - BLINK_MIN_DELAY);
+      blinkTimeoutId = window.setTimeout(() => {
+        blinkEyes();
+        queueBlink();
+      }, delay);
+    }
 
     function movePupils(x, y) {
       eyes.forEach((eye) => {
@@ -2731,8 +2975,12 @@ async function initializeSite() {
     };
 
     applyMode();
+    queueBlink();
 
-    const handlePointerChange = () => applyMode();
+    const handlePointerChange = () => {
+      applyMode();
+      queueBlink();
+    };
     if (pointerFineQuery) {
       if (typeof pointerFineQuery.addEventListener === "function") {
         pointerFineQuery.addEventListener("change", handlePointerChange);
@@ -2742,7 +2990,10 @@ async function initializeSite() {
     }
 
     if (reduceMotionQuery) {
-      const handleReduceMotionChange = () => applyMode();
+      const handleReduceMotionChange = () => {
+        applyMode();
+        queueBlink();
+      };
       if (typeof reduceMotionQuery.addEventListener === "function") {
         reduceMotionQuery.addEventListener(
           "change",
