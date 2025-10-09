@@ -2786,9 +2786,10 @@ async function initializeSite() {
         ? window.matchMedia("(prefers-reduced-motion: reduce)")
         : null;
 
-    const tiltTimeouts = new WeakMap();
+    const blinkTimeouts = new WeakMap();
     const BLINK_MIN_DELAY = 6000;
     const BLINK_MAX_DELAY = 10000;
+    const MANUAL_BLINK_DURATION = 160;
     let blinkTimeoutId = null;
 
     function clearBlinkSchedule() {
@@ -2859,6 +2860,35 @@ async function initializeSite() {
         if (pupil)
           pupil.style.transform = "translate(-50%, -50%) translate(0, 0)";
       });
+    }
+
+    function blinkFeature(feature) {
+      const targets =
+        feature.classList.contains("eye")
+          ? [feature]
+          : feature.querySelectorAll?.(".eye") ?? [];
+      if (!targets.length) {
+        return;
+      }
+
+      targets.forEach((eye) => {
+        const existing = blinkTimeouts.get(eye);
+        if (typeof existing === "number") {
+          window.clearTimeout(existing);
+        }
+
+        eye.classList.remove("wink");
+        eye.classList.add("blink");
+
+        const timeoutId = window.setTimeout(() => {
+          eye.classList.remove("blink");
+          blinkTimeouts.delete(eye);
+        }, MANUAL_BLINK_DURATION);
+
+        blinkTimeouts.set(eye, timeoutId);
+      });
+
+      queueBlink();
     }
 
     function enablePointerTracking() {
@@ -3000,23 +3030,8 @@ async function initializeSite() {
 
     interactiveParts.forEach((feature) => {
       feature.addEventListener("click", () => {
-        const container = feature.closest(".footer-eyes");
-        if (container) {
-          const existing = tiltTimeouts.get(container);
-          if (typeof existing === "number") {
-            window.clearTimeout(existing);
-          }
-          container.classList.add("wink-tilt");
-          const timeoutId = window.setTimeout(() => {
-            container.classList.remove("wink-tilt");
-            tiltTimeouts.delete(container);
-          }, 1500);
-          tiltTimeouts.set(container, timeoutId);
-        }
+        blinkFeature(feature);
 
-        if (feature.classList.contains("wink")) return;
-        feature.classList.add("wink");
-        window.setTimeout(() => feature.classList.remove("wink"), 1500);
       });
     });
   })();
