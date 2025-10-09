@@ -1,0 +1,79 @@
+<!-- Footer Orbby HTML snippet -->
+<div class="orbby-peek footer-eyes" aria-hidden="true">
+  <div class="head">
+    <div class="eye left"><div class="pupil"></div></div>
+    <div class="eye right"><div class="pupil"></div></div>
+  </div>
+</div>
+
+/* Footer Orbby CSS snippet */
+.orbby-peek {
+  position: absolute;
+  bottom: -30px;
+  right: 10px;
+  width: 160px;
+  height: 120px;
+  overflow: visible;
+}
+
+.orbby-peek .head {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  border: 2px solid var(--color-orbby-border);
+  border-radius: 50%;
+  background: var(--color-orbby-skin);
+  box-shadow: 4px 4px 0 var(--color-shadow);
+}
+
+.footer-eyes .eye {
+  --eye-size: 28px;
+  --eye-border: 2px;
+  width: var(--eye-size);
+  height: var(--eye-size);
+  border-radius: 50%;
+  background: var(--color-orbby-sclera);
+  border: var(--eye-border) solid var(--color-orbby-border);
+  position: absolute;
+  overflow: hidden;
+  transition: all 150ms ease;
+}
+
+.footer-eyes .eye.left {
+  left: 24px;
+  --eye-top: 38px;
+  top: var(--eye-top);
+}
+
+.footer-eyes .eye.right {
+  right: 24px;
+  --eye-top: 38px;
+  top: var(--eye-top);
+}
+
+.footer-eyes .pupil {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-orbby-pupil);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate3d(0, 0, 0);
+  transition: transform var(--pupil-transition-duration, 80ms) ease;
+  will-change: transform;
+}
+
+.footer-eyes .eye.wink {
+  height: 0;
+  top: calc(var(--eye-top) + var(--eye-size) / 2 - var(--eye-border) / 2);
+  border: none;
+  border-top: var(--eye-border) solid var(--color-orbby-border);
+  border-radius: 0;
+}
+
+.footer-eyes .eye.wink .pupil {
+  display: none;
+}
