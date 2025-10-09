@@ -120,6 +120,8 @@ async function loadEntry(section, id) {
 }
 
 const ISO_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+const IMAGE_POSITIONS = new Set(["hero", "inline", "bottom"]);
+const IMAGE_WIDTHS = new Set(["full", "wide", "content"]);
 
 // Parse potentially invalid ISO date strings safely.
 function parseISO(d) {
@@ -171,6 +173,187 @@ function formatDate(d) {
   } catch (err) {
     return d;
   }
+}
+
+function ensureTrailingSlash(path) {
+  if (!path) return "";
+  return path.endsWith("/") ? path : `${path}/`;
+}
+
+function readCustomAssetFolder(entry) {
+  if (!entry) return "";
+  const candidates = [
+    entry.assetFolder,
+    entry.assetsFolder,
+    entry.imageFolder,
+    entry.imagesFolder,
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate.trim();
+    }
+  }
+  return "";
+}
+
+function getSectionAssetRoot(section) {
+  if (section === "blog") return "/assets/blog/";
+  if (section === "projects") return "/assets/projects/";
+  if (section === "research") return "/assets/research/";
+  return "/assets/";
+}
+
+function getEntryAssetBasePath(section, entry) {
+  if (!entry) return "";
+  const custom = readCustomAssetFolder(entry);
+  const root = getSectionAssetRoot(section);
+
+  if (custom) {
+    if (/^([a-z]+:)?\/\//i.test(custom)) {
+      return ensureTrailingSlash(custom);
+    }
+    if (custom.startsWith("/")) {
+      const trimmed = custom.replace(/\/+$/, "");
+      return ensureTrailingSlash(trimmed);
+    }
+    const sanitized = custom.replace(/\\/g, "/");
+    let withoutLeading = sanitized;
+    while (withoutLeading.startsWith("./")) {
+      withoutLeading = withoutLeading.slice(2);
+    }
+    while (withoutLeading.startsWith(".")) {
+      withoutLeading = withoutLeading.slice(1);
+    }
+    withoutLeading = withoutLeading.replace(/^\/+/, "");
+    const normalized = withoutLeading.replace(/\/+$/, "");
+    return ensureTrailingSlash(`${root}${normalized}`);
+  }
+
+  const slugCandidate =
+    typeof entry.slug === "string" && entry.slug.trim()
+      ? entry.slug.trim()
+      : typeof entry.id === "string"
+        ? entry.id.trim()
+        : "";
+  if (!slugCandidate) return "";
+
+  return ensureTrailingSlash(`${root}${slugCandidate}`);
+}
+
+function sanitizeImageWidth(width, position) {
+  const key = typeof width === "string" ? width.toLowerCase().trim() : "";
+  if (IMAGE_WIDTHS.has(key)) return key;
+  return position === "hero" ? "full" : "content";
+}
+
+function normalizeImageRecord(section, entry, image, index, basePath) {
+  if (!image || typeof image !== "object") return null;
+  let src = typeof image.src === "string" ? image.src.trim() : "";
+  if (!src) return null;
+  const rawPosition =
+    typeof image.position === "string" ? image.position.trim().toLowerCase() : "";
+  const position = IMAGE_POSITIONS.has(rawPosition) ? rawPosition : "inline";
+  const caption =
+    typeof image.caption === "string" ? image.caption.trim() : "";
+  let alt = typeof image.alt === "string" ? image.alt.trim() : "";
+  let order = Number(image.order);
+  if (!Number.isFinite(order)) {
+    order = index + (position === "hero" ? 0 : 1);
+  }
+  order = Math.max(0, order);
+  const width = sanitizeImageWidth(image.width, position);
+
+  if (!/^([a-z]+:)?\/\//i.test(src) && !src.startsWith("/")) {
+    const normalized = src.replace(/^\.\/?/, "");
+    if (basePath) {
+      src = `${basePath}${normalized}`;
+    } else {
+      src = `/${normalized}`;
+    }
+  }
+
+  if (!alt) {
+    if (caption) {
+      alt = caption;
+    } else if (entry && entry.title) {
+      alt = `${entry.title} illustration`;
+    } else {
+      alt = "Post illustration";
+    }
+  }
+
+  return {
+    src,
+    alt,
+    caption,
+    position,
+    width,
+    order,
+  };
+}
+
+function collectEntryImages(section, entry) {
+  if (!entry) {
+    return { hero: [], inline: [], bottom: [] };
+  }
+  if (entry.__normalizedImages && entry.__normalizedImages.section === section) {
+    return entry.__normalizedImages.payload;
+  }
+  const basePath = getEntryAssetBasePath(section, entry);
+  const result = { hero: [], inline: [], bottom: [] };
+  const images = Array.isArray(entry.images) ? entry.images : [];
+  images.forEach((image, index) => {
+    const normalized = normalizeImageRecord(section, entry, image, index, basePath);
+    if (!normalized) return;
+    if (!IMAGE_POSITIONS.has(normalized.position)) return;
+    result[normalized.position].push(normalized);
+  });
+
+  if (!result.hero.length && typeof entry.hero === "string" && entry.hero.trim()) {
+    const legacyAlt =
+      typeof entry.hero_alt === "string"
+        ? entry.hero_alt.trim()
+        : typeof entry.heroAlt === "string"
+          ? entry.heroAlt.trim()
+          : "";
+    const legacyCaption =
+      typeof entry.hero_caption === "string"
+        ? entry.hero_caption.trim()
+        : typeof entry.heroCaption === "string"
+          ? entry.heroCaption.trim()
+          : "";
+    result.hero.push({
+      src: entry.hero.trim(),
+      alt:
+        legacyAlt ||
+        legacyCaption ||
+        (entry.title ? `${entry.title} hero image` : "Featured image"),
+      caption: legacyCaption,
+      position: "hero",
+      width: "full",
+      order: 0,
+    });
+  }
+
+  ["hero", "inline", "bottom"].forEach((key) => {
+    result[key].sort((a, b) => a.order - b.order);
+  });
+
+  if (result.hero.length) {
+    const primaryHero = result.hero[0];
+    entry.hero = primaryHero.src;
+    entry.hero_alt = primaryHero.alt;
+    entry.hero_caption = primaryHero.caption;
+  }
+
+  const payload = result;
+  Object.defineProperty(entry, "__normalizedImages", {
+    configurable: true,
+    enumerable: false,
+    value: { section, payload },
+    writable: true,
+  });
+  return payload;
 }
 
 function readUpdatedFlag(entry) {
@@ -452,6 +635,8 @@ function normalizeBlock(block) {
       src,
       alt: typeof block.alt === "string" ? block.alt : "",
       caption: typeof block.caption === "string" ? block.caption : "",
+      width: sanitizeImageWidth(block.width, "inline"),
+      position: "inline",
     };
   }
   if (type === "heading") {
@@ -520,7 +705,103 @@ function bodyToPlainText(body) {
 }
 
 // Render the normalized block array into DOM nodes.
-function renderBody(blocks) {
+function getImageWidthClass(width) {
+  const map = {
+    full: "framed-media--full",
+    wide: "framed-media--wide",
+    content: "framed-media--content",
+  };
+  const key = typeof width === "string" ? width.toLowerCase() : "";
+  return map[key] || map.content;
+}
+
+function createImageFigure(image, options = {}) {
+  if (!image || !image.src) return null;
+  const figure = document.createElement("figure");
+  const classes = ["framed-media", getImageWidthClass(image.width)];
+  if (options.extraClass) classes.push(options.extraClass);
+  figure.className = classes.filter(Boolean).join(" ");
+  if (image.position) {
+    figure.dataset.position = image.position;
+  }
+
+  const img = document.createElement("img");
+  img.src = image.src;
+  const fallbackAlt =
+    image.alt && image.alt.trim()
+      ? image.alt.trim()
+      : options.fallbackAlt && options.fallbackAlt.trim()
+        ? options.fallbackAlt.trim()
+        : image.caption && image.caption.trim()
+          ? image.caption.trim()
+          : "Illustration";
+  img.alt = fallbackAlt;
+  img.loading = options.loading || "lazy";
+  img.decoding = "async";
+  img.fetchPriority = options.fetchPriority || "low";
+  img.addEventListener(
+    "error",
+    () => {
+      figure.classList.add("framed-media--error");
+      img.hidden = true;
+      if (!figure.querySelector(".framed-media__fallback")) {
+        const fallback = document.createElement("div");
+        fallback.className = "framed-media__fallback";
+        fallback.textContent = "Image unavailable";
+        figure.appendChild(fallback);
+      }
+    },
+    { once: true },
+  );
+  figure.appendChild(img);
+
+  if (image.caption) {
+    const caption = document.createElement("figcaption");
+    caption.textContent = image.caption;
+    figure.appendChild(caption);
+  }
+
+  return figure;
+}
+
+function mergeInlineImageBlocks(blocks, inlineImages) {
+  if (!Array.isArray(blocks) || !blocks.length) {
+    if (!inlineImages || !inlineImages.length) return blocks || [];
+    return inlineImages.map((image) => ({ type: "image", ...image }));
+  }
+  if (!inlineImages || !inlineImages.length) return blocks;
+
+  const normalized = inlineImages
+    .map((image, index) => ({
+      type: "image",
+      src: image.src,
+      alt: image.alt,
+      caption: image.caption,
+      width: image.width,
+      position: image.position || "inline",
+      order: Number.isFinite(image.order) ? image.order : index + 1,
+    }))
+    .sort((a, b) => a.order - b.order);
+
+  const merged = [];
+  let pointer = 0;
+  for (let i = 0; i <= blocks.length; i += 1) {
+    while (pointer < normalized.length && normalized[pointer].order <= i) {
+      merged.push(normalized[pointer]);
+      pointer += 1;
+    }
+    if (i < blocks.length) {
+      merged.push(blocks[i]);
+    }
+  }
+  while (pointer < normalized.length) {
+    merged.push(normalized[pointer]);
+    pointer += 1;
+  }
+  return merged;
+}
+
+function renderBody(blocks, fallbackAltText) {
   if (!blocks.length) return null;
   const container = document.createElement("div");
   container.className = "prose";
@@ -547,20 +828,7 @@ function renderBody(blocks) {
         break;
       }
       case "image": {
-        const figure = document.createElement("figure");
-        const img = document.createElement("img");
-        img.src = block.src;
-        img.alt = block.alt || "";
-        img.loading = "lazy";
-        img.decoding = "async";
-        img.fetchPriority = "low";
-        figure.appendChild(img);
-        if (block.caption) {
-          const caption = document.createElement("figcaption");
-          caption.textContent = block.caption;
-          figure.appendChild(caption);
-        }
-        node = figure;
+        node = createImageFigure(block, { fallbackAlt: fallbackAltText });
         break;
       }
       case "html": {
@@ -573,7 +841,13 @@ function renderBody(blocks) {
       default:
         break;
     }
-    if (node) container.appendChild(node);
+    if (node) {
+      if (block.type === "image" && node && !block.alt && fallbackAltText) {
+        const img = node.querySelector("img");
+        if (img && !img.alt) img.alt = fallbackAltText;
+      }
+      container.appendChild(node);
+    }
   });
   if (!container.childNodes.length) return null;
   return container;
@@ -724,6 +998,7 @@ async function renderSectionIndex(section, options = {}) {
         const detail = await loadEntry(section, entry.id);
         if (detail) {
           normalizeEntrySummary(detail);
+          collectEntryImages(section, detail);
           if (detail.summary) enriched.summary = detail.summary;
           if (detail.tags && detail.tags.length) enriched.tags = detail.tags;
           if (detail.hero) enriched.hero = detail.hero;
@@ -922,34 +1197,38 @@ async function renderSectionEntry(section, options = {}) {
     frag.appendChild(meta);
   }
 
-  if (working.hero) {
-    const figure = document.createElement("figure");
-    figure.className = "blog-hero";
-    const img = document.createElement("img");
-    img.src = working.hero;
-    const heroAlt =
-      typeof working.hero_alt === "string"
-        ? working.hero_alt
-        : typeof working.heroAlt === "string"
-          ? working.heroAlt
-          : "";
-    img.alt = heroAlt;
-    img.loading = "eager";
-    img.decoding = "async";
-    img.fetchPriority = "high";
-    figure.appendChild(img);
-    const caption = working.hero_caption || working.heroCaption;
-    if (typeof caption === "string" && caption.trim()) {
-      const figcaption = document.createElement("figcaption");
-      figcaption.textContent = caption.trim();
-      figure.appendChild(figcaption);
-    }
-    frag.appendChild(figure);
+  const media = collectEntryImages(section, working);
+  if (media.hero.length) {
+    media.hero.forEach((image) => {
+      const figure = createImageFigure(image, {
+        fallbackAlt: working.title,
+        extraClass: "blog-hero",
+      });
+      if (figure) frag.appendChild(figure);
+    });
   }
 
-  const blocks = createBodyBlocks(working.body);
-  const body = renderBody(blocks);
+  const bodySource = hasOwn(working, "body") ? working.body : working.html;
+  const baseBlocks = createBodyBlocks(bodySource);
+  const blocks = mergeInlineImageBlocks(baseBlocks, media.inline);
+  const body = renderBody(blocks, working.title);
   if (body) frag.appendChild(body);
+
+  if (media.bottom.length) {
+    const gallery = document.createElement("section");
+    gallery.className = "entry-bottom-media";
+    gallery.setAttribute("aria-label", "Post images");
+    media.bottom.forEach((image) => {
+      const figure = createImageFigure(image, {
+        fallbackAlt: working.title,
+        extraClass: "entry-bottom-media__item",
+      });
+      if (figure) gallery.appendChild(figure);
+    });
+    if (gallery.childNodes.length) {
+      frag.appendChild(gallery);
+    }
+  }
 
   const tags = createTagList(working.tags);
   if (tags) {
