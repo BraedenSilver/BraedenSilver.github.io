@@ -966,7 +966,7 @@ function renderFooter(yearText) {
         </a>
       </p>
       <button type="button" class="footer-share" data-share-button>
-        Copy page link
+        📤 Share link
       </button>
       <button type="button" class="theme-toggle" data-theme-toggle aria-label="Activate dark mode" aria-pressed="false">
         <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
