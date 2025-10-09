@@ -1,0 +1,38 @@
+{
+  "id": "example-blog",
+  "title": "Example Blog",
+  "date": "2025-10-09",
+  "updated": false,
+  "updated_date": "",
+  "summary": "Demonstrates how images declared in JSON appear as hero, inline, and bottom gallery media on a post page.",
+  "tags": ["General", "Demo"],
+  "assetFolder": "example-blog",
+  "body": "This entry exists to document the JSON image workflow. It walks through declaring hero, inline, and bottom figures so the rendering pipeline can frame them just like the rest of the site.\\n\\nEach image below references the same placeholder artwork. In a real post you would swap in distinct files, but the structure stays the same.\\n\\nFuture posts can add as many images as they need, mixing positions and widths to suit the story.",
+  "links": [],
+  "images": [
+    {
+      "src": "example-hero.png",
+      "alt": "Placeholder illustration for the Example Blog hero image",
+      "caption": "Hero placement pulled from /assets/blog/example-blog/example-hero.png.",
+      "position": "hero",
+      "width": "full",
+      "order": 1
+    },
+    {
+      "src": "example-hero.png",
+      "alt": "Placeholder illustration repeated for the inline example",
+      "caption": "Inline placement reuses the same artwork to keep the demo self-contained.",
+      "position": "inline",
+      "width": "content",
+      "order": 2
+    },
+    {
+      "src": "example-hero.png",
+      "alt": "Placeholder illustration displayed as a bottom gallery item",
+      "caption": "Bottom placement shows how captions appear beneath framed images.",
+      "position": "bottom",
+      "width": "wide",
+      "order": 3
+    }
+  ]
+}
