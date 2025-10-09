@@ -983,23 +983,21 @@ function renderFooter(yearText) {
 <footer class="footer-fixed" aria-label="Site footer">
   <div class="footer-bar">
     <nav class="footer-meta" aria-label="Footer">
-      <a
-        class="footer-last-updated"
-        data-last-updated-link
-        href="https://github.com/BraedenSilver/BraedenSilver.github.io"
-      >
+      <span class="footer-last-updated">
         <span class="footer-last-updated__label">Last updated:</span>
-        <time id="last-updated" datetime="">Loading…</time>
-      </a>
-      <span
+        <time data-last-updated datetime="">Loading…</time>
+      </span>
+      <a
         class="footer-version"
         data-footer-version
         data-version-prefix="v0.1."
         data-version-fallback="194"
+        data-version-link
         data-secret-trigger
-      >v0.1.194</span>
-      <button type="button" class="footer-share" data-share-button>
-        Share
+        href="https://github.com/BraedenSilver/BraedenSilver.github.io"
+      >v0.1.194</a>
+      <button type="button" class="footer-share" data-share-button aria-label="Share this page">
+        📤
       </button>
       <button
         type="button"
@@ -1010,7 +1008,6 @@ function renderFooter(yearText) {
       >
         <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
         <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
-        <span class="theme-toggle__label">Dark mode</span>
       </button>
       <button
         type="button"
@@ -1654,37 +1651,40 @@ function resolveSourceUrlFromMetadata() {
  * Attempts to read the "Last-Modified" HTTP header for the current page and
  * falls back to `document.lastModified` if that header isn't available.
  */
-async function updateLastUpdated() {
-  const timeTarget = document.getElementById("last-updated");
-  const linkTarget = document.querySelector("[data-last-updated-link]");
-  if (!timeTarget || !linkTarget) return;
-
+async function updateFooterMetadata() {
+  const linkTarget = document.querySelector("[data-version-link]");
+  const timeTarget = document.querySelector("[data-last-updated]");
   const formatOptions = { year: "numeric", month: "short", day: "numeric" };
-
-  const timeCtor =
-    typeof window !== "undefined" && "HTMLTimeElement" in window
-      ? window.HTMLTimeElement
-      : null;
 
   const applyDate = (value) => {
     if (!(value instanceof Date)) return false;
     const time = value.getTime();
     if (!Number.isFinite(time)) return false;
     const iso = new Date(time).toISOString();
-    const readable = value.toLocaleDateString(undefined, formatOptions);
-    if (timeCtor && timeTarget instanceof timeCtor) {
-      timeTarget.textContent = readable;
-      timeTarget.dateTime = iso;
-    } else {
-      timeTarget.textContent = readable;
-      timeTarget.setAttribute("data-last-updated-iso", iso);
+
+    if (timeTarget) {
+      const readable = value.toLocaleDateString(undefined, formatOptions);
+      if (
+        typeof window !== "undefined" &&
+        "HTMLTimeElement" in window &&
+        timeTarget instanceof window.HTMLTimeElement
+      ) {
+        timeTarget.textContent = readable;
+        timeTarget.dateTime = iso;
+      } else {
+        timeTarget.textContent = readable;
+        timeTarget.setAttribute("data-last-updated-iso", iso);
+      }
     }
+
     applyLastModifiedMetadata(iso);
     return true;
   };
 
-  const sourceUrl = resolveSourceUrlFromMetadata();
-  linkTarget.setAttribute("href", sourceUrl);
+  if (linkTarget) {
+    const sourceUrl = resolveSourceUrlFromMetadata();
+    linkTarget.setAttribute("href", sourceUrl);
+  }
 
   const buildDate = getBuildLastUpdatedDate();
   if (buildDate && applyDate(buildDate)) {
@@ -2765,7 +2765,7 @@ async function initializeSite() {
 
   await Promise.all([
     initContentRenderers(),
-    updateLastUpdated(),
+    updateFooterMetadata(),
     updateFooterVersion(),
   ]);
 

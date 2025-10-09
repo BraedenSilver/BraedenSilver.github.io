@@ -25,7 +25,7 @@ html {
   --color-orbby-pupil: #000;
   --color-orbby-sclera: #fff;
   --footer-fixed-offset: 6.5rem;
-  --footer-fixed-gap: 0.75rem;
+  --footer-fixed-gap: 0rem;
 }
 
 html.theme-dark {
@@ -51,7 +51,7 @@ html.theme-dark {
   --color-orbby-pupil: #000;
   --color-orbby-sclera: #fff;
   --footer-fixed-offset: 6.5rem;
-  --footer-fixed-gap: 0.75rem;
+  --footer-fixed-gap: 0rem;
 }
 
 *, *::before, *::after {
@@ -725,72 +725,26 @@ html.theme-dark .theme-toggle__icon--moon {
   height: 120px;
 }
 
-.last-updated {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.last-updated .footer-version {
-  appearance: none;
-  border: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  font: inherit;
-  font-size: inherit;
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.15em;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.25rem;
-  transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
-  cursor: pointer;
-}
-
-.last-updated .footer-version:hover,
-.last-updated .footer-version:focus-visible {
-  color: var(--color-text);
-  text-decoration-thickness: 2px;
-}
-
-.last-updated .footer-source-link {
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.15em;
-  transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
-}
-
-.last-updated .footer-source-link:hover,
-.last-updated .footer-source-link:focus-visible {
-  color: var(--color-text);
-  text-decoration-thickness: 2px;
-}
-
 .footer-share {
   appearance: none;
   border: 2px solid var(--color-border);
   background: var(--color-surface);
   color: inherit;
   font: inherit;
-  font-size: 0.95rem;
-  padding: 0.25rem 0.7rem 0.3rem;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.35rem 0.75rem;
   border-radius: 999px;
   cursor: pointer;
   box-shadow: 4px 4px 0 var(--color-shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease,
-    color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer-share:hover,
 .footer-share:focus-visible {
-  background: var(--color-strong-bg);
-  color: var(--color-strong-text);
   transform: translate(-1px, -1px);
   box-shadow: 6px 6px 0 var(--color-shadow);
 }
@@ -817,7 +771,7 @@ html.theme-dark .theme-toggle__icon--moon {
 
 @media (max-width: 600px) {
   body {
-    padding-bottom: calc(4rem + 16px);
+    padding-bottom: calc(var(--footer-fixed-offset) + var(--footer-fixed-gap));
   }
 
   .footer-bar {
@@ -844,7 +798,6 @@ html.theme-dark .theme-toggle__icon--moon {
 
   .footer-share {
     width: auto;
-    padding: 0.3rem 0.6rem 0.35rem;
     justify-content: center;
     justify-self: start;
   }
@@ -2617,32 +2570,38 @@ body.konami-active {
   display: inline-flex;
   align-items: baseline;
   gap: 0.35rem;
-  color: inherit;
-  text-decoration: none;
-  transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
-}
-
-.footer-last-updated:hover,
-.footer-last-updated:focus-visible {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.2em;
-  color: inherit;
+  white-space: nowrap;
 }
 
 .footer-last-updated__label {
-  font-weight: 600;
-  white-space: nowrap;
+  font-weight: 500;
+  color: var(--color-muted-text);
 }
 
 .footer-last-updated time {
   font-variant-numeric: tabular-nums;
+  color: inherit;
 }
 
 .footer-version {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: text-decoration-thickness 0.2s ease;
+}
+
+.footer-version:hover,
+.footer-version:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
 }
 
 .footer-share,
@@ -2652,17 +2611,25 @@ body.konami-active {
   background: var(--color-surface);
   color: inherit;
   font: inherit;
-  font-size: 0.95rem;
-  padding: 0.25rem 0.7rem 0.3rem;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.35rem 0.75rem;
   border-radius: 999px;
   cursor: pointer;
   box-shadow: 4px 4px 0 var(--color-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease,
     color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer-share:hover,
-.footer-share:focus-visible,
+.footer-share:focus-visible {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 var(--color-shadow);
+}
+
 .footer-easter:hover,
 .footer-easter:focus-visible {
   background: var(--color-strong-bg);
@@ -2691,10 +2658,6 @@ body.konami-active {
 
 .footer-share-feedback.is-error {
   color: var(--color-error-text);
-  font-weight: 600;
-}
-
-.theme-toggle__label {
   font-weight: 600;
 }
 
