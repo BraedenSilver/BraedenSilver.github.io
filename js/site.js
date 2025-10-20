@@ -165,6 +165,7 @@ const FALLBACK_VISITOR_MESSAGE = "Thank you for visiting BraedenSilver.com";
 const HOLIDAY_CONFIG_URL = "/data/holiday-banners.json";
 const BANNER_TIME_ZONE = "America/Chicago";
 const ANNOUNCEMENT_SPEED_PX_PER_SECOND = 72;
+const ANNOUNCEMENT_RESIZE_WIDTH_THRESHOLD_PX = 2;
 
 const HOME_LATEST_MEDIA_QUERY = "(max-width: 719px)";
 const HOME_LATEST_DEFAULT_LIMIT = 3;
@@ -1170,18 +1171,22 @@ function prefersReducedMotion() {
 const announcementMarqueeRegistry = new Map();
 let announcementMarqueeListenersRegistered = false;
 let announcementMarqueeRefreshHandle = null;
+let announcementMarqueeLastViewportWidth = null;
 
 function ensureAnnouncementMarqueeListeners() {
   if (announcementMarqueeListenersRegistered) return;
   if (typeof window === "undefined") return;
 
   announcementMarqueeListenersRegistered = true;
+  if (Number.isFinite(window.innerWidth)) {
+    announcementMarqueeLastViewportWidth = window.innerWidth;
+  }
   window.addEventListener("resize", queueAnnouncementMarqueeRefresh);
 
   if (typeof window.matchMedia === "function") {
     try {
       const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const handler = () => queueAnnouncementMarqueeRefresh();
+      const handler = () => queueAnnouncementMarqueeRefresh(true);
       if (typeof query.addEventListener === "function") {
         query.addEventListener("change", handler);
       } else if (typeof query.addListener === "function") {
@@ -1193,8 +1198,31 @@ function ensureAnnouncementMarqueeListeners() {
   }
 }
 
-function queueAnnouncementMarqueeRefresh() {
+function queueAnnouncementMarqueeRefresh(forceOrEvent = false) {
   if (typeof window === "undefined") return;
+  const force = typeof forceOrEvent === "boolean" ? forceOrEvent : false;
+
+  if (!force) {
+    const viewportWidth = window.innerWidth;
+    if (Number.isFinite(viewportWidth)) {
+      if (announcementMarqueeLastViewportWidth == null) {
+        announcementMarqueeLastViewportWidth = viewportWidth;
+      } else if (
+        Math.abs(viewportWidth - announcementMarqueeLastViewportWidth) <
+        ANNOUNCEMENT_RESIZE_WIDTH_THRESHOLD_PX
+      ) {
+        return;
+      } else {
+        announcementMarqueeLastViewportWidth = viewportWidth;
+      }
+    }
+  } else {
+    const viewportWidth = window.innerWidth;
+    if (Number.isFinite(viewportWidth)) {
+      announcementMarqueeLastViewportWidth = viewportWidth;
+    }
+  }
+
   if (announcementMarqueeRefreshHandle != null) return;
 
   if (typeof window.requestAnimationFrame !== "function") {
