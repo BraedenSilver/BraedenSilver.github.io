@@ -137,12 +137,17 @@ function handleInitialUrl() {
     const params = new URLSearchParams(hash.substring(1));
     const type = params.get('type');
     const id = params.get('id');
+    const isMobile = window.innerWidth <= 768;
 
     if (type && id) {
         if (type === 'folder') {
             const folder = desktopData.find(f => f.id === id);
             if (folder) {
-                openWindow(folder.id, folder.title, 'folder', folder.id);
+                if (isMobile) {
+                    openMobileApp(folder);
+                } else {
+                    openWindow(folder.id, folder.title, 'folder', folder.id);
+                }
             }
         } else if (type === 'pdf') {
             // Find file in any folder
@@ -152,7 +157,18 @@ function handleInitialUrl() {
                 if (f) { file = f; break; }
             }
             if (file) {
-                openWindow(file.id, file.title, 'pdf', file.id);
+                if (isMobile) {
+                    // For PDF on mobile, maybe just open it directly? 
+                    // Or open the folder containing it?
+                    // Let's open the folder containing it for now as mobile doesn't have window system
+                    const parentFolder = desktopData.find(folder => folder.files.includes(file));
+                    if (parentFolder) {
+                        openMobileApp(parentFolder);
+                        // Ideally scroll to item or highlight it, but opening folder is good start
+                    }
+                } else {
+                    openWindow(file.id, file.title, 'pdf', file.id);
+                }
             }
         }
     }
@@ -503,58 +519,61 @@ function renderDock() {
 // Mobile View
 function renderMobileView() {
     const mobileApps = document.getElementById('mobile-apps');
-    const mobileDock = document.getElementById('mobile-dock');
+    
+    if (!mobileApps) return;
     
     mobileApps.innerHTML = '';
-    mobileDock.innerHTML = '';
 
-    // Split data: last 4 items go to dock, rest to grid
-    // Or just put specific ones. Let's put Contact, Writing, Case Summary, Research in dock?
-    // Let's just put the last 4 in the dock for now as a heuristic
-    const dockCount = 4;
-    const gridItems = desktopData.slice(0, desktopData.length - dockCount);
-    const dockItems = desktopData.slice(desktopData.length - dockCount);
-
-    // Render Grid
-    gridItems.forEach(folder => {
-        mobileApps.appendChild(createMobileAppIcon(folder));
-    });
-
-    // Render Dock
-    dockItems.forEach(folder => {
-        mobileDock.appendChild(createMobileAppIcon(folder));
+    // Grid: Render ALL folders
+    desktopData.forEach(folder => {
+        mobileApps.appendChild(createMobileAppIcon(folder, true));
     });
 
     // Setup Back Button
-    document.getElementById('mobile-back-btn').addEventListener('click', closeMobileApp);
+    const backBtn = document.getElementById('mobile-back-btn');
+    if (backBtn) backBtn.addEventListener('click', closeMobileApp);
 
     // Start Clock
     updateMobileClock();
     setInterval(updateMobileClock, 1000);
 }
 
-function createMobileAppIcon(folder) {
+function createMobileAppIcon(item, isFolder = true) {
     const iconEl = document.createElement('div');
     iconEl.className = 'mobile-app-icon';
     
-    // Use a simplified icon for mobile
-    // We can reuse the SVG but maybe scale it or put it in a rounded square background
-    const isFull = folder.files.length > 0;
-    const iconSvg = isFull 
-        ? ICONS.FOLDER_FULL(folder.color, folder.stroke) 
-        : ICONS.FOLDER_EMPTY(folder.color, folder.stroke);
+    const iconColor = '#ffffff';
+    const iconStroke = 'rgba(255,255,255,0.8)';
     
-    // Adjust SVG size for the icon container
-    const scaledSvg = iconSvg.replace('width="48"', 'width="32"').replace('height="48"', 'height="32"');
+    let iconSvg;
+    if (isFolder) {
+        const isFull = item.files.length > 0;
+        iconSvg = isFull 
+            ? ICONS.FOLDER_FULL(iconColor, iconStroke) 
+            : ICONS.FOLDER_EMPTY(iconColor, iconStroke);
+    } else {
+        if (item.iconType === 'email') iconSvg = ICONS.FILE_EMAIL;
+        else iconSvg = ICONS.FILE_LINK;
+        iconSvg = iconSvg.replace(/currentColor/g, 'white');
+    }
+    
+    // Adjust SVG size
+    const scaledSvg = iconSvg
+        .replace('width="48"', 'width="32"').replace('height="48"', 'height="32"')
+        .replace('width="24"', 'width="32"').replace('height="24"', 'height="32"');
 
     iconEl.innerHTML = `
-        <div class="mobile-app-icon-bg">
+        <div class="mobile-app-icon-bg" style="background-color: ${item.color};">
             ${scaledSvg}
         </div>
-        <div class="mobile-app-label">${folder.title}</div>
+        <div class="mobile-app-label">${item.title}</div>
     `;
 
-    iconEl.addEventListener('click', () => openMobileApp(folder));
+    if (isFolder) {
+        iconEl.addEventListener('click', () => openMobileApp(item));
+    } else {
+        iconEl.addEventListener('click', item.action);
+    }
     return iconEl;
 }
 
@@ -599,11 +618,39 @@ function openMobileApp(folder) {
         });
     }
 
+    // Update URL for sharing
+    window.location.hash = `type=folder&id=${folder.id}`;
+
+    // Setup Share Button
+    const shareBtn = document.getElementById('mobile-app-share-btn');
+    // Remove old listeners by cloning
+    const newShareBtn = shareBtn.cloneNode(true);
+    shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
+    
+    newShareBtn.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            
+            // Visual feedback
+            const originalIcon = newShareBtn.innerHTML;
+            newShareBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            
+            setTimeout(() => {
+                newShareBtn.innerHTML = originalIcon;
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+            alert("Link copied to clipboard!");
+        }
+    });
+
     windowEl.classList.add('open');
 }
 
 function closeMobileApp() {
     document.getElementById('mobile-app-window').classList.remove('open');
+    // Clear hash without scrolling
+    history.pushState("", document.title, window.location.pathname + window.location.search);
 }
 
 function updateMobileClock() {
@@ -830,54 +877,66 @@ function setupSelectionBox() {
 }
 
 function setupTheme() {
-    const toggleBtn = document.getElementById('theme-toggle');
-    const sunIcon = toggleBtn.querySelector('.sun-icon');
-    const moonIcon = toggleBtn.querySelector('.moon-icon');
+    const desktopBtn = document.getElementById('theme-toggle');
+    const mobileBtn = document.getElementById('mobile-theme-toggle');
     
+    const updateIcons = (isDark) => {
+        [desktopBtn, mobileBtn].forEach(btn => {
+            if (!btn) return;
+            const sunIcon = btn.querySelector('.sun-icon');
+            const moonIcon = btn.querySelector('.moon-icon');
+            if (isDark) {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+        });
+    };
+
     // Check saved preference or system preference
     const savedTheme = localStorage.getItem('theme');
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialDark = savedTheme === 'dark' || (!savedTheme && systemDark);
     
-    if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+    if (initialDark) {
         document.documentElement.setAttribute('data-theme', 'dark');
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
     }
+    updateIcons(initialDark);
 
-    toggleBtn.addEventListener('click', () => {
+    const toggleTheme = () => {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        
         if (isDark) {
             document.documentElement.removeAttribute('data-theme');
             localStorage.setItem('theme', 'light');
-            sunIcon.style.display = 'block';
-            moonIcon.style.display = 'none';
+            updateIcons(false);
         } else {
             document.documentElement.setAttribute('data-theme', 'dark');
             localStorage.setItem('theme', 'dark');
-            sunIcon.style.display = 'none';
-            moonIcon.style.display = 'block';
+            updateIcons(true);
         }
-    });
+    };
+
+    if (desktopBtn) desktopBtn.addEventListener('click', toggleTheme);
+    if (mobileBtn) mobileBtn.addEventListener('click', toggleTheme);
 }
 
 function setupShare() {
-    const shareBtn = document.getElementById('share-btn');
-    
-    shareBtn.addEventListener('click', async () => {
+    const handleShare = async (btn) => {
         try {
             await navigator.clipboard.writeText(window.location.href);
             
             // Visual feedback
-            const originalIcon = shareBtn.innerHTML;
-            shareBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
             
             setTimeout(() => {
-                shareBtn.innerHTML = originalIcon;
+                btn.innerHTML = originalIcon;
             }, 2000);
         } catch (err) {
             console.error('Failed to copy:', err);
-            // Fallback for older browsers
+            // Fallback
             const textArea = document.createElement("textarea");
             textArea.value = window.location.href;
             document.body.appendChild(textArea);
@@ -886,7 +945,13 @@ function setupShare() {
             textArea.remove();
             alert("Link copied to clipboard!");
         }
-    });
+    };
+
+    const desktopBtn = document.getElementById('share-btn');
+    const mobileBtn = document.getElementById('mobile-share-btn');
+
+    if (desktopBtn) desktopBtn.addEventListener('click', () => handleShare(desktopBtn));
+    if (mobileBtn) mobileBtn.addEventListener('click', () => handleShare(mobileBtn));
 }
 
 // Start

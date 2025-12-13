@@ -77,7 +77,41 @@ body {
 
 .mobile-status-icons {
     display: flex;
-    gap: 0.5rem;
+    gap: 1rem;
+    align-items: center;
+}
+
+.mobile-icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-logo-widget {
+    text-align: center;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.mobile-logo-widget h1 {
+    font-family: "Didot", "Bodoni MT", "Noto Serif Display", "URW Palladio L", P052, Sylfaen, serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-color);
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.mobile-logo-widget p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0 0;
 }
 
 .mobile-home-screen {
@@ -110,7 +144,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--window-bg);
+    /* background-color set inline */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     transition: transform 0.1s;
 }
@@ -129,21 +163,6 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.mobile-dock-container {
-    padding: 1rem;
-    padding-bottom: 2rem;
-}
-
-.mobile-dock {
-    background: var(--dock-bg);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
 }
 
 /* Mobile App Window (Overlay) */
