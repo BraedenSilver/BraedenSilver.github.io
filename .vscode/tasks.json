@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "append_css",
+			"type": "shell",
+			"command": "/bin/zsh",
+			"args": [
+				"echo \".selection-box {\n    position: absolute;\n    background-color: var(--selection-bg);\n    border: 1px solid var(--selection-border);\n    pointer-events: none;\n    z-index: 9999;\n}\" >> style.css"
+			],
+			"group": "build"
+		}
+	]
+}

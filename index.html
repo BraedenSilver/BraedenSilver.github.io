@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braeden Silver - Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Braeden Silver's Desktop Workspace Portfolio">
+</head>
+<body>
+    <!-- Mobile View (Visible only on small screens) -->
+    <div id="mobile-view" class="mobile-container">
+        <!-- Status Bar -->
+        <div class="mobile-status-bar">
+            <span id="mobile-time" class="mobile-time">9:41</span>
+            <div class="mobile-status-icons">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.5 2 3.5 3.5 0 6l12 14 12-14c-3.5-2.5-7.5-4-12-4z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.73 0 1.33-.6 1.33-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+
+        <!-- Home Screen -->
+        <div class="mobile-home-screen">
+            <div id="mobile-apps" class="mobile-app-grid">
+                <!-- Apps injected here -->
+            </div>
+        </div>
+
+        <!-- Mobile Dock -->
+        <div class="mobile-dock-container">
+            <div id="mobile-dock" class="mobile-dock">
+                <!-- Dock apps injected here -->
+            </div>
+        </div>
+
+        <!-- App Window (Overlay) -->
+        <div id="mobile-app-window" class="mobile-app-window">
+            <div class="mobile-app-header">
+                <button id="mobile-back-btn" class="mobile-back-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <span id="mobile-app-title">Folder</span>
+                <div style="width: 24px;"></div>
+            </div>
+            <div id="mobile-app-content" class="mobile-app-content">
+                <!-- Content injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Desktop View (Visible on large screens) -->
+    <div id="desktop-view" class="desktop-container">
+        <!-- Logo -->
+        <div class="brand-logo">
+            <h1>Braeden Silver</h1>
+            <p>Interactive Portfolio</p>
+        </div>
+
+        <!-- Desktop Icons Container -->
+        <div id="desktop-icons" class="desktop-icons">
+            <!-- Icons injected here -->
+        </div>
+
+        <!-- Windows Container -->
+        <div id="windows-container" class="windows-container">
+            <!-- Windows injected here -->
+        </div>
+
+        <!-- Dock -->
+        <div id="dock" class="dock">
+            <div id="dock-items" class="dock-items">
+                <!-- Dock items injected here -->
+            </div>
+        </div>
+
+        <!-- Bottom Right Controls -->
+        <div class="bottom-controls">
+            <button id="theme-toggle" class="control-circle-btn" aria-label="Toggle Dark Mode">
+                <!-- Sun Icon (Default) -->
+                <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <!-- Moon Icon (Hidden by default) -->
+                <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+            <button id="share-btn" class="control-circle-btn" aria-label="Share">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="window-template">
+        <div class="window">
+            <div class="window-header">
+                <div class="window-title">
+                    <span class="window-icon"></span>
+                    <span class="window-title-text">Title</span>
+                </div>
+                <div class="window-controls">
+                    <button class="control-btn share-window-btn" aria-label="Share">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    </button>
+                    <button class="control-btn minimize-btn" aria-label="Minimize">
+                        <svg width="10" height="2" viewBox="0 0 10 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1h8"/></svg>
+                    </button>
+                    <button class="control-btn close-btn" aria-label="Close">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l8 8M9 1L1 9"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="window-content">
+                <!-- Content goes here -->
+            </div>
+            <div class="resize-handle"></div>
+        </div>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+</html>
