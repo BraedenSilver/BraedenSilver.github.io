@@ -991,7 +991,11 @@ function setupSettings() {
 
     const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
     if (mobileSettingsBtn) {
-        mobileSettingsBtn.addEventListener('click', openMobileSettings);
+        mobileSettingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openMobileSettings();
+        });
     }
 }
 
@@ -1405,6 +1409,8 @@ function openMobileSettings() {
     const contentEl = document.getElementById('mobile-app-content');
     const shareBtn = document.getElementById('mobile-app-share-btn');
 
+    if (!windowEl || !titleEl || !contentEl) return;
+
     titleEl.textContent = 'Settings';
     contentEl.innerHTML = '';
     contentEl.appendChild(getSettingsContent(true));
@@ -1414,14 +1420,16 @@ function openMobileSettings() {
 
     // Override back button to just close
     const backBtn = document.getElementById('mobile-back-btn');
-    const originalBack = backBtn.cloneNode(true);
-    backBtn.parentNode.replaceChild(originalBack, backBtn);
-    
-    originalBack.addEventListener('click', () => {
-        closeMobileApp();
-        // Restore share button visibility
-        if (shareBtn) shareBtn.style.display = 'flex';
-    });
+    if (backBtn) {
+        const newBackBtn = backBtn.cloneNode(true);
+        backBtn.parentNode.replaceChild(newBackBtn, backBtn);
+        
+        newBackBtn.addEventListener('click', () => {
+            closeMobileApp();
+            // Restore share button visibility
+            if (shareBtn) shareBtn.style.display = 'flex';
+        });
+    }
 
     windowEl.classList.add('open');
 }
