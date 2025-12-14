@@ -80,3 +80,16 @@ Your site will be live at `https://yourusername.github.io/repo-name/`.
 *   **Enter**: Open the selected desktop icon.
 *   **Escape**: Close the currently active window.
 *   **Shift/Ctrl + Click**: Add to selection.
+
+## Portfolio Folder Definitions
+
+In this section, we define what each desktop folder represents and what content belongs inside it.
+
+*   **Case Summary** — an overview memo describing academic background, intellectual interests, and motivation for law (analytical, not autobiographical).
+*   **Writing Samples** — 3–5 curated academic writing PDFs demonstrating argumentation, clarity, and revision (political theory, policy, law-adjacent work).
+*   **Research** — independent research projects, literature reviews, theses, or policy memos showing methodology and source synthesis.
+*   **Exhibits** — evidence of real-world experience (internships, leadership, work, projects), each framed with context, role, and lessons learned.
+*   **Contact** — professional contact information and optional CV.
+
+*All documents are provided for informational and educational purposes and do not constitute legal advice.*
+

@@ -1170,9 +1170,9 @@ function updateSkyPosition() {
     // 0% = Top, 100% = Bottom (Ground)
     // Peak Height (at noon):
     // Summer: High in sky (e.g., 10% from top)
-    // Winter: Low in sky (e.g., 60% from top)
-    const minHeight = 10; // Highest point (Summer)
-    const maxHeight = 60; // Lowest point (Winter)
+    // Winter: Low in sky (e.g., 50% from top)
+    const minHeight = 15; // Highest point (Summer)
+    const maxHeight = 50; // Lowest point (Winter)
     const avgHeight = (minHeight + maxHeight) / 2;
     const range = (maxHeight - minHeight) / 2;
     
