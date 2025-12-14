@@ -32,6 +32,163 @@
     --hover-bg: #374151;
 }
 
+/* Wallpapers */
+/* Ocean */
+[data-wallpaper="ocean"] {
+    --bg-color: #e0f2fe;
+    --dot-color: #bae6fd;
+}
+[data-theme="dark"] [data-wallpaper="ocean"] {
+    --bg-color: #0c4a6e;
+    --dot-color: #075985;
+}
+
+/* Forest */
+[data-wallpaper="forest"] {
+    --bg-color: #dcfce7;
+    --dot-color: #bbf7d0;
+}
+[data-theme="dark"] [data-wallpaper="forest"] {
+    --bg-color: #064e3b;
+    --dot-color: #065f46;
+}
+
+/* Sunset */
+[data-wallpaper="sunset"] {
+    --bg-color: #fff7ed;
+    --dot-color: #fed7aa;
+}
+[data-theme="dark"] [data-wallpaper="sunset"] {
+    --bg-color: #431407;
+    --dot-color: #7c2d12;
+}
+
+/* Midnight (Gradient) */
+[data-wallpaper="midnight"] .desktop-container,
+[data-wallpaper="midnight"] .mobile-container {
+    background-image: linear-gradient(to bottom right, #e0e7ff, #f3e8ff);
+    background-size: cover;
+}
+[data-theme="dark"] [data-wallpaper="midnight"] .desktop-container,
+[data-theme="dark"] [data-wallpaper="midnight"] .mobile-container {
+    background-image: linear-gradient(to bottom right, #1e1b4b, #312e81);
+}
+
+/* Live Sky */
+[data-wallpaper="sky"] {
+    --bg-color: #60a5fa; /* Sky Blue */
+    --dot-color: rgba(255, 255, 255, 0.3);
+}
+[data-theme="dark"] [data-wallpaper="sky"] {
+    --bg-color: #0f172a; /* Night Blue */
+    --dot-color: rgba(255, 255, 255, 0.1);
+}
+
+.sky-wallpaper {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: linear-gradient(to bottom, #38bdf8, #bae6fd);
+    transition: background 1s ease;
+}
+
+.sky-wallpaper.is-night {
+    background: linear-gradient(to bottom, #0f172a, #1e293b);
+}
+
+[data-wallpaper="sky"] .sky-wallpaper {
+    display: block;
+}
+
+.celestial-body {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    transition: top 1s ease, left 1s ease;
+    /* Centered by default, moved by JS */
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%, -50%);
+}
+
+.celestial-body.sun {
+    background: #fcd34d; /* Sun Yellow */
+    box-shadow: 0 0 40px rgba(252, 211, 77, 0.6);
+}
+
+.celestial-body.moon {
+    background: transparent;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Moon Phase Rendering */
+.moon-phase-icon {
+    font-size: 60px;
+    line-height: 1;
+    cursor: help;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+}
+
+/* Stars */
+.stars {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(1px 1px at 10% 10%, white, transparent),
+        radial-gradient(1px 1px at 20% 40%, white, transparent),
+        radial-gradient(2px 2px at 40% 20%, white, transparent),
+        radial-gradient(1px 1px at 50% 70%, white, transparent),
+        radial-gradient(2px 2px at 80% 40%, white, transparent),
+        radial-gradient(1px 1px at 70% 80%, white, transparent),
+        radial-gradient(1px 1px at 90% 10%, white, transparent);
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.sky-wallpaper.is-night .stars {
+    opacity: 0.8;
+}
+
+.moon-phase::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 50%;
+    background: #f1f5f9;
+    transition: all 0.3s;
+    border-radius: 0 40px 40px 0; /* Default semi-circle */
+    transform-origin: 0 50%;
+}
+
+/* Stars */
+.stars {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(1px 1px at 10% 10%, white, transparent),
+        radial-gradient(1px 1px at 20% 40%, white, transparent),
+        radial-gradient(2px 2px at 40% 20%, white, transparent),
+        radial-gradient(1px 1px at 50% 70%, white, transparent),
+        radial-gradient(2px 2px at 80% 40%, white, transparent),
+        radial-gradient(1px 1px at 70% 80%, white, transparent),
+        radial-gradient(1px 1px at 90% 10%, white, transparent);
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+[data-theme="dark"] .stars {
+    opacity: 0.8;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -82,14 +239,22 @@ body {
 }
 
 .mobile-icon-btn {
-    background: none;
-    border: none;
-    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--window-bg);
+    border: 1px solid var(--border-color);
     color: var(--text-color);
+    padding: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
+}
+
+.mobile-icon-btn:active {
+    transform: scale(0.95);
 }
 
 .mobile-logo-widget {
@@ -232,6 +397,7 @@ body {
 /* Desktop View */
 .desktop-container {
     position: relative;
+    z-index: 0; /* Create stacking context so negative z-index children show above background */
     width: 100%;
     height: 100%;
     background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
@@ -681,3 +847,172 @@ body {
         display: block;
     }
 }
+
+/* Weather Effects */
+.weather-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
+/* Stormy Sky Background Override */
+.sky-wallpaper.is-stormy {
+    background: linear-gradient(to bottom, #1e293b, #334155) !important;
+}
+.sky-wallpaper.is-rainy {
+    background: linear-gradient(to bottom, #64748b, #94a3b8) !important;
+}
+.sky-wallpaper.is-cloudy {
+    background: linear-gradient(to bottom, #60a5fa, #cbd5e1) !important;
+}
+
+/* Clouds */
+.weather-layer.clouds {
+    background: 
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, transparent 60%),
+        radial-gradient(circle at 20% 60%, rgba(255,255,255,0.8) 0%, transparent 50%),
+        radial-gradient(circle at 80% 40%, rgba(255,255,255,0.8) 0%, transparent 50%),
+        radial-gradient(circle at 40% 30%, rgba(255,255,255,0.6) 0%, transparent 40%);
+    background-size: 800px 600px;
+    filter: blur(40px);
+    opacity: 0; /* Controlled by JS */
+    animation: drift 120s linear infinite;
+}
+
+/* Dark Clouds for Night or Storm */
+.sky-wallpaper.is-night .weather-layer.clouds,
+.sky-wallpaper.is-stormy .weather-layer.clouds {
+    background: 
+        radial-gradient(circle at 50% 50%, #334155 0%, transparent 60%),
+        radial-gradient(circle at 20% 60%, #1e293b 0%, transparent 50%),
+        radial-gradient(circle at 80% 40%, #475569 0%, transparent 50%);
+}
+
+@keyframes drift {
+    from { background-position: 0 0; }
+    to { background-position: 800px 0; }
+}
+
+/* Rain - Improved */
+/* Rain - Improved */
+.weather-layer.rain {
+    background-image: 
+        radial-gradient(ellipse 2px 60px at 10% 10%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(ellipse 2px 40px at 30% 60%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(ellipse 2px 50px at 50% 30%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(ellipse 2px 70px at 70% 80%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(ellipse 2px 45px at 90% 20%, rgba(255,255,255,0.5), transparent);
+    background-size: 400px 400px;
+    animation: rain 0.5s linear infinite;
+    opacity: 0;
+}
+
+/* Storm Rain - Heavier, Faster, Windy */
+.sky-wallpaper.is-stormy .weather-layer.rain {
+    background-image: 
+        radial-gradient(ellipse 2px 60px at 10% 10%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(ellipse 2px 40px at 30% 60%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(ellipse 2px 50px at 50% 30%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(ellipse 2px 70px at 70% 80%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(ellipse 2px 45px at 90% 20%, rgba(255,255,255,0.6), transparent),
+        /* Extra drops for storm density */
+        radial-gradient(ellipse 2px 55px at 20% 40%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(ellipse 2px 65px at 40% 15%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(ellipse 2px 45px at 60% 55%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(ellipse 2px 75px at 80% 85%, rgba(255,255,255,0.5), transparent);
+    animation: rain 0.3s linear infinite; /* Faster */
+    transform: rotate(15deg) scale(1.4); /* Angled rain + scale to cover edges */
+    width: 120%; /* Ensure coverage */
+    height: 120%; /* Ensure coverage */
+    left: -10%; /* Center after scale */
+    top: -10%; /* Center after scale */
+}
+
+@keyframes rain {
+    from { background-position: 0 0; }
+    to { background-position: 0 400px; }
+}
+
+/* Snow - Perfect Loop */
+.weather-layer.snow {
+    background-image: 
+        radial-gradient(circle at 50% 50%, white 2px, transparent 2.5px),
+        radial-gradient(circle at 20% 60%, white 1.5px, transparent 2px),
+        radial-gradient(circle at 80% 40%, white 2px, transparent 2.5px),
+        radial-gradient(circle at 40% 80%, white 1.5px, transparent 2px);
+    background-size: 
+        300px 300px,
+        250px 250px,
+        200px 200px,
+        150px 150px;
+    background-position: 
+        0 0,
+        0 0,
+        0 0,
+        0 0;
+    animation: snow 10s linear infinite;
+    opacity: 0;
+}
+
+@keyframes snow {
+    0% { 
+        background-position: 
+            0 0,
+            0 0,
+            0 0,
+            0 0;
+    }
+    100% { 
+        background-position: 
+            0 300px,
+            0 250px,
+            0 200px,
+            0 150px;
+    }
+}
+
+/* Lightning */
+.weather-layer.lightning {
+    background-color: transparent; /* Removed full screen flash base */
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.lightning-bolt {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+    opacity: 0;
+}
+
+.weather-layer.lightning.flash .lightning-bolt {
+    animation: bolt-flash 0.5s ease-out;
+}
+
+/* Full screen flash effect on the container */
+.weather-layer.lightning.flash {
+    animation: screen-flash 0.5s ease-out;
+}
+
+@keyframes bolt-flash {
+    0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+    10% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+    20% { opacity: 0; transform: translateX(-50%) scale(1.2); }
+    30% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
+}
+
+@keyframes screen-flash {
+    0% { background-color: rgba(255,255,255,0); }
+    10% { background-color: rgba(255,255,255,0.3); }
+    100% { background-color: rgba(255,255,255,0); }
+}
+

@@ -79,6 +79,7 @@ const ICONS = {
         <path d="M6 8h12v8H6z" fill="white" stroke="none"></path>
         <path d="M22 12H2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7z" fill="${color}"></path>
     </svg>`,
+    SETTINGS: (color, stroke) => `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`,
     FILE_PDF: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>`,
     FILE_LINK: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
     FILE_EMAIL: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`,
@@ -106,6 +107,7 @@ function init() {
     renderMobileView();
     setupTheme();
     setupShare();
+    setupSettings();
     setupSelectionBox();
     handleInitialUrl();
     
@@ -190,10 +192,15 @@ function renderDesktopIcons() {
         iconEl.style.left = '20px';
         iconEl.style.top = `${20 + (index * 100)}px`;
         
-        const isFull = folder.files.length > 0;
-        const iconSvg = isFull 
-            ? ICONS.FOLDER_FULL(folder.color, folder.stroke) 
-            : ICONS.FOLDER_EMPTY(folder.color, folder.stroke);
+        let iconSvg;
+        if (folder.type === 'app') {
+            iconSvg = ICONS.SETTINGS(folder.color, folder.stroke);
+        } else {
+            const isFull = folder.files && folder.files.length > 0;
+            iconSvg = isFull 
+                ? ICONS.FOLDER_FULL(folder.color, folder.stroke) 
+                : ICONS.FOLDER_EMPTY(folder.color, folder.stroke);
+        }
 
         iconEl.innerHTML = `
             <div class="icon-svg">${iconSvg}</div>
@@ -208,7 +215,11 @@ function renderDesktopIcons() {
                 return;
             }
             selectIcon(folder.id);
-            openWindow(folder.id, folder.title, 'folder', folder.id);
+            if (folder.type === 'app' && folder.id === 'settings') {
+                openSettingsWindow();
+            } else {
+                openWindow(folder.id, folder.title, 'folder', folder.id);
+            }
         });
 
         makeDraggable(iconEl);
@@ -547,10 +558,14 @@ function createMobileAppIcon(item, isFolder = true) {
     
     let iconSvg;
     if (isFolder) {
-        const isFull = item.files.length > 0;
-        iconSvg = isFull 
-            ? ICONS.FOLDER_FULL(iconColor, iconStroke) 
-            : ICONS.FOLDER_EMPTY(iconColor, iconStroke);
+        if (item.type === 'app') {
+            iconSvg = ICONS.SETTINGS(iconColor, iconStroke);
+        } else {
+            const isFull = item.files.length > 0;
+            iconSvg = isFull 
+                ? ICONS.FOLDER_FULL(iconColor, iconStroke) 
+                : ICONS.FOLDER_EMPTY(iconColor, iconStroke);
+        }
     } else {
         if (item.iconType === 'email') iconSvg = ICONS.FILE_EMAIL;
         else iconSvg = ICONS.FILE_LINK;
@@ -570,7 +585,11 @@ function createMobileAppIcon(item, isFolder = true) {
     `;
 
     if (isFolder) {
-        iconEl.addEventListener('click', () => openMobileApp(item));
+        if (item.type === 'app' && item.id === 'settings') {
+            iconEl.addEventListener('click', openSettingsWindow);
+        } else {
+            iconEl.addEventListener('click', () => openMobileApp(item));
+        }
     } else {
         iconEl.addEventListener('click', item.action);
     }
@@ -954,5 +973,539 @@ function setupShare() {
     if (mobileBtn) mobileBtn.addEventListener('click', () => handleShare(mobileBtn));
 }
 
+function setupSettings() {
+    // Load saved wallpaper
+    const savedWallpaper = localStorage.getItem('wallpaper');
+    if (savedWallpaper) {
+        document.body.setAttribute('data-wallpaper', savedWallpaper);
+    }
+
+    // Load saved hemisphere
+    const savedHemisphere = localStorage.getItem('hemisphere') || 'north';
+    document.body.setAttribute('data-hemisphere', savedHemisphere);
+
+    const settingsBtn = document.getElementById('settings-btn');
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', openSettingsWindow);
+    }
+
+    const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
+    if (mobileSettingsBtn) {
+        mobileSettingsBtn.addEventListener('click', openMobileSettings);
+    }
+}
+
+function getSettingsContent(isMobile = false) {
+    const content = document.createElement('div');
+    content.className = 'settings-content';
+    content.style.padding = isMobile ? '0' : '1.5rem';
+
+    const wallpapers = [
+        { id: 'default', name: 'Classic', color: '#f3f4f6' },
+        { id: 'ocean', name: 'Ocean', color: '#e0f2fe' },
+        { id: 'forest', name: 'Forest', color: '#dcfce7' },
+        { id: 'sunset', name: 'Sunset', color: '#fff7ed' },
+        { id: 'midnight', name: 'Midnight', color: 'linear-gradient(to bottom right, #e0e7ff, #f3e8ff)' },
+        { id: 'sky', name: 'Live Sky', color: '#60a5fa' }
+    ];
+
+    const currentHemisphere = localStorage.getItem('hemisphere') || 'north';
+    const weatherMode = localStorage.getItem('weatherMode') || 'auto';
+    const manualWeather = localStorage.getItem('manualWeather') || 'clear';
+
+    content.innerHTML = `
+        <h3 style="margin-bottom: 1rem; font-weight: 600; ${isMobile ? 'display:none;' : ''}">Appearance</h3>
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Wallpaper</label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 1rem;">
+                ${wallpapers.map(wp => `
+                    <div class="wallpaper-option" data-id="${wp.id}" style="cursor: pointer;">
+                        <div style="height: 60px; border-radius: 8px; background: ${wp.color}; border: 2px solid var(--border-color); margin-bottom: 0.5rem; position: relative;">
+                            ${document.body.getAttribute('data-wallpaper') === wp.id || (!document.body.getAttribute('data-wallpaper') && wp.id === 'default') ? 
+                                '<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--text-color);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>' 
+                                : ''}
+                        </div>
+                        <div style="text-align: center; font-size: 0.8rem; color: var(--text-color);">${wp.name}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+
+        ${document.body.getAttribute('data-wallpaper') === 'sky' ? `
+        <div style="margin-bottom: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Location</label>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="radio" name="hemisphere" value="north" ${currentHemisphere === 'north' ? 'checked' : ''}>
+                    <span style="font-size: 0.9rem;">Northern Hemisphere</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="radio" name="hemisphere" value="south" ${currentHemisphere === 'south' ? 'checked' : ''}>
+                    <span style="font-size: 0.9rem;">Southern Hemisphere</span>
+                </label>
+            </div>
+
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Weather</label>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="radio" name="weatherMode" value="auto" ${weatherMode === 'auto' ? 'checked' : ''}>
+                    <span style="font-size: 0.9rem;">Auto (Estimated)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="radio" name="weatherMode" value="manual" ${weatherMode === 'manual' ? 'checked' : ''}>
+                    <span style="font-size: 0.9rem;">Manual</span>
+                </label>
+            </div>
+            
+            <div id="manual-weather-controls" style="display: ${weatherMode === 'manual' ? 'grid' : 'none'}; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+                ${['clear', 'clouds', 'rain', 'snow', 'storm'].map(w => `
+                    <button class="weather-btn" data-weather="${w}" style="
+                        padding: 0.5rem; 
+                        border: 1px solid var(--border-color); 
+                        border-radius: 6px; 
+                        background: ${manualWeather === w ? 'var(--selection-bg)' : 'var(--window-bg)'};
+                        color: var(--text-color);
+                        cursor: pointer;
+                        font-size: 0.8rem;
+                        text-transform: capitalize;
+                    ">${w}</button>
+                `).join('')}
+            </div>
+        </div>
+        ` : ''}
+    `;
+
+    // Add event listeners for wallpaper selection
+    content.querySelectorAll('.wallpaper-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            const id = opt.dataset.id;
+            if (id === 'default') {
+                document.body.removeAttribute('data-wallpaper');
+                localStorage.removeItem('wallpaper');
+            } else {
+                document.body.setAttribute('data-wallpaper', id);
+                localStorage.setItem('wallpaper', id);
+            }
+            
+            // Refresh UI
+            if (isMobile) {
+                openMobileSettings();
+            } else {
+                closeWindow('settings');
+                setTimeout(() => openSettingsWindow(), 50);
+            }
+            
+            // Trigger sky update if selected
+            if (id === 'sky') {
+                updateSkyPosition();
+                fetchWeather(); // Fetch weather when switching to sky
+            }
+        });
+    });
+
+    // Add event listeners for hemisphere selection
+    content.querySelectorAll('input[name="hemisphere"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const val = e.target.value;
+            localStorage.setItem('hemisphere', val);
+            document.body.setAttribute('data-hemisphere', val);
+            updateSkyPosition();
+        });
+    });
+
+    // Add event listeners for weather mode
+    content.querySelectorAll('input[name="weatherMode"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const val = e.target.value;
+            localStorage.setItem('weatherMode', val);
+            const controls = content.querySelector('#manual-weather-controls');
+            controls.style.display = val === 'manual' ? 'grid' : 'none';
+            
+            if (val === 'auto') {
+                fetchWeather();
+            } else {
+                updateWeatherEffects(localStorage.getItem('manualWeather') || 'clear');
+            }
+        });
+    });
+
+    // Add event listeners for manual weather buttons
+    content.querySelectorAll('.weather-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const w = btn.dataset.weather;
+            localStorage.setItem('manualWeather', w);
+            updateWeatherEffects(w);
+            
+            // Update UI selection
+            content.querySelectorAll('.weather-btn').forEach(b => {
+                b.style.background = 'var(--window-bg)';
+            });
+            btn.style.background = 'var(--selection-bg)';
+        });
+    });
+
+    return content;
+}
+
+function updateSkyPosition() {
+    if (document.body.getAttribute('data-wallpaper') !== 'sky') return;
+
+    const now = new Date();
+    const hour = now.getHours() + now.getMinutes() / 60;
+    const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+    const isNorth = (localStorage.getItem('hemisphere') || 'north') === 'north';
+    
+    // Seasonality
+    // Northern Summer (Day ~172) = High Arc
+    // Southern Summer (Day ~355) = High Arc
+    // We want a factor from -1 (Winter) to 1 (Summer)
+    const peakDay = isNorth ? 172 : 355;
+    const seasonFactor = Math.cos((dayOfYear - peakDay) / 365 * 2 * Math.PI);
+    
+    // Arc Height (Y)
+    // 0% = Top, 100% = Bottom (Ground)
+    // Peak Height (at noon):
+    // Summer: High in sky (e.g., 10% from top)
+    // Winter: Low in sky (e.g., 60% from top)
+    const minHeight = 10; // Highest point (Summer)
+    const maxHeight = 60; // Lowest point (Winter)
+    const avgHeight = (minHeight + maxHeight) / 2;
+    const range = (maxHeight - minHeight) / 2;
+    
+    const noonY = avgHeight - (seasonFactor * range);
+    
+    // Calculate Y position based on time
+    // We want a curve that starts at 100 (6am), goes to noonY (12pm), goes to 100 (6pm).
+    const amplitude = 100 - noonY;
+    const sunY = 100 - (amplitude * Math.sin((hour - 6) / 24 * 2 * Math.PI));
+    
+    // --- Sun X Position ---
+    // North: Left (East) -> Right (West)
+    // South: Right (East) -> Left (West)
+    let sunXPercent = (hour / 24) * 100; // 0 to 100 linear
+    let sunX = isNorth ? sunXPercent : (100 - sunXPercent);
+    
+    const suns = document.querySelectorAll('.celestial-body.sun');
+    suns.forEach(sun => {
+        sun.style.left = `${sunX}%`;
+        sun.style.top = `${sunY}%`;
+        // Hide if below horizon (approx > 105%)
+        sun.style.opacity = sunY > 105 ? '0' : '1';
+    });
+
+    // --- Moon Position ---
+    // Moon Phase Calculation
+    const knownNewMoon = new Date('2000-01-06T18:14:00');
+    const cycle = 29.53058867; // Synodic month
+    const diffTime = now - knownNewMoon;
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    const cycles = diffDays / cycle;
+    const currentCycle = cycles - Math.floor(cycles);
+    const phase = currentCycle; // 0 to 1. 0=New, 0.5=Full, 1=New
+
+    // Moon Offset:
+    // Moon Time = Sun Time - (Phase * 24h)
+    let moonHour = (hour - (phase * 24) + 24) % 24;
+    
+    // Moon Y follows similar arc but based on its own time
+    const moonY = 100 - (amplitude * Math.sin((moonHour - 6) / 24 * 2 * Math.PI));
+    
+    let moonXPercent = (moonHour / 24) * 100;
+    let moonX = isNorth ? moonXPercent : (100 - moonXPercent);
+
+    const moons = document.querySelectorAll('.celestial-body.moon');
+    moons.forEach(moon => {
+        moon.style.left = `${moonX}%`;
+        moon.style.top = `${moonY}%`;
+        moon.style.opacity = moonY > 105 ? '0' : '1';
+    });
+
+    // --- Sky Background (Day/Night Cycle) ---
+    // Determine if it's night based on Sun elevation
+    const isNight = sunY > 100;
+    
+    const wallpapers = document.querySelectorAll('.sky-wallpaper');
+    wallpapers.forEach(wp => {
+        if (isNight) {
+            wp.classList.add('is-night');
+        } else {
+            wp.classList.remove('is-night');
+        }
+    });
+
+    // Update Moon Visuals
+    const moonPhases = document.querySelectorAll('.moon-phase-icon');
+    moonPhases.forEach(el => {
+        const phaseIcons = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
+        const phaseNames = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'];
+        
+        let index;
+        const p = phase;
+        const w = 0.03; // Window size for exact phases
+        
+        if (p < w || p > 1 - w) index = 0; // New
+        else if (p < 0.25 - w) index = 1; // Wax Cres
+        else if (p < 0.25 + w) index = 2; // First Q
+        else if (p < 0.5 - w) index = 3; // Wax Gib
+        else if (p < 0.5 + w) index = 4; // Full
+        else if (p < 0.75 - w) index = 5; // Wan Gib
+        else if (p < 0.75 + w) index = 6; // Last Q
+        else index = 7; // Wan Cres
+
+        // In Southern Hemisphere, moon phases look inverted (left-right flipped)
+        if (!isNorth) {
+            el.style.transform = 'scaleX(-1)';
+        } else {
+            el.style.transform = 'none';
+        }
+
+        el.textContent = phaseIcons[index];
+        el.title = `${phaseNames[index]} (${Math.round(phase * 100)}%)`; // Tooltip
+    });
+}
+
+// --- Weather System ---
+
+function fetchWeather() {
+    // Estimate weather based on season and hemisphere
+    const now = new Date();
+    const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+    const isNorth = (localStorage.getItem('hemisphere') || 'north') === 'north';
+    
+    // Seasonality Factor (-1 Winter to 1 Summer)
+    const peakDay = isNorth ? 172 : 355;
+    const seasonFactor = Math.cos((dayOfYear - peakDay) / 365 * 2 * Math.PI);
+    
+    // Determine probabilities based on season
+    let probs = { clear: 0, clouds: 0, rain: 0, snow: 0, storm: 0 };
+    
+    if (seasonFactor > 0.5) { 
+        // Summer
+        probs = { clear: 0.6, clouds: 0.2, rain: 0.1, snow: 0, storm: 0.1 };
+    } else if (seasonFactor < -0.5) {
+        // Winter
+        probs = { clear: 0.3, clouds: 0.3, rain: 0.1, snow: 0.3, storm: 0 };
+    } else {
+        // Spring/Autumn
+        probs = { clear: 0.4, clouds: 0.3, rain: 0.25, snow: 0.05, storm: 0 };
+    }
+    
+    // Random selection
+    const rand = Math.random();
+    let sum = 0;
+    let weatherType = 'clear';
+    
+    for (const [type, prob] of Object.entries(probs)) {
+        sum += prob;
+        if (rand < sum) {
+            weatherType = type;
+            break;
+        }
+    }
+    
+    // Only update if auto-weather is on (default)
+    if (localStorage.getItem('weatherMode') !== 'manual') {
+        updateWeatherEffects(weatherType);
+        localStorage.setItem('detectedWeather', weatherType);
+    }
+}
+
+function updateWeatherEffects(type) {
+    // Types: clear, clouds, rain, snow, storm
+    const layers = document.querySelectorAll('.weather-layer');
+    layers.forEach(l => {
+        l.style.opacity = '0';
+        l.classList.remove('flash');
+    });
+
+    // Reset wallpaper state
+    const wallpapers = document.querySelectorAll('.sky-wallpaper');
+    wallpapers.forEach(wp => {
+        wp.classList.remove('is-stormy', 'is-rainy', 'is-snowy', 'is-cloudy');
+    });
+
+    if (type === 'clear') return;
+
+    // Add state class
+    wallpapers.forEach(wp => {
+        if (type === 'storm') wp.classList.add('is-stormy');
+        else if (type === 'rain') wp.classList.add('is-rainy');
+        else if (type === 'snow') wp.classList.add('is-snowy');
+        else if (type === 'clouds') wp.classList.add('is-cloudy');
+    });
+
+    if (type === 'clouds') {
+        document.querySelectorAll('.weather-layer.clouds').forEach(l => l.style.opacity = '0.8');
+    } else if (type === 'rain') {
+        document.querySelectorAll('.weather-layer.clouds').forEach(l => l.style.opacity = '1');
+        document.querySelectorAll('.weather-layer.rain').forEach(l => l.style.opacity = '1');
+    } else if (type === 'snow') {
+        document.querySelectorAll('.weather-layer.clouds').forEach(l => l.style.opacity = '0.6');
+        document.querySelectorAll('.weather-layer.snow').forEach(l => l.style.opacity = '1');
+    } else if (type === 'storm') {
+        document.querySelectorAll('.weather-layer.clouds').forEach(l => l.style.opacity = '1');
+        document.querySelectorAll('.weather-layer.rain').forEach(l => l.style.opacity = '1');
+        document.querySelectorAll('.weather-layer.lightning').forEach(l => l.style.opacity = '1');
+        
+        // Start random lightning loop
+        const lightningLoop = () => {
+            // Check if we are still in storm mode
+            const isStorm = document.querySelector('.sky-wallpaper.is-stormy');
+            if (!isStorm) return;
+
+            const layers = document.querySelectorAll('.weather-layer.lightning');
+            const delay = Math.random() * 3000 + 1000; // Random delay between 1-4 seconds (More frequent)
+
+            setTimeout(() => {
+                if (!document.querySelector('.sky-wallpaper.is-stormy')) return;
+                
+                // Randomize position
+                const randomLeft = Math.random() * 80 + 10; // 10% to 90%
+                const randomScale = Math.random() * 0.5 + 0.8; // 0.8 to 1.3 scale
+                
+                layers.forEach(l => {
+                    const bolt = l.querySelector('.lightning-bolt');
+                    if (bolt) {
+                        bolt.style.left = `${randomLeft}%`;
+                        bolt.style.transform = `translateX(-50%) scale(${randomScale})`;
+                    }
+                    
+                    // Trigger flash
+                    l.classList.remove('flash');
+                    void l.offsetWidth; // Trigger reflow
+                    l.classList.add('flash');
+                });
+
+                // Continue loop
+                lightningLoop();
+            }, delay);
+        };
+        
+        lightningLoop();
+    }
+}
+
+// Initialize weather on load if sky wallpaper is active
+if (document.body.getAttribute('data-wallpaper') === 'sky') {
+    // Check if we have a stored manual setting
+    const mode = localStorage.getItem('weatherMode');
+    if (mode === 'manual') {
+        updateWeatherEffects(localStorage.getItem('manualWeather') || 'clear');
+    } else {
+        fetchWeather();
+        // Refresh every 30 mins
+        setInterval(fetchWeather, 30 * 60 * 1000);
+    }
+}
+
+
+function openMobileSettings() {
+    const windowEl = document.getElementById('mobile-app-window');
+    const titleEl = document.getElementById('mobile-app-title');
+    const contentEl = document.getElementById('mobile-app-content');
+    const shareBtn = document.getElementById('mobile-app-share-btn');
+
+    titleEl.textContent = 'Settings';
+    contentEl.innerHTML = '';
+    contentEl.appendChild(getSettingsContent(true));
+    
+    // Hide share button for settings
+    if (shareBtn) shareBtn.style.display = 'none';
+
+    // Override back button to just close
+    const backBtn = document.getElementById('mobile-back-btn');
+    const originalBack = backBtn.cloneNode(true);
+    backBtn.parentNode.replaceChild(originalBack, backBtn);
+    
+    originalBack.addEventListener('click', () => {
+        closeMobileApp();
+        // Restore share button visibility
+        if (shareBtn) shareBtn.style.display = 'flex';
+    });
+
+    windowEl.classList.add('open');
+}
+
+function openSettingsWindow() {
+    // Check if settings window is already open
+    const existingWindow = state.windows.find(w => w.id === 'settings');
+    if (existingWindow) {
+        restoreWindow('settings');
+        return;
+    }
+
+    const content = getSettingsContent(false);
+
+    // Open the window
+    // Use openWindow helper but with custom content
+    const id = 'settings';
+    const title = 'Settings';
+    
+    // Full screen
+    const desktop = document.querySelector('.desktop-container');
+    const width = desktop ? desktop.clientWidth : window.innerWidth;
+    const height = desktop ? desktop.clientHeight : window.innerHeight;
+    
+    const newWindow = {
+        id,
+        title,
+        type: 'settings',
+        contentId: null,
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+        zIndex: state.nextZIndex++,
+        isMinimized: false
+    };
+
+    state.windows.push(newWindow);
+    state.activeWindowId = id;
+    
+    // Custom create window DOM since we have direct content element
+    const clone = windowTemplate.content.cloneNode(true);
+    const windowEl = clone.querySelector('.window');
+    
+    windowEl.id = `window-${id}`;
+    windowEl.style.left = `${newWindow.x}px`;
+    windowEl.style.top = `${newWindow.y}px`;
+    windowEl.style.width = `${newWindow.width}px`;
+    windowEl.style.height = `${newWindow.height}px`;
+    windowEl.style.zIndex = newWindow.zIndex;
+    
+    // Header
+    const titleEl = windowEl.querySelector('.window-title-text');
+    titleEl.textContent = title;
+    
+    // Controls
+    windowEl.querySelector('.minimize-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        minimizeWindow(id);
+    });
+    
+    windowEl.querySelector('.close-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeWindow(id);
+    });
+
+    // Content
+    const contentContainer = windowEl.querySelector('.window-content');
+    contentContainer.appendChild(content);
+
+    // Dragging
+    const header = windowEl.querySelector('.window-header');
+    makeDraggable(windowEl, header);
+
+    // Focus on click
+    windowEl.addEventListener('mousedown', () => {
+        focusWindow(id);
+    });
+
+    windowsContainer.appendChild(windowEl);
+    renderDock();
+}
+
 // Start
 init();
+setInterval(updateSkyPosition, 60000); // Update sky every minute
+updateSkyPosition(); // Initial call
