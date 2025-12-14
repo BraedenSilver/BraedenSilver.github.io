@@ -74,6 +74,23 @@
     background-image: linear-gradient(to bottom right, #1e1b4b, #312e81);
 }
 
+/* Bliss (Windows XP Style) */
+[data-wallpaper="bliss"] .desktop-container,
+[data-wallpaper="bliss"] .mobile-container {
+    background-color: #60a5fa;
+    background-image: url('photos/BlissDay.jpeg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+[data-theme="dark"] [data-wallpaper="bliss"] .desktop-container,
+[data-theme="dark"] [data-wallpaper="bliss"] .mobile-container {
+    background-color: #1e293b;
+    background-image: url('photos/BlissNight.jpeg');
+    background-size: cover;
+}
+
 /* Live Sky */
 [data-wallpaper="sky"] {
     --bg-color: #60a5fa; /* Sky Blue */

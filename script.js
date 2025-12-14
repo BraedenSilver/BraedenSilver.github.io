@@ -1010,6 +1010,7 @@ function getSettingsContent(isMobile = false) {
         { id: 'forest', name: 'Forest', color: '#dcfce7' },
         { id: 'sunset', name: 'Sunset', color: '#fff7ed' },
         { id: 'midnight', name: 'Midnight', color: 'linear-gradient(to bottom right, #e0e7ff, #f3e8ff)' },
+        { id: 'bliss', name: 'Bliss', color: 'linear-gradient(to bottom, #38bdf8, #4ade80)' },
         { id: 'sky', name: 'Live Sky', color: '#60a5fa' }
     ];
 
