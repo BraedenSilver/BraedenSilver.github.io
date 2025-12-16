@@ -1033,3 +1033,16 @@ body {
     100% { background-color: rgba(255,255,255,0); }
 }
 
+
+.sky-wallpaper.is-sunrise {
+    background: linear-gradient(to bottom, #38bdf8, #f472b6, #fbbf24);
+}
+
+.sky-wallpaper.is-sunset {
+    background: linear-gradient(to bottom, #1e40af, #7c3aed, #ef4444);
+}
+
+.sky-wallpaper.is-sunrise .stars,
+.sky-wallpaper.is-sunset .stars {
+    opacity: 0.4;
+}

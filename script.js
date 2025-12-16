@@ -978,6 +978,18 @@ function setupSettings() {
     const savedWallpaper = localStorage.getItem('wallpaper');
     if (savedWallpaper) {
         document.body.setAttribute('data-wallpaper', savedWallpaper);
+
+        // Initialize weather if sky wallpaper is active
+        if (savedWallpaper === 'sky') {
+            const mode = localStorage.getItem('weatherMode');
+            if (mode === 'manual') {
+                updateWeatherEffects(localStorage.getItem('manualWeather') || 'clear');
+            } else {
+                fetchWeather();
+                // Refresh every 30 mins
+                setInterval(fetchWeather, 30 * 60 * 1000);
+            }
+        }
     }
 
     // Load saved hemisphere
@@ -1226,16 +1238,21 @@ function updateSkyPosition() {
     });
 
     // --- Sky Background (Day/Night Cycle) ---
-    // Determine if it's night based on Sun elevation
-    const isNight = sunY > 100;
-    
     const wallpapers = document.querySelectorAll('.sky-wallpaper');
     wallpapers.forEach(wp => {
-        if (isNight) {
+        wp.classList.remove('is-night', 'is-sunrise', 'is-sunset');
+        
+        if (sunY > 105) {
             wp.classList.add('is-night');
-        } else {
-            wp.classList.remove('is-night');
+        } else if (sunY >= 85) {
+            // Transition zone (Sunrise/Sunset)
+            if (hour < 12) {
+                wp.classList.add('is-sunrise');
+            } else {
+                wp.classList.add('is-sunset');
+            }
         }
+        // else Day (default)
     });
 
     // Update Moon Visuals
@@ -1390,18 +1407,7 @@ function updateWeatherEffects(type) {
     }
 }
 
-// Initialize weather on load if sky wallpaper is active
-if (document.body.getAttribute('data-wallpaper') === 'sky') {
-    // Check if we have a stored manual setting
-    const mode = localStorage.getItem('weatherMode');
-    if (mode === 'manual') {
-        updateWeatherEffects(localStorage.getItem('manualWeather') || 'clear');
-    } else {
-        fetchWeather();
-        // Refresh every 30 mins
-        setInterval(fetchWeather, 30 * 60 * 1000);
-    }
-}
+
 
 
 function openMobileSettings() {

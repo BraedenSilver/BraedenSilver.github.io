@@ -9,6 +9,15 @@
 				"echo \".selection-box {\n    position: absolute;\n    background-color: var(--selection-bg);\n    border: 1px solid var(--selection-border);\n    pointer-events: none;\n    z-index: 9999;\n}\" >> style.css"
 			],
 			"group": "build"
+		},
+		{
+			"label": "append_css",
+			"type": "shell",
+			"command": "/bin/zsh",
+			"args": [
+				"echo \".sky-wallpaper.is-sunrise {\n    background: linear-gradient(to bottom, #38bdf8, #f472b6, #fbbf24);\n}\n\n.sky-wallpaper.is-sunset {\n    background: linear-gradient(to bottom, #1e40af, #7c3aed, #ef4444);\n}\" >> style.css"
+			],
+			"group": "build"
 		}
 	]
 }
