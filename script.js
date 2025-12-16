@@ -985,7 +985,13 @@ function setupSettings() {
             if (mode === 'manual') {
                 updateWeatherEffects(localStorage.getItem('manualWeather') || 'clear');
             } else {
-                fetchWeather();
+                // Check for saved detected weather first
+                const savedDetected = localStorage.getItem('detectedWeather');
+                if (savedDetected) {
+                    updateWeatherEffects(savedDetected);
+                } else {
+                    fetchWeather();
+                }
                 // Refresh every 30 mins
                 setInterval(fetchWeather, 30 * 60 * 1000);
             }
