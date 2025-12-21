@@ -91,7 +91,7 @@
     background-size: cover;
 }
 
-/* Live Sky */
+/* Sky */
 [data-wallpaper="sky"] {
     --bg-color: #60a5fa; /* Sky Blue */
     --dot-color: rgba(255, 255, 255, 0.3);
@@ -125,7 +125,7 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    transition: top 1s ease, left 1s ease;
+    will-change: top, left, opacity;
     /* Centered by default, moved by JS */
     left: 50%;
     top: 20%;
@@ -135,22 +135,23 @@
 .celestial-body.sun {
     background: #fcd34d; /* Sun Yellow */
     box-shadow: 0 0 40px rgba(252, 211, 77, 0.6);
+    opacity: 1;
+    transition: opacity 0.6s ease;
+}
+
+.sky-wallpaper.is-night .celestial-body.sun {
+    opacity: 0;
 }
 
 .celestial-body.moon {
-    background: transparent;
-    box-shadow: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: radial-gradient(circle at 35% 35%, #f8fafc, #cbd5e1 70%, #94a3b8);
+    box-shadow: 0 0 30px rgba(248, 250, 252, 0.35);
+    opacity: 0;
+    transition: opacity 0.6s ease;
 }
 
-/* Moon Phase Rendering */
-.moon-phase-icon {
-    font-size: 60px;
-    line-height: 1;
-    cursor: help;
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+.sky-wallpaper.is-night .celestial-body.moon {
+    opacity: 1;
 }
 
 /* Stars */
@@ -164,7 +165,11 @@
         radial-gradient(1px 1px at 50% 70%, white, transparent),
         radial-gradient(2px 2px at 80% 40%, white, transparent),
         radial-gradient(1px 1px at 70% 80%, white, transparent),
-        radial-gradient(1px 1px at 90% 10%, white, transparent);
+        radial-gradient(1px 1px at 90% 10%, white, transparent),
+        radial-gradient(1px 1px at 15% 75%, white, transparent),
+        radial-gradient(2px 2px at 30% 55%, white, transparent),
+        radial-gradient(1px 1px at 60% 15%, white, transparent),
+        radial-gradient(1px 1px at 85% 70%, white, transparent);
     opacity: 0;
     transition: opacity 1s;
 }
@@ -173,37 +178,26 @@
     opacity: 0.8;
 }
 
-.moon-phase::after {
-    content: '';
+.shooting-star {
     position: absolute;
-    top: 0;
-    bottom: 0;
     left: 50%;
-    width: 50%;
-    background: #f1f5f9;
-    transition: all 0.3s;
-    border-radius: 0 40px 40px 0; /* Default semi-circle */
-    transform-origin: 0 50%;
-}
-
-/* Stars */
-.stars {
-    position: absolute;
-    inset: 0;
-    background-image: 
-        radial-gradient(1px 1px at 10% 10%, white, transparent),
-        radial-gradient(1px 1px at 20% 40%, white, transparent),
-        radial-gradient(2px 2px at 40% 20%, white, transparent),
-        radial-gradient(1px 1px at 50% 70%, white, transparent),
-        radial-gradient(2px 2px at 80% 40%, white, transparent),
-        radial-gradient(1px 1px at 70% 80%, white, transparent),
-        radial-gradient(1px 1px at 90% 10%, white, transparent);
+    top: 20%;
+    width: 140px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.95), rgba(255,255,255,0));
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.35));
     opacity: 0;
-    transition: opacity 1s;
+    transform: translate(0, 0) rotate(-25deg);
+    transform-origin: left center;
+    animation: shooting-star var(--shoot-duration, 1100ms) ease-out forwards;
+    pointer-events: none;
 }
 
-[data-theme="dark"] .stars {
-    opacity: 0.8;
+@keyframes shooting-star {
+    0% { opacity: 0; transform: translate(0, 0) rotate(-25deg) scaleX(0.2); }
+    12% { opacity: 1; }
+    100% { opacity: 0; transform: translate(var(--shoot-x, 360px), var(--shoot-y, 240px)) rotate(-25deg) scaleX(1); }
 }
 
 * {
@@ -373,18 +367,29 @@ body {
     justify-content: space-between;
     padding: 0 1rem;
     border-bottom: 1px solid var(--border-color);
-    background-color: var(--header-bg);
+    background-color: var(--app-header-bg, var(--header-bg));
+    color: var(--app-header-fg, var(--text-color));
 }
 
 .mobile-back-btn {
     background: none;
     border: none;
-    color: var(--primary-color);
+    color: var(--app-header-fg, var(--primary-color));
     display: flex;
     align-items: center;
     font-size: 1rem;
     cursor: pointer;
     padding: 0.5rem;
+}
+
+.mobile-app-header .mobile-icon-btn {
+    background: transparent;
+    border-color: transparent;
+    color: inherit;
+}
+
+.mobile-app-header .mobile-icon-btn:active {
+    transform: scale(0.95);
 }
 
 #mobile-app-title {
@@ -520,17 +525,18 @@ body {
 
 .window-header {
     height: 40px;
-    background-color: var(--header-bg);
+    background-color: var(--window-header-bg, var(--header-bg));
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 0.75rem;
     user-select: none;
+    color: var(--window-header-fg, var(--text-color));
 }
 
 .window.active .window-header {
-    background-color: var(--bg-color);
+    background-color: var(--window-header-bg-active, var(--bg-color));
 }
 
 .window-title {
@@ -539,7 +545,7 @@ body {
     gap: 0.5rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--text-color);
+    color: inherit;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -548,6 +554,14 @@ body {
 .window-controls {
     display: flex;
     gap: 0.5rem;
+}
+
+.window-header .control-btn {
+    color: inherit;
+}
+
+.window-header .control-btn:hover {
+    background-color: var(--window-header-hover-bg, var(--hover-bg));
 }
 
 .control-btn {
