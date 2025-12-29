@@ -9,6 +9,99 @@ const desktopData = [
         files: []
     },
     {
+        id: 'what-im-reading',
+        title: "What I'm Reading",
+        type: 'note',
+        color: '#FEF3C7', // Paper
+        stroke: '#B45309',
+        note: {
+            title: "What I'm Reading",
+            subtitle: 'Current',
+            items: [
+                { title: 'Leviathan', author: 'Hobbes' },
+                { title: 'Republic', author: 'Plato' }
+            ]
+        }
+    },
+    {
+        id: 'projects',
+        title: 'Projects',
+        type: 'folder',
+        color: '#FDE68A', // Warm Yellow
+        stroke: '#B45309',
+        files: [
+            {
+                id: 'projects-plans',
+                title: 'Plans',
+                type: 'folder',
+                date: 'Folder',
+                abstract: "What I'm planning next",
+                tags: ['Projects']
+            },
+            {
+                id: 'projects-fun',
+                title: 'Fun',
+                type: 'folder',
+                date: 'Folder',
+                abstract: 'Games and things I made',
+                tags: ['Projects']
+            },
+            {
+                id: 'projects-books',
+                title: 'Books',
+                type: 'folder',
+                date: 'Folder',
+                abstract: "Books I've written",
+                tags: ['Projects']
+            },
+            {
+                id: 'projects-reviews',
+                title: 'Reviews',
+                type: 'folder',
+                date: 'Folder',
+                abstract: "Books I've read and reviewed",
+                tags: ['Projects']
+            }
+        ]
+    },
+    {
+        id: 'projects-plans',
+        parentId: 'projects',
+        title: 'Plans',
+        type: 'folder',
+        color: '#A7F3D0', // Mint
+        stroke: '#047857',
+        files: []
+    },
+    {
+        id: 'projects-fun',
+        parentId: 'projects',
+        title: 'Fun',
+        type: 'folder',
+        color: '#C4B5FD', // Lavender
+        stroke: '#6D28D9',
+        files: []
+    },
+    {
+        id: 'projects-books',
+        parentId: 'projects',
+        title: 'Books',
+        type: 'folder',
+        color: '#FBCFE8', // Pink
+        stroke: '#BE185D',
+        files: []
+    },
+    {
+        id: 'projects-reviews',
+        parentId: 'projects',
+        title: 'Reviews',
+        type: 'folder',
+        color: '#BFDBFE', // Light Blue
+        stroke: '#1D4ED8',
+        files: [],
+        reviews: []
+    },
+    {
         id: 'writing',
         title: 'Writing Samples',
         type: 'folder',
@@ -79,13 +172,78 @@ const ICONS = {
         <path d="M6 8h12v8H6z" fill="white" stroke="none"></path>
         <path d="M22 12H2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7z" fill="${color}"></path>
     </svg>`,
+    NOTEPAD: (color, stroke) => `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Notepad">
+        <path d="M7 3h10a2 2 0 0 1 2 2v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a2 2 0 0 1 2-2z" fill="${color}"/>
+        <path d="M8 7h8M8 10h8M8 13h8M8 16h6" stroke="rgba(17,24,39,0.35)"/>
+        <path d="M7 3v3" />
+        <path d="M10 3v3" />
+        <path d="M13 3v3" />
+        <path d="M16 3v3" />
+    </svg>`,
     SETTINGS: (color, stroke) => `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`,
     FILE_PDF: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+    FILE_FOLDER: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Folder"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>`,
+    FILE_NOTE: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Note"><path d="M6 2h9l3 3v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v6h6"/><path d="M8 11h8M8 14h8M8 17h6"/></svg>`,
     FILE_LINK: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
+    FILE_LINKEDIN: `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-label="LinkedIn"><path d="M22.225 0H1.771C.792 0 0 .774 0 1.727v20.545C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.273V1.727C24 .774 23.2 0 22.222 0h.003zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM6.813 20.452H3.861V9h2.952v11.452zM20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.266 2.37 4.266 5.455v6.286z"/></svg>`,
+    FILE_GITHUB: `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-label="GitHub"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>`,
     FILE_EMAIL: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`,
     DOWNLOAD: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
     EXTERNAL: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`
 };
+
+function getRootDesktopItems() {
+    return desktopData.filter(item => {
+        if (item.parentId) return false;
+        if (item.type !== 'folder') return true;
+        return folderHasContent(item);
+    });
+}
+
+function getFileIconSvg(file) {
+    if (file.type === 'folder') return ICONS.FILE_FOLDER;
+    if (file.type === 'pdf') return ICONS.FILE_PDF;
+    if (file.type === 'email') return ICONS.FILE_EMAIL;
+    if (file.type === 'note') return ICONS.FILE_NOTE;
+    if (file.id === 'linkedin') return ICONS.FILE_LINKEDIN;
+    if (file.id === 'github') return ICONS.FILE_GITHUB;
+    return ICONS.FILE_LINK;
+}
+
+function getPdfIframeSrc(pdfPath) {
+    if (!pdfPath) return pdfPath;
+    return pdfPath.includes('#') ? pdfPath : `${pdfPath}#view=FitH`;
+}
+
+function folderHasContent(folder, visited = new Set()) {
+    if (!folder || folder.type !== 'folder') return false;
+    if (visited.has(folder.id)) return false;
+    visited.add(folder.id);
+
+    const reviewsCount = Array.isArray(folder.reviews) ? folder.reviews.length : 0;
+    if (reviewsCount > 0) return true;
+
+    const files = Array.isArray(folder.files) ? folder.files : [];
+    for (const file of files) {
+        if (!file) continue;
+        if (file.type !== 'folder') return true;
+        const child = desktopData.find((item) => item.id === file.id && item.type === 'folder');
+        if (child && folderHasContent(child, visited)) return true;
+    }
+    return false;
+}
+
+function getVisibleFolderFiles(folder) {
+    if (!folder || folder.type !== 'folder') return [];
+    const files = Array.isArray(folder.files) ? folder.files : [];
+
+    return files.filter((file) => {
+        if (!file) return false;
+        if (file.type !== 'folder') return true;
+        const child = desktopData.find((item) => item.id === file.id && item.type === 'folder');
+        return folderHasContent(child);
+    });
+}
 
 // State
 const state = {
@@ -134,18 +292,18 @@ function init() {
     });
 
     // Keyboard shortcuts
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && state.activeWindowId) {
-            closeWindow(state.activeWindowId);
-        }
-        if (e.key === 'Enter' && state.selectedIconId) {
-            const folder = desktopData.find(f => f.id === state.selectedIconId);
-            if (folder) {
-                openWindow(folder.id, folder.title, 'folder', folder.id);
-            }
-        }
-    });
-}
+	    window.addEventListener('keydown', (e) => {
+	        if (e.key === 'Escape' && state.activeWindowId) {
+	            closeWindow(state.activeWindowId);
+	        }
+	        if (e.key === 'Enter' && state.selectedIconId) {
+	            const item = desktopData.find(f => f.id === state.selectedIconId);
+	            if (!item) return;
+	            if (item.type === 'note') openWindow(item.id, item.title, 'note', item.id);
+	            else openWindow(item.id, item.title, 'folder', item.id);
+	        }
+	    });
+	}
 
 function handleInitialUrl() {
     const hash = window.location.hash;
@@ -156,40 +314,50 @@ function handleInitialUrl() {
     const id = params.get('id');
     const isMobile = window.innerWidth <= 768;
 
-    if (type && id) {
-        if (type === 'folder') {
-            const folder = desktopData.find(f => f.id === id);
-            if (folder) {
+	    if (type && id) {
+	        if (type === 'folder') {
+	            const folder = desktopData.find(f => f.id === id);
+	            if (folder) {
+	                if (isMobile) {
+	                    openMobileItem(folder);
+	                } else {
+	                    openWindow(folder.id, folder.title, 'folder', folder.id);
+	                }
+	            }
+	        } else if (type === 'pdf') {
+	            // Find file in any folder
+	            let file;
+	            for (const folder of desktopData) {
+	                if (!folder.files) continue;
+	                const f = folder.files.find(fi => fi.id === id);
+	                if (f) { file = f; break; }
+	            }
+	            if (file) {
                 if (isMobile) {
-                    openMobileApp(folder);
-                } else {
-                    openWindow(folder.id, folder.title, 'folder', folder.id);
-                }
-            }
-        } else if (type === 'pdf') {
-            // Find file in any folder
-            let file;
-            for (const folder of desktopData) {
-                const f = folder.files.find(fi => fi.id === id);
-                if (f) { file = f; break; }
-            }
-            if (file) {
-                if (isMobile) {
-                    // For PDF on mobile, maybe just open it directly? 
-                    // Or open the folder containing it?
-                    // Let's open the folder containing it for now as mobile doesn't have window system
-                    const parentFolder = desktopData.find(folder => folder.files.includes(file));
-                    if (parentFolder) {
-                        openMobileApp(parentFolder);
-                        // Ideally scroll to item or highlight it, but opening folder is good start
-                    }
-                } else {
-                    openWindow(file.id, file.title, 'pdf', file.id);
-                }
-            }
-        }
-    }
-}
+	                    // For PDF on mobile, maybe just open it directly? 
+	                    // Or open the folder containing it?
+	                    // Let's open the folder containing it for now as mobile doesn't have window system
+	                    const parentFolder = desktopData.find(folder => folder.files && folder.files.includes(file));
+	                    if (parentFolder) {
+	                        openMobileItem(parentFolder);
+	                        // Ideally scroll to item or highlight it, but opening folder is good start
+	                    }
+	                } else {
+	                    openWindow(file.id, file.title, 'pdf', file.id);
+	                }
+	            }
+	        } else if (type === 'note') {
+	            const note = desktopData.find(item => item.id === id && item.type === 'note');
+	            if (note) {
+	                if (isMobile) {
+	                    openMobileItem(note);
+	                } else {
+	                    openWindow(note.id, note.title, 'note', note.id);
+	                }
+	            }
+	        }
+	    }
+	}
 
 function updateUrl(type, id) {
     const url = new URL(window.location);
@@ -200,7 +368,7 @@ function updateUrl(type, id) {
 // Rendering
 function renderDesktopIcons() {
     desktopIconsContainer.innerHTML = '';
-    desktopData.forEach((folder, index) => {
+    getRootDesktopItems().forEach((folder, index) => {
         const iconEl = document.createElement('div');
         iconEl.className = 'desktop-icon';
         iconEl.dataset.id = folder.id;
@@ -210,8 +378,10 @@ function renderDesktopIcons() {
         let iconSvg;
         if (folder.type === 'app') {
             iconSvg = ICONS.SETTINGS(folder.color, folder.stroke);
+        } else if (folder.type === 'note') {
+            iconSvg = ICONS.NOTEPAD(folder.color, folder.stroke);
         } else {
-            const isFull = folder.files && folder.files.length > 0;
+            const isFull = folderHasContent(folder);
             iconSvg = isFull 
                 ? ICONS.FOLDER_FULL(folder.color, folder.stroke) 
                 : ICONS.FOLDER_EMPTY(folder.color, folder.stroke);
@@ -232,6 +402,8 @@ function renderDesktopIcons() {
             selectIcon(folder.id);
             if (folder.type === 'app' && folder.id === 'settings') {
                 openSettingsWindow();
+            } else if (folder.type === 'note') {
+                openWindow(folder.id, folder.title, 'note', folder.id);
             } else {
                 openWindow(folder.id, folder.title, 'folder', folder.id);
             }
@@ -277,8 +449,8 @@ function openWindow(id, title, type, contentId) {
         contentId,
         x: startX,
         y: startY,
-        width: type === 'pdf' ? 800 : 600,
-        height: type === 'pdf' ? 700 : 400,
+        width: type === 'pdf' ? 800 : type === 'note' ? 520 : 600,
+        height: type === 'pdf' ? 700 : type === 'note' ? 520 : 400,
         zIndex: state.nextZIndex++,
         isMinimized: false
     };
@@ -308,6 +480,9 @@ function createWindowDOM(windowObj) {
     if (windowObj.type === 'folder') {
         const folder = desktopData.find(f => f.id === windowObj.contentId);
         applyWindowHeaderTheme(windowEl, folder?.color);
+    } else if (windowObj.type === 'note') {
+        const note = desktopData.find(item => item.id === windowObj.contentId && item.type === 'note');
+        applyWindowHeaderTheme(windowEl, note?.color);
     }
     
     // Controls
@@ -343,6 +518,8 @@ function createWindowDOM(windowObj) {
         renderFolderContent(contentEl, windowObj.contentId);
     } else if (windowObj.type === 'pdf') {
         renderPdfContent(contentEl, windowObj.contentId);
+    } else if (windowObj.type === 'note') {
+        renderNoteContent(contentEl, windowObj.contentId);
     }
 
     // Interaction
@@ -428,7 +605,14 @@ function renderFolderContent(container, folderId) {
     const folder = desktopData.find(f => f.id === folderId);
     if (!folder) return;
 
-    if (folder.files.length === 0) {
+    if (folder.id === 'projects-reviews') {
+        renderReviewsContent(container, folder);
+        return;
+    }
+
+    const visibleFiles = getVisibleFolderFiles(folder);
+
+    if (visibleFiles.length === 0) {
         container.innerHTML = '<div class="empty-folder">This folder is empty.</div>';
         return;
     }
@@ -436,12 +620,12 @@ function renderFolderContent(container, folderId) {
     const list = document.createElement('div');
     list.className = 'folder-list';
 
-    folder.files.forEach(file => {
+    visibleFiles.forEach(file => {
         const item = document.createElement('div');
         item.className = 'file-item';
         item.innerHTML = `
             <div class="file-icon">
-                ${file.type === 'pdf' ? ICONS.FILE_PDF : (file.type === 'email' ? ICONS.FILE_EMAIL : ICONS.FILE_LINK)}
+                ${getFileIconSvg(file)}
             </div>
             <div class="file-info">
                 <h3>${file.title}</h3>
@@ -453,8 +637,12 @@ function renderFolderContent(container, folderId) {
         `;
 
         item.addEventListener('click', () => {
-            if (file.type === 'pdf') {
+            if (file.type === 'folder') {
+                openWindow(file.id, file.title, 'folder', file.id);
+            } else if (file.type === 'pdf') {
                 openWindow(file.id, file.title, 'pdf', file.id);
+            } else if (file.type === 'note') {
+                openWindow(file.id, file.title, 'note', file.id);
             } else if (file.type === 'email') {
                 window.location.href = `mailto:${file.emailUser}@${file.emailDomain}`;
             } else if (file.url) {
@@ -468,10 +656,99 @@ function renderFolderContent(container, folderId) {
     container.appendChild(list);
 }
 
+function renderReviewsContent(container, folder) {
+    const reviews = Array.isArray(folder.reviews) ? folder.reviews : [];
+
+    const skeletonCards = Array.from({ length: 6 }).map(() => `
+        <div class="review-card is-skeleton">
+            <div class="review-cover"></div>
+            <div class="review-body">
+                <div class="review-title-line"></div>
+                <div class="review-meta-line"></div>
+                <div class="review-blurb-line"></div>
+                <div class="review-blurb-line short"></div>
+            </div>
+        </div>
+    `).join('');
+
+    const cardsHtml = reviews.length
+        ? reviews.map(renderReviewCard).join('')
+        : skeletonCards;
+
+    container.innerHTML = `
+        <div class="reviews-page">
+            <div class="reviews-hero">
+                <div class="reviews-hero-inner">
+                    <div class="reviews-kicker">Reviews</div>
+                    <h2 class="reviews-title">Books I’ve Read</h2>
+                    <p class="reviews-subtitle">Short, honest reviews — with notes worth keeping.</p>
+
+                    <div class="reviews-controls">
+                        <div class="reviews-search" role="search">
+                            <input class="reviews-search-input" type="search" placeholder="Search reviews (coming soon)" disabled />
+                        </div>
+                        <div class="reviews-filters" aria-label="Filters">
+                            <button class="chip active" type="button" disabled>All</button>
+                            <button class="chip" type="button" disabled>Philosophy</button>
+                            <button class="chip" type="button" disabled>Politics</button>
+                            <button class="chip" type="button" disabled>Fiction</button>
+                            <button class="chip" type="button" disabled>History</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reviews-grid">
+                ${cardsHtml}
+            </div>
+        </div>
+    `;
+}
+
+function renderReviewCard(review) {
+    const title = review?.title || 'Untitled';
+    const author = review?.author ? `by ${review.author}` : '';
+    const date = review?.date || '';
+    const rating = typeof review?.rating === 'number' ? review.rating : null;
+    const blurb = review?.blurb || '';
+
+    return `
+        <div class="review-card">
+            <div class="review-cover" aria-hidden="true"></div>
+            <div class="review-body">
+                <div class="review-title">${title}</div>
+                <div class="review-meta">${[author, date].filter(Boolean).join(' • ')}</div>
+                ${rating !== null ? `<div class="review-rating" aria-label="Rating">${renderStars(rating)}</div>` : ''}
+                ${blurb ? `<div class="review-blurb">${blurb}</div>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+function renderStars(rating) {
+    const clamped = Math.max(0, Math.min(5, rating));
+    const full = Math.floor(clamped);
+    const half = clamped - full >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+
+    const star = (className) => `
+        <svg class="star ${className}" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
+        </svg>
+    `;
+
+    return [
+        ...Array.from({ length: full }, () => star('is-full')),
+        ...Array.from({ length: half }, () => star('is-half')),
+        ...Array.from({ length: empty }, () => star('is-empty'))
+    ].join('');
+}
+
 function renderPdfContent(container, fileId) {
     // Find file
     let file;
     for (const folder of desktopData) {
+        if (!folder.files) continue;
         const f = folder.files.find(fi => fi.id === fileId);
         if (f) { file = f; break; }
     }
@@ -494,7 +771,30 @@ function renderPdfContent(container, fileId) {
                 </div>
             </div>
             <div class="pdf-frame-container">
-                ${file.pdfPath ? `<iframe src="${file.pdfPath}" class="pdf-frame"></iframe>` : '<div class="empty-folder">PDF Source Not Available</div>'}
+                ${file.pdfPath ? `<iframe src="${getPdfIframeSrc(file.pdfPath)}" class="pdf-frame"></iframe>` : '<div class="empty-folder">PDF Source Not Available</div>'}
+            </div>
+        </div>
+    `;
+}
+
+function renderNoteContent(container, noteId) {
+    const note = desktopData.find(item => item.id === noteId && item.type === 'note');
+    if (!note?.note) return;
+
+    const itemsHtml = (note.note.items || [])
+        .map((item) => `<li><span class="note-book">${item.title}</span><span class="note-author"> — ${item.author}</span></li>`)
+        .join('');
+
+    container.innerHTML = `
+        <div class="note-pad">
+            <div class="note-pad-paper">
+                <div class="note-pad-header">
+                    <h2>${note.note.title || note.title}</h2>
+                    ${note.note.subtitle ? `<div class="note-pad-subtitle">${note.note.subtitle}</div>` : ''}
+                </div>
+                <ul class="note-pad-list">
+                    ${itemsHtml}
+                </ul>
             </div>
         </div>
     `;
@@ -526,6 +826,8 @@ function renderDock() {
                 : ICONS.FOLDER_EMPTY(color, stroke);
                 
             iconHtml = iconSvg.replace('width="48"', 'width="24"').replace('height="48"', 'height="24"');
+        } else if (win.type === 'note') {
+            iconHtml = ICONS.FILE_NOTE;
         } else {
             iconHtml = ICONS.FILE_PDF;
         }
@@ -555,9 +857,9 @@ function renderMobileView() {
     
     mobileApps.innerHTML = '';
 
-    // Grid: Render ALL folders
-    desktopData.forEach(folder => {
-        mobileApps.appendChild(createMobileAppIcon(folder, true));
+    // Grid: Render ALL root items
+    getRootDesktopItems().forEach(item => {
+        mobileApps.appendChild(createMobileAppIcon(item));
     });
 
     // Setup Back Button
@@ -569,7 +871,7 @@ function renderMobileView() {
     setInterval(updateMobileClock, 1000);
 }
 
-function createMobileAppIcon(item, isFolder = true) {
+function createMobileAppIcon(item) {
     const iconEl = document.createElement('div');
     iconEl.className = 'mobile-app-icon';
     
@@ -577,19 +879,15 @@ function createMobileAppIcon(item, isFolder = true) {
     const iconStroke = 'rgba(255,255,255,0.8)';
     
     let iconSvg;
-    if (isFolder) {
-        if (item.type === 'app') {
-            iconSvg = ICONS.SETTINGS(iconColor, iconStroke);
-        } else {
-            const isFull = item.files.length > 0;
-            iconSvg = isFull 
-                ? ICONS.FOLDER_FULL(iconColor, iconStroke) 
-                : ICONS.FOLDER_EMPTY(iconColor, iconStroke);
-        }
+    if (item.type === 'app') {
+        iconSvg = ICONS.SETTINGS(iconColor, iconStroke);
+    } else if (item.type === 'note') {
+        iconSvg = ICONS.FILE_NOTE.replace(/currentColor/g, 'white');
     } else {
-        if (item.iconType === 'email') iconSvg = ICONS.FILE_EMAIL;
-        else iconSvg = ICONS.FILE_LINK;
-        iconSvg = iconSvg.replace(/currentColor/g, 'white');
+        const isFull = item.type === 'folder' ? folderHasContent(item) : (item.files && item.files.length > 0);
+        iconSvg = isFull 
+            ? ICONS.FOLDER_FULL(iconColor, iconStroke) 
+            : ICONS.FOLDER_EMPTY(iconColor, iconStroke);
     }
     
     // Adjust SVG size
@@ -604,62 +902,71 @@ function createMobileAppIcon(item, isFolder = true) {
         <div class="mobile-app-label">${item.title}</div>
     `;
 
-    if (isFolder) {
-        if (item.type === 'app' && item.id === 'settings') {
-            iconEl.addEventListener('click', openSettingsWindow);
-        } else {
-            iconEl.addEventListener('click', () => openMobileApp(item));
-        }
+    if (item.type === 'app' && item.id === 'settings') {
+        iconEl.addEventListener('click', openSettingsWindow);
     } else {
-        iconEl.addEventListener('click', item.action);
+        iconEl.addEventListener('click', () => openMobileItem(item));
     }
     return iconEl;
 }
 
-function openMobileApp(folder) {
+function openMobileItem(item) {
     const windowEl = document.getElementById('mobile-app-window');
     const titleEl = document.getElementById('mobile-app-title');
     const contentEl = document.getElementById('mobile-app-content');
 
-    titleEl.textContent = folder.title;
+    titleEl.textContent = item.title;
     contentEl.innerHTML = '';
-    applyMobileHeaderTheme(windowEl, folder?.color);
+    applyMobileHeaderTheme(windowEl, item?.color);
 
-    if (folder.files.length === 0) {
-        contentEl.innerHTML = '<div class="empty-folder">No items</div>';
-    } else {
-        folder.files.forEach(file => {
-            const item = document.createElement('div');
-            item.className = 'file-item';
-            item.innerHTML = `
-                <div class="file-icon">
-                    ${file.type === 'pdf' ? ICONS.FILE_PDF : (file.type === 'email' ? ICONS.FILE_EMAIL : ICONS.FILE_LINK)}
-                </div>
-                <div class="file-info">
-                    <h3>${file.title}</h3>
-                    <div class="file-meta">${file.date} • ${file.abstract}</div>
-                    <div class="file-tags">
-                        ${file.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+    if (item.type === 'note') {
+        renderMobileNoteContent(contentEl, item.id);
+    } else if (item.type === 'folder' && item.id === 'projects-reviews') {
+        renderMobileReviewsContent(contentEl, item);
+    } else if (item.type === 'folder') {
+        const visibleFiles = getVisibleFolderFiles(item);
+        if (visibleFiles.length === 0) {
+            contentEl.innerHTML = '<div class="empty-folder">No items</div>';
+        } else {
+            visibleFiles.forEach(file => {
+                const row = document.createElement('div');
+                row.className = 'file-item';
+                row.innerHTML = `
+                    <div class="file-icon">
+                        ${getFileIconSvg(file)}
                     </div>
-                </div>
-            `;
+                    <div class="file-info">
+                        <h3>${file.title}</h3>
+                        <div class="file-meta">${file.date} • ${file.abstract}</div>
+                        <div class="file-tags">
+                            ${file.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
 
-            item.addEventListener('click', () => {
-                if (file.type === 'email') {
-                    window.location.href = `mailto:${file.emailUser}@${file.emailDomain}`;
-                } else if (file.pdfPath) {
-                    window.open(file.pdfPath, '_blank');
-                } else if (file.url) {
-                    window.open(file.url, '_blank');
-                }
+                row.addEventListener('click', () => {
+                    if (file.type === 'folder') {
+                        const next = desktopData.find(f => f.id === file.id);
+                        if (next) openMobileItem(next);
+                    } else if (file.type === 'note') {
+                        const next = desktopData.find(f => f.id === file.id && f.type === 'note');
+                        if (next) openMobileItem(next);
+                    } else if (file.type === 'email') {
+                        window.location.href = `mailto:${file.emailUser}@${file.emailDomain}`;
+                    } else if (file.pdfPath) {
+                        window.open(file.pdfPath, '_blank');
+                    } else if (file.url) {
+                        window.open(file.url, '_blank');
+                    }
+                });
+
+                contentEl.appendChild(row);
             });
-
-            contentEl.appendChild(item);
-        });
+        }
     }
 
     // Update URL for sharing
-    window.location.hash = `type=folder&id=${folder.id}`;
+    window.location.hash = `type=${item.type}&id=${item.id}`;
 
     // Setup Share Button
     const shareBtn = document.getElementById('mobile-app-share-btn');
@@ -685,6 +992,36 @@ function openMobileApp(folder) {
     });
 
     windowEl.classList.add('open');
+}
+
+function renderMobileReviewsContent(container, folder) {
+    renderReviewsContent(container, folder);
+}
+
+function renderMobileNoteContent(container, noteId) {
+    const note = desktopData.find(item => item.id === noteId && item.type === 'note');
+    if (!note?.note) {
+        container.innerHTML = '<div class="empty-folder">No note</div>';
+        return;
+    }
+
+    const itemsHtml = (note.note.items || [])
+        .map((item) => `<li><span class="note-book">${item.title}</span><span class="note-author"> — ${item.author}</span></li>`)
+        .join('');
+
+    container.innerHTML = `
+        <div class="note-pad is-mobile">
+            <div class="note-pad-paper">
+                <div class="note-pad-header">
+                    <h2>${note.note.title || note.title}</h2>
+                    ${note.note.subtitle ? `<div class="note-pad-subtitle">${note.note.subtitle}</div>` : ''}
+                </div>
+                <ul class="note-pad-list">
+                    ${itemsHtml}
+                </ul>
+            </div>
+        </div>
+    `;
 }
 
 function closeMobileApp() {
@@ -1211,23 +1548,78 @@ function spawnShootingStar() {
         const star = document.createElement('div');
         star.className = 'shooting-star';
 
-        const startLeft = Math.random() * 60 + 5; // 5%..65%
-        const startTop = Math.random() * 40 + 5; // 5%..45%
-        const dx = Math.random() * 260 + 260; // 260..520px
-        const dy = Math.random() * 180 + 180; // 180..360px
-        const duration = Math.random() * 500 + 850; // 850..1350ms
+        const bounds = wp.getBoundingClientRect();
+        const width = Math.max(1, bounds.width);
+        const height = Math.max(1, bounds.height);
 
-        star.style.left = `${startLeft}%`;
-        star.style.top = `${startTop}%`;
-        star.style.setProperty('--shoot-x', `${dx}px`);
-        star.style.setProperty('--shoot-y', `${dy}px`);
+        // Start near top-left-ish, end further down/right, with an upward-bowed arc.
+        const x0 = (Math.random() * 0.55 + 0.05) * width;
+        const y0 = (Math.random() * 0.35 + 0.05) * height;
+        const x2 = x0 + (Math.random() * 0.35 + 0.45) * width;
+        const y2 = y0 + (Math.random() * 0.22 + 0.08) * height;
+
+        const midX = x0 + (x2 - x0) * 0.5;
+        const arcLift = (Math.random() * 0.22 + 0.18) * height;
+        const y1 = Math.max(0, Math.min(height * 0.55, (y0 + y2) * 0.5 - arcLift));
+        const x1 = midX + (Math.random() * 0.12 - 0.06) * width;
+
+        const duration = Math.random() * 650 + 950; // 950..1600ms
+        const tail = Math.round(Math.random() * 120 + 180); // 180..300px
+
         star.style.setProperty('--shoot-duration', `${Math.round(duration)}ms`);
-
-        const remove = () => star.remove();
-        star.addEventListener('animationend', remove, { once: true });
-        setTimeout(remove, duration + 250);
+        star.style.setProperty('--shoot-tail', `${tail}px`);
 
         wp.appendChild(star);
+
+        const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+        const bezierPoint = (t) => {
+            const mt = 1 - t;
+            const a = mt * mt;
+            const b = 2 * mt * t;
+            const c = t * t;
+            return {
+                x: a * x0 + b * x1 + c * x2,
+                y: a * y0 + b * y1 + c * y2
+            };
+        };
+        const bezierTangent = (t) => {
+            // Derivative of quadratic bezier
+            return {
+                x: 2 * (1 - t) * (x1 - x0) + 2 * t * (x2 - x1),
+                y: 2 * (1 - t) * (y1 - y0) + 2 * t * (y2 - y1)
+            };
+        };
+
+        const start = performance.now();
+        let rafId = 0;
+
+        const step = (now) => {
+            const raw = (now - start) / duration;
+            if (raw >= 1) {
+                star.remove();
+                return;
+            }
+            const t = easeOutCubic(Math.max(0, raw));
+            const p = bezierPoint(t);
+            const v = bezierTangent(t);
+            const angle = Math.atan2(v.y, v.x) * (180 / Math.PI);
+
+            star.style.left = `${p.x}px`;
+            star.style.top = `${p.y}px`;
+            star.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+
+            rafId = requestAnimationFrame(step);
+        };
+
+        rafId = requestAnimationFrame(step);
+
+        const cleanup = () => {
+            cancelAnimationFrame(rafId);
+            star.remove();
+        };
+        star.__shootingStarCleanup = cleanup;
+        star.addEventListener('animationend', cleanup, { once: true });
+        setTimeout(cleanup, duration + 250);
     });
 }
 
@@ -1243,7 +1635,10 @@ function stopShootingStars() {
     if (!shootingStarIntervalId) return;
     clearInterval(shootingStarIntervalId);
     shootingStarIntervalId = null;
-    document.querySelectorAll('.shooting-star').forEach(el => el.remove());
+    document.querySelectorAll('.shooting-star').forEach(el => {
+        if (typeof el.__shootingStarCleanup === 'function') el.__shootingStarCleanup();
+        else el.remove();
+    });
 }
 
 function syncShootingStarsState() {
