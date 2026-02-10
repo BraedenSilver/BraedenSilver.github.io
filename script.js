@@ -126,6 +126,14 @@ const desktopData = [
         files: []
     },
     {
+        id: 'mapquiz',
+        title: 'Map Quiz',
+        type: 'link',
+        color: '#20B2AA', // LightSeaGreen
+        stroke: '#008B8B', // DarkCyan
+        url: 'MapQuiz/'
+    },
+    {
         id: 'contact',
         title: 'Contact',
         type: 'folder',
@@ -181,6 +189,11 @@ const ICONS = {
         <path d="M16 3v3" />
     </svg>`,
     SETTINGS: (color, stroke) => `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`,
+    MAP: (color, stroke) => `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" fill="${color}" fill-opacity="0.2"></polygon>
+        <line x1="8" y1="2" x2="8" y2="18"></line>
+        <line x1="16" y1="6" x2="16" y2="22"></line>
+    </svg>`,
     FILE_PDF: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>`,
     FILE_FOLDER: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Folder"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>`,
     FILE_NOTE: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Note"><path d="M6 2h9l3 3v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v6h6"/><path d="M8 11h8M8 14h8M8 17h6"/></svg>`,
@@ -380,6 +393,8 @@ function renderDesktopIcons() {
             iconSvg = ICONS.SETTINGS(folder.color, folder.stroke);
         } else if (folder.type === 'note') {
             iconSvg = ICONS.NOTEPAD(folder.color, folder.stroke);
+        } else if (folder.type === 'link' && folder.id === 'mapquiz') {
+            iconSvg = ICONS.MAP(folder.color, folder.stroke);
         } else {
             const isFull = folderHasContent(folder);
             iconSvg = isFull 
@@ -404,6 +419,8 @@ function renderDesktopIcons() {
                 openSettingsWindow();
             } else if (folder.type === 'note') {
                 openWindow(folder.id, folder.title, 'note', folder.id);
+            } else if (folder.type === 'link' && folder.url) {
+                window.location.href = folder.url;
             } else {
                 openWindow(folder.id, folder.title, 'folder', folder.id);
             }
@@ -883,6 +900,8 @@ function createMobileAppIcon(item) {
         iconSvg = ICONS.SETTINGS(iconColor, iconStroke);
     } else if (item.type === 'note') {
         iconSvg = ICONS.FILE_NOTE.replace(/currentColor/g, 'white');
+    } else if (item.type === 'link' && item.id === 'mapquiz') {
+        iconSvg = ICONS.MAP(iconColor, iconStroke);
     } else {
         const isFull = item.type === 'folder' ? folderHasContent(item) : (item.files && item.files.length > 0);
         iconSvg = isFull 
@@ -911,6 +930,11 @@ function createMobileAppIcon(item) {
 }
 
 function openMobileItem(item) {
+    if (item.type === 'link' && item.url) {
+        window.location.href = item.url;
+        return;
+    }
+
     const windowEl = document.getElementById('mobile-app-window');
     const titleEl = document.getElementById('mobile-app-title');
     const contentEl = document.getElementById('mobile-app-content');
