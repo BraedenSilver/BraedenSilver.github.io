@@ -45,7 +45,12 @@
 
 <div id="header">
     <div style="font-size: 20px; font-weight: bold;">Map Quiz Study Tool</div>
+    <div id="timer-display" style="font-size: 24px; font-family: monospace; font-weight: bold; background: #222; padding: 5px 15px; border-radius: 4px; color: #0f0; margin: 0 20px;">00:00</div>
     <div id="controls">
+        <select id="interaction-mode" onchange="setInteractionMode(this.value)" style="margin-right: 10px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            <option value="drag">Drag & Drop Mode</option>
+            <option value="typing">Typing Mode</option>
+        </select>
         <button onclick="loadMode('RiversAndWaterways')" id="btn-rivers">Rivers & Waterways</button>
         <button onclick="loadMode('Regions')" id="btn-regions">Regions</button>
         <button onclick="loadMode('Cities')" id="btn-cities">Cities</button>
@@ -56,7 +61,7 @@
 
 <div id="container">
     <div id="sidebar">
-        <div style="font-weight: bold; margin-bottom: 5px;">Drag Items onto Map:</div>
+        <div id="sidebar-instruction" style="font-weight: bold; margin-bottom: 5px;">Drag Items onto Map:</div>
         <div id="items-list">
             <!-- Draggable items will go here -->
         </div>
@@ -143,6 +148,13 @@
     var currentItems = []; // Stores the data for current mode
     var markers = []; // Stores placed markers
     var targetMarkers = []; // Stores the hint dots
+    var currentCategory = 'RiversAndWaterways'; // Track active category
+    var interactionMode = 'drag'; // 'drag' or 'typing'
+    
+    // Timer Variables
+    var timerInterval;
+    var startTime;
+    var timerRunning = false;
 
     // Fisher-Yates Shuffle
     function shuffleArray(array) {
@@ -153,7 +165,48 @@
         return array;
     }
 
+    function renderSidebar(data) {
+        // ... (this function is further down, we will add timer logic before it)
+    } // Just a placeholder for my mental map, I am adding functions below this block
+
+    function startTimer() {
+        if (timerRunning) return;
+        timerRunning = true;
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimerDisplay, 100);
+    }
+
+    function stopTimer() {
+        if (!timerRunning) return;
+        clearInterval(timerInterval);
+        timerRunning = false;
+    }
+    
+    function resetTimer() {
+        stopTimer();
+        const el = document.getElementById('timer-display');
+        if(el) el.innerText = "00:00";
+    }
+
+    function updateTimerDisplay() {
+        const now = Date.now();
+        const diff = now - startTime;
+        const minutes = Math.floor(diff / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        const str = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+        const el = document.getElementById('timer-display');
+        if(el) el.innerText = str;
+    }
+
+    function setInteractionMode(mode) {
+        interactionMode = mode;
+        loadMode(currentCategory);
+    }
+
     function loadMode(mode) {
+        resetTimer();
+        currentCategory = mode;
+        
         // Update Buttons
         document.querySelectorAll('#controls button').forEach(b => b.classList.remove('active'));
         var btn = document.getElementById('btn-' + (mode === 'RiversAndWaterways' ? 'rivers' : mode.toLowerCase()));
@@ -206,30 +259,97 @@
             // Tag it so we can remove it when matched
             circle.quizItemName = item.name;
             targetMarkers.push(circle);
+
+            if (interactionMode === 'typing') {
+                // Interactive click for typing mode
+                circle.setStyle({ cursor: 'pointer', color: '#007bff', weight: 2 });
+                circle.on('click', function(e) {
+                     var container = document.createElement('div');
+                     
+                     var label = document.createElement('div');
+                     label.innerText = 'Enter location name:';
+                     label.style.marginBottom = '5px';
+                     container.appendChild(label);
+
+                     var input = document.createElement('input');
+                     input.type = 'text';
+                     input.style.width = '150px';
+                     input.style.padding = '4px';
+                     container.appendChild(input);
+                     
+                     var btn = document.createElement('button');
+                     btn.innerText = 'Check';
+                     btn.style.marginTop = '5px';
+                     btn.style.width = '100%';
+                     container.appendChild(btn);
+
+                     function submit() {
+                        checkTypingAnswer(input.value, item);
+                     }
+
+                     btn.onclick = submit;
+                     input.onkeypress = function(ev) {
+                        if (ev.key === 'Enter') submit();
+                     };
+
+                     L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(container)
+                        .openOn(map);
+                    
+                     setTimeout(() => input.focus(), 100);
+                });
+            }
         });
+    }
+
+    function checkTypingAnswer(startValue, item) {
+        if (!startValue) return;
+        // Simple case-insensitive exact match
+        if (startValue.trim().toLowerCase() === item.name.toLowerCase()) {
+            map.closePopup();
+            placeMarker(item, true);
+            markItemStartAsPlaced(item);
+        } else {
+            alert('Incorrect. Check the Word Bank for the exact spelling.');
+        }
     }
 
     function renderSidebar(data) {
         const list = document.getElementById('items-list');
         list.innerHTML = '';
+
+        const instruction = document.getElementById('sidebar-instruction');
+        if (instruction) {
+             instruction.innerText = (interactionMode === 'typing') ? "Word Bank:" : "Drag Items onto Map:";
+        }
         
         data.forEach(item => {
             let div = document.createElement('div');
             div.className = 'draggable-item';
             div.innerText = item.name;
-            div.draggable = true;
             div.id = 'item-' + item.name.replace(/[^a-zA-Z0-9]/g, '');
             
-            // Drag Events
-            div.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text/plain', JSON.stringify(item));
-                e.dataTransfer.effectAllowed = 'move';
-                div.style.opacity = '0.5';
-            });
-            
-            div.addEventListener('dragend', (e) => {
-                div.style.opacity = '1';
-            });
+            if (interactionMode === 'drag') {
+                div.draggable = true;
+                
+                // Drag Events
+                div.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', JSON.stringify(item));
+                    e.dataTransfer.effectAllowed = 'move';
+                    div.style.opacity = '0.5';
+                });
+                
+                div.addEventListener('dragend', (e) => {
+                    div.style.opacity = '1';
+                });
+            } else {
+                // Typing mode - just a list
+                div.draggable = false;
+                div.style.cursor = 'text';
+                div.style.userSelect = 'text';
+                div.style.color = '#333';
+            }
             
             list.appendChild(div);
         });
@@ -238,7 +358,8 @@
     function showAnswers() {
         if (!currentItems || currentItems.length === 0) return;
         
-        if (confirm("Are you sure you want to reveal all answers?")) {
+        if (confirm("Are you sure you want to reveal all answers? (This will stop the timer)")) {
+            stopTimer();
             currentItems.forEach(item => {
                 // Check if already placed (by checking sidebar state) to avoid duplicates
                 const id = 'item-' + item.name.replace(/[^a-zA-Z0-9]/g, '');
@@ -307,6 +428,11 @@
     }
 
     function placeMarker(item, success) {
+        // Start timer on first placement if not running
+        if (markers.length === 0 && !timerRunning) {
+            startTimer();
+        }
+
         // Remove the target circle for this item to avoid clutter
         var targetToRemove = targetMarkers.find(m => m.quizItemName === item.name);
         if(targetToRemove) {
@@ -322,6 +448,16 @@
             opacity: 0.9
         }).openTooltip();
         markers.push(marker);
+
+        // Check for completion
+        if (markers.length === currentItems.length) {
+            stopTimer();
+            const timeStr = document.getElementById('timer-display').innerText;
+            // Short delay to allow UI to update
+            setTimeout(() => {
+                alert("🎉 Stage Completed! 🎉\n\nYour Time: " + timeStr);
+            }, 100);
+        }
     }
     
     function markItemStartAsPlaced(item) {
