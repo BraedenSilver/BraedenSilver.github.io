@@ -2,193 +2,367 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Map Quiz Drag & Drop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Map Quiz Study Tool</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; display: flex; flex-direction: column; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body, html {
+            margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        /* ── Header ── */
         #header {
-            background: #333; color: white; padding: 10px; display: flex; align-items: center; justify-content: space-between;
+            background: #333; color: white; padding: 8px 12px;
+            display: flex; flex-direction: column; gap: 6px;
+            flex-shrink: 0; z-index: 1000;
         }
-        #controls { display: flex; gap: 10px; }
-        #container { display: flex; flex: 1; min-height: 0; }
+        #header-top {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        }
+        #title { font-size: 18px; font-weight: bold; white-space: nowrap; }
+        #timer-display {
+            font-size: 20px; font-family: monospace; font-weight: bold;
+            background: #222; padding: 4px 12px; border-radius: 4px; color: #0f0;
+            white-space: nowrap;
+        }
+        #header-bottom {
+            display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+        }
+        #mode-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+        #action-btns { display: flex; gap: 6px; margin-left: auto; }
+
+        select#interaction-mode {
+            padding: 7px 8px; border-radius: 4px; border: 1px solid #ccc;
+            font-size: 14px; background: white; color: #333; cursor: pointer;
+        }
+
+        button {
+            padding: 8px 14px; cursor: pointer; background: #007bff; color: white;
+            border: none; border-radius: 4px; font-size: 14px; white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 36px;
+        }
+        button:hover, button:active { background: #0056b3; }
+        button.active { background: #004494; border: 2px solid white; }
+        button.btn-show { background: #ffc107; color: #333; }
+        button.btn-show:hover, button.btn-show:active { background: #e0a800; }
+        button.btn-reset { background: #dc3545; }
+        button.btn-reset:hover, button.btn-reset:active { background: #b02a37; }
+
+        /* ── Main container ── */
+        #container { display: flex; flex: 1; min-height: 0; position: relative; }
+
+        /* ── Sidebar (desktop) ── */
         #sidebar {
-            width: 250px; background: #f4f4f4; padding: 10px; overflow-y: auto; border-right: 2px solid #ccc;
-            display: flex; flex-direction: column; gap: 10px;
+            width: 240px; background: #f4f4f4; padding: 10px; overflow-y: auto;
+            border-right: 2px solid #ccc; display: flex; flex-direction: column; gap: 8px;
+            flex-shrink: 0;
         }
+        #sidebar-header {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        #sidebar-instruction { font-weight: bold; font-size: 14px; }
+        #exact-names-label {
+            display: flex; align-items: center; gap: 4px; font-size: 12px;
+            cursor: pointer; user-select: none;
+        }
+        #exact-names-label input { width: 13px; height: 13px; cursor: pointer; }
+        #items-list { display: flex; flex-direction: column; gap: 6px; }
+
+        /* ── Map ── */
         #map { flex: 1; }
-        
+
+        /* ── Draggable items ── */
         .draggable-item {
-            background: white; border: 1px solid #999; padding: 8px; cursor: grab;
-            border-radius: 4px; box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-            user-select: none;
+            background: white; border: 1px solid #999; padding: 8px 10px;
+            cursor: grab; border-radius: 4px; box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            user-select: none; font-size: 14px; transition: background 0.1s;
+            -webkit-tap-highlight-color: transparent;
         }
         .draggable-item:active { cursor: grabbing; background: #e0e0e0; }
         .draggable-item.placed {
-            background: #dff0d8; color: #3c763d; border-color: #d6e9c6; opacity: 0.6; cursor: default;
+            background: #dff0d8; color: #3c763d; border-color: #d6e9c6;
+            opacity: 0.6; cursor: default;
         }
-        
-        button {
-            padding: 8px 16px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; font-size: 14px;
+        .draggable-item.selected-mobile {
+            background: #cce5ff; border-color: #004494; color: #004494;
+            box-shadow: 0 0 0 2px #004494; cursor: pointer;
         }
-        button:hover { background: #0056b3; }
-        button.active { background: #004494; border: 2px solid white; }
 
-        /* Specific styles for feedback */
-        .feedback-popup { text-align: center; }
+        /* ── Mobile word-bank toggle button ── */
+        #wordbank-toggle {
+            display: none; /* shown via media query */
+            position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%);
+            z-index: 500; background: #333; color: white;
+            border: 2px solid #666; border-radius: 24px;
+            padding: 10px 22px; font-size: 15px; font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            cursor: pointer; white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── Mobile tap-hint banner ── */
+        #tap-hint {
+            display: none;
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(0,70,180,0.92); color: white;
+            text-align: center; padding: 10px 16px; font-size: 14px;
+            font-weight: bold; z-index: 600; pointer-events: none;
+            border-bottom: 2px solid #004494;
+        }
+
+        /* ── Mobile bottom drawer ── */
+        #mobile-drawer {
+            display: none; /* shown via media query */
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #f4f4f4; border-top: 2px solid #ccc;
+            z-index: 400; flex-direction: column;
+            max-height: 55vh; transition: transform 0.3s ease;
+        }
+        #mobile-drawer.open { transform: translateY(0); }
+        #mobile-drawer.closed { transform: translateY(100%); }
+        #drawer-handle {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 14px; background: #ddd; cursor: pointer;
+            border-bottom: 1px solid #ccc; flex-shrink: 0;
+        }
+        #drawer-handle-title { font-weight: bold; font-size: 14px; }
+        #drawer-close-btn { font-size: 20px; line-height: 1; padding: 0 4px; }
+        #drawer-content {
+            overflow-y: auto; padding: 10px;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        #mobile-exact-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 4px 4px 8px; border-bottom: 1px solid #ccc; flex-shrink: 0;
+        }
+        #mobile-exact-row span { font-size: 13px; color: #555; }
+        #mobile-exact-label {
+            display: flex; align-items: center; gap: 5px; font-size: 13px;
+            cursor: pointer; user-select: none;
+        }
+
+        /* ── Footer ── */
+        #footer {
+            background: #222; color: #aaa; font-size: 11px; padding: 5px 14px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 4px; border-top: 1px solid #444; flex-shrink: 0;
+        }
+        #footer a { color: #7ec8e3; text-decoration: none; white-space: nowrap; }
+
+        /* ── Feedback ── */
         .success { color: green; font-weight: bold; }
         .fail { color: red; }
+
+        /* ══════════════════════════════════════════
+           MOBILE OVERRIDES  (≤ 767px)
+        ══════════════════════════════════════════ */
+        @media (max-width: 767px) {
+            #title { font-size: 15px; }
+            #timer-display { font-size: 17px; padding: 3px 10px; }
+
+            /* Hide the desktop sidebar */
+            #sidebar { display: none; }
+
+            /* Show mobile-only elements */
+            #wordbank-toggle { display: block; }
+            #mobile-drawer { display: flex; }
+
+            /* Header: stack bottom row, allow wrapping */
+            #header { padding: 6px 10px; gap: 5px; }
+            #header-bottom { gap: 5px; }
+            #mode-btns { gap: 5px; }
+            button { font-size: 13px; padding: 8px 10px; min-height: 40px; }
+
+            /* Mode buttons scroll horizontally instead of wrapping */
+            #mode-btns {
+                flex-wrap: nowrap; overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            #mode-btns::-webkit-scrollbar { display: none; }
+
+            select#interaction-mode { font-size: 13px; padding: 8px 6px; min-height: 40px; }
+
+            /* Map fills remaining height */
+            #container { flex-direction: column; }
+            #map { flex: 1; width: 100%; }
+
+            /* Footer: smaller */
+            #footer { font-size: 10px; padding: 4px 10px; }
+        }
+
+        /* Very small phones */
+        @media (max-width: 380px) {
+            #title { font-size: 13px; }
+            #timer-display { font-size: 15px; padding: 2px 8px; }
+            button { font-size: 12px; padding: 7px 8px; }
+        }
     </style>
 </head>
 <body>
 
+<!-- ── Tap-to-place hint banner (mobile) ── -->
+<div id="tap-hint">Tap a location on the map to place it</div>
+
 <div id="header">
-    <div style="font-size: 20px; font-weight: bold;">Map Quiz Study Tool</div>
-    <div id="timer-display" style="font-size: 24px; font-family: monospace; font-weight: bold; background: #222; padding: 5px 15px; border-radius: 4px; color: #0f0; margin: 0 20px;">00:00</div>
-    <div id="controls">
-        <select id="interaction-mode" onchange="setInteractionMode(this.value)" style="margin-right: 10px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-            <option value="drag">Drag & Drop Mode</option>
+    <div id="header-top">
+        <div id="title">Map Quiz Study Tool</div>
+        <div id="timer-display">00:00</div>
+    </div>
+    <div id="header-bottom">
+        <select id="interaction-mode" onchange="setInteractionMode(this.value)">
+            <option value="drag">Drag &amp; Drop</option>
             <option value="typing">Typing Mode</option>
         </select>
-        <button onclick="loadMode('RiversAndWaterways')" id="btn-rivers">Rivers & Waterways</button>
-        <button onclick="loadMode('Regions')" id="btn-regions">Regions</button>
-        <button onclick="loadMode('Cities')" id="btn-cities">Cities</button>
-        <button onclick="showAnswers()" style="background: #ffc107; color: #333;">Show Answers</button>
-        <button onclick="resetCurrentMode()" style="background: #dc3545;">Reset</button>
+        <div id="mode-btns">
+            <button onclick="loadMode('RiversAndWaterways')" id="btn-rivers">Rivers &amp; Waterways</button>
+            <button onclick="loadMode('Regions')" id="btn-regions">Regions</button>
+            <button onclick="loadMode('Cities')" id="btn-cities">Cities</button>
+        </div>
+        <div id="action-btns">
+            <button class="btn-show" onclick="showAnswers()">Show Answers</button>
+            <button class="btn-reset" onclick="resetCurrentMode()">Reset</button>
+        </div>
     </div>
 </div>
 
 <div id="container">
+    <!-- Desktop sidebar -->
     <div id="sidebar">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
-            <div id="sidebar-instruction" style="font-weight: bold;">Drag Items onto Map:</div>
-            <label style="display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; user-select: none;">
-                <input type="checkbox" id="exact-names-toggle" onchange="toggleExactNames(this.checked)" style="width: 13px; height: 13px; cursor: pointer;">
+        <div id="sidebar-header">
+            <div id="sidebar-instruction">Drag Items onto Map:</div>
+            <label id="exact-names-label">
+                <input type="checkbox" id="exact-names-toggle" onchange="toggleExactNames(this.checked)">
                 Exact Names
             </label>
         </div>
-        <div id="items-list">
-            <!-- Draggable items will go here -->
-        </div>
+        <div id="items-list"></div>
     </div>
     <div id="map"></div>
 </div>
 
-<div id="footer" style="background: #222; color: #aaa; font-size: 12px; padding: 6px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; border-top: 1px solid #444;">
-    <span>⚠️ Location coordinates are approximate and may not match your in-class quiz exactly. If anything looks off, please let me know.</span>
-    <a href="mailto:contact@braedensilver.com" style="color: #7ec8e3; text-decoration: none; white-space: nowrap;">contact@braedensilver.com</a>
+<!-- Mobile bottom drawer -->
+<div id="mobile-drawer" class="closed">
+    <div id="drawer-handle" onclick="toggleDrawer()">
+        <span id="drawer-handle-title">Word Bank</span>
+        <span id="drawer-close-btn">▼</span>
+    </div>
+    <div id="mobile-exact-row">
+        <span id="mobile-sidebar-instruction">Tap a word, then tap the map</span>
+        <label id="mobile-exact-label">
+            <input type="checkbox" id="exact-names-toggle-mobile" onchange="toggleExactNames(this.checked)">
+            Exact Names
+        </label>
+    </div>
+    <div id="drawer-content">
+        <div id="mobile-items-list"></div>
+    </div>
+</div>
+
+<!-- Mobile word bank toggle -->
+<button id="wordbank-toggle" onclick="toggleDrawer()">Word Bank ▲</button>
+
+<div id="footer">
+    <span>⚠️ Coordinates are approximate and may not match your in-class quiz exactly. Let me know if anything looks off.</span>
+    <a href="mailto:contact@braedensilver.com">contact@braedensilver.com</a>
 </div>
 
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // Embedded Data - No server needed
+    // ── Data ──────────────────────────────────────────────────────────────────
     const DATA = {
         "Rivers": [
-            {"name": "Tigris River", "lat": 34.0, "lng": 44.0},
-            {"name": "Euphrates River", "lat": 33.0, "lng": 43.0},
-            {"name": "Nile River", "lat": 28.0, "lng": 30.8},
-            {"name": "Danube River", "lat": 45.0, "lng": 19.0},
-            {"name": "Rhine River", "lat": 50.0, "lng": 7.5}
+            {"name": "Tigris River",     "lat": 34.0,  "lng": 44.0},
+            {"name": "Euphrates River",  "lat": 33.0,  "lng": 43.0},
+            {"name": "Nile River",       "lat": 28.0,  "lng": 30.8},
+            {"name": "Danube River",     "lat": 45.0,  "lng": 19.0},
+            {"name": "Rhine River",      "lat": 50.0,  "lng": 7.5}
         ],
         "Waterways": [
-            {"name": "Aegean Sea", "lat": 38.0, "lng": 25.0},
-            {"name": "Ionian Sea", "lat": 38.0, "lng": 19.0},
-            {"name": "Mediterranean Sea", "lat": 35.0, "lng": 18.0},
-            {"name": "Black Sea", "lat": 43.0, "lng": 34.0},
-            {"name": "Baltic Sea", "lat": 56.0, "lng": 19.0},
-            {"name": "Strait of Gibraltar", "lat": 35.9, "lng": -5.5},
-            {"name": "Adriatic Sea", "lat": 43.0, "lng": 15.0},
-            {"name": "Red Sea", "lat": 22.0, "lng": 38.0},
-            {"name": "Persian Gulf", "lat": 27.0, "lng": 51.0}
+            {"name": "Aegean Sea",          "lat": 38.0,  "lng": 25.0},
+            {"name": "Ionian Sea",          "lat": 38.0,  "lng": 19.0},
+            {"name": "Mediterranean Sea",   "lat": 35.0,  "lng": 18.0},
+            {"name": "Black Sea",           "lat": 43.0,  "lng": 34.0},
+            {"name": "Baltic Sea",          "lat": 56.0,  "lng": 19.0},
+            {"name": "Strait of Gibraltar", "lat": 35.9,  "lng": -5.5},
+            {"name": "Adriatic Sea",        "lat": 43.0,  "lng": 15.0},
+            {"name": "Red Sea",             "lat": 22.0,  "lng": 38.0},
+            {"name": "Persian Gulf",        "lat": 27.0,  "lng": 51.0}
         ],
         "Regions": [
-            {"name": "Mesopotamia", "lat": 34.0, "lng": 43.5},
-            {"name": "Sumer", "lat": 31.5, "lng": 46.0},
-            {"name": "Assyrian Empire", "lat": 36.0, "lng": 43.0},
+            {"name": "Mesopotamia",              "lat": 34.0,  "lng": 43.5},
+            {"name": "Sumer",                    "lat": 31.5,  "lng": 46.0},
+            {"name": "Assyrian Empire",          "lat": 36.0,  "lng": 43.0},
             {"name": "Carthage (Region)", "exactName": "Carthage", "lat": 36.8, "lng": 10.3},
-            {"name": "Gaul", "lat": 47.0, "lng": 2.0},
-            {"name": "Britannia", "lat": 52.5, "lng": -1.5},
-            {"name": "Iberian Peninsula", "lat": 40.0, "lng": -4.0},
-            {"name": "Levant", "lat": 33.0, "lng": 36.0},
-            {"name": "Asia Minor / Anatolia", "lat": 39.0, "lng": 34.0},
-            {"name": "Balkans", "lat": 42.5, "lng": 23.0}
+            {"name": "Gaul",                     "lat": 47.0,  "lng": 2.0},
+            {"name": "Britannia",                "lat": 52.5,  "lng": -1.5},
+            {"name": "Iberian Peninsula",        "lat": 40.0,  "lng": -4.0},
+            {"name": "Levant",                   "lat": 33.0,  "lng": 36.0},
+            {"name": "Asia Minor / Anatolia",    "lat": 39.0,  "lng": 34.0},
+            {"name": "Balkans",                  "lat": 42.5,  "lng": 23.0}
         ],
         "Cities": [
-            {"name": "Ur", "lat": 30.96, "lng": 46.10},
-            {"name": "Babylon", "lat": 32.53, "lng": 44.42},
-            {"name": "Jerusalem", "lat": 31.76, "lng": 35.21},
-            {"name": "Memphis", "exactName": "Memphis (Egypt)", "lat": 29.85, "lng": 31.25},
-            {"name": "Thebes", "exactName": "Thebes (Egypt)", "lat": 25.72, "lng": 32.65},
-            {"name": "Knossos", "exactName": "Knossos (Crete)", "lat": 35.30, "lng": 25.16},
-            {"name": "Troy", "lat": 39.96, "lng": 26.24},
-            {"name": "Athens", "lat": 37.98, "lng": 23.72},
-            {"name": "Sparta", "lat": 37.08, "lng": 22.43},
-            {"name": "Corinth", "lat": 37.91, "lng": 22.88},
-            {"name": "Delphi", "lat": 38.48, "lng": 22.50},
-            {"name": "Rome", "lat": 41.90, "lng": 12.49},
-            {"name": "Pompeii", "lat": 40.75, "lng": 14.49},
+            {"name": "Ur",          "lat": 30.96, "lng": 46.10},
+            {"name": "Babylon",     "lat": 32.53, "lng": 44.42},
+            {"name": "Jerusalem",   "lat": 31.76, "lng": 35.21},
+            {"name": "Memphis",  "exactName": "Memphis (Egypt)",  "lat": 29.85, "lng": 31.25},
+            {"name": "Thebes",   "exactName": "Thebes (Egypt)",   "lat": 25.72, "lng": 32.65},
+            {"name": "Knossos",  "exactName": "Knossos (Crete)",  "lat": 35.30, "lng": 25.16},
+            {"name": "Troy",        "lat": 39.96, "lng": 26.24},
+            {"name": "Athens",      "lat": 37.98, "lng": 23.72},
+            {"name": "Sparta",      "lat": 37.08, "lng": 22.43},
+            {"name": "Corinth",     "lat": 37.91, "lng": 22.88},
+            {"name": "Delphi",      "lat": 38.48, "lng": 22.50},
+            {"name": "Rome",        "lat": 41.90, "lng": 12.49},
+            {"name": "Pompeii",     "lat": 40.75, "lng": 14.49},
             {"name": "Constantinople", "lat": 41.00, "lng": 28.98},
-            {"name": "Aachen", "lat": 50.78, "lng": 6.08},
+            {"name": "Aachen",      "lat": 50.78, "lng": 6.08},
             {"name": "Hastings", "exactName": "Hastings (battle site)", "lat": 50.85, "lng": 0.57},
-            {"name": "Paris", "lat": 48.85, "lng": 2.35},
-            {"name": "London", "lat": 51.50, "lng": -0.12},
-            {"name": "Córdoba", "lat": 37.88, "lng": -4.78},
-            {"name": "Granada", "lat": 37.18, "lng": -3.60},
-            {"name": "Venice", "lat": 45.44, "lng": 12.31},
-            {"name": "Florence", "lat": 43.76, "lng": 11.25},
-            {"name": "Genoa", "lat": 44.40, "lng": 8.94},
-            {"name": "Vienna", "lat": 48.20, "lng": 16.37},
-            {"name": "Wittenberg", "lat": 51.87, "lng": 12.65},
-            {"name": "Worms", "lat": 49.63, "lng": 8.36}
+            {"name": "Paris",       "lat": 48.85, "lng": 2.35},
+            {"name": "London",      "lat": 51.50, "lng": -0.12},
+            {"name": "Córdoba",     "lat": 37.88, "lng": -4.78},
+            {"name": "Granada",     "lat": 37.18, "lng": -3.60},
+            {"name": "Venice",      "lat": 45.44, "lng": 12.31},
+            {"name": "Florence",    "lat": 43.76, "lng": 11.25},
+            {"name": "Genoa",       "lat": 44.40, "lng": 8.94},
+            {"name": "Vienna",      "lat": 48.20, "lng": 16.37},
+            {"name": "Wittenberg",  "lat": 51.87, "lng": 12.65},
+            {"name": "Worms",       "lat": 49.63, "lng": 8.36}
         ]
     };
 
-    // Initialize Map
-    // Start centered roughly on Mediterranean
-    var map = L.map('map').setView([38.0, 18.0], 5);
-
-    // Using CartoDB Positron No Labels (perfect for quizzes)
-    var tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    // ── Map ───────────────────────────────────────────────────────────────────
+    var map = L.map('map', { tap: true }).setView([38.0, 18.0], 5);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 19
     }).addTo(map);
 
-    var currentItems = []; // Stores the data for current mode
-    var markers = []; // Stores placed markers
-    var targetMarkers = []; // Stores the hint dots
-    var currentCategory = 'RiversAndWaterways'; // Track active category
-    var interactionMode = 'drag'; // 'drag' or 'typing'
-    var useExactNames = false;
+    // ── State ─────────────────────────────────────────────────────────────────
+    var currentItems  = [];
+    var markers       = [];
+    var targetMarkers = [];
+    var currentCategory = 'RiversAndWaterways';
+    var interactionMode = 'drag';
+    var useExactNames   = false;
 
-    function getItemDisplayName(item) {
-        return useExactNames && item.exactName ? item.exactName : item.name;
+    // Mobile-specific state
+    var isMobile = false;
+    var selectedMobileItem = null; // { item, el }
+    var drawerOpen = false;
+
+    function detectMobile() {
+        return window.matchMedia('(max-width: 767px)').matches;
     }
 
-    function toggleExactNames(checked) {
-        useExactNames = checked;
-        loadMode(currentCategory);
-    }
-    
-    // Timer Variables
-    var timerInterval;
-    var startTime;
-    var timerRunning = false;
-
-    // Fisher-Yates Shuffle
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    function renderSidebar(data) {
-        // ... (this function is further down, we will add timer logic before it)
-    } // Just a placeholder for my mental map, I am adding functions below this block
+    // ── Timer ─────────────────────────────────────────────────────────────────
+    var timerInterval, startTime, timerRunning = false;
 
     function startTimer() {
         if (timerRunning) return;
@@ -196,27 +370,45 @@
         startTime = Date.now();
         timerInterval = setInterval(updateTimerDisplay, 100);
     }
-
     function stopTimer() {
         if (!timerRunning) return;
         clearInterval(timerInterval);
         timerRunning = false;
     }
-    
     function resetTimer() {
         stopTimer();
-        const el = document.getElementById('timer-display');
-        if(el) el.innerText = "00:00";
+        document.getElementById('timer-display').innerText = '00:00';
+    }
+    function updateTimerDisplay() {
+        const diff = Date.now() - startTime;
+        const m = Math.floor(diff / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('timer-display').innerText =
+            (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
     }
 
-    function updateTimerDisplay() {
-        const now = Date.now();
-        const diff = now - startTime;
-        const minutes = Math.floor(diff / 60000);
-        const seconds = Math.floor((diff % 60000) / 1000);
-        const str = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-        const el = document.getElementById('timer-display');
-        if(el) el.innerText = str;
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function getItemDisplayName(item) {
+        return useExactNames && item.exactName ? item.exactName : item.name;
+    }
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+    function itemElemId(item) {
+        return 'item-' + item.name.replace(/[^a-zA-Z0-9]/g, '');
+    }
+
+    // ── Mode toggle ───────────────────────────────────────────────────────────
+    function toggleExactNames(checked) {
+        useExactNames = checked;
+        // Sync both checkboxes
+        document.getElementById('exact-names-toggle').checked = checked;
+        document.getElementById('exact-names-toggle-mobile').checked = checked;
+        loadMode(currentCategory);
     }
 
     function setInteractionMode(mode) {
@@ -224,275 +416,337 @@
         loadMode(currentCategory);
     }
 
-    function loadMode(mode) {
-        resetTimer();
-        currentCategory = mode;
-        
-        // Update Buttons
-        document.querySelectorAll('#controls button').forEach(b => b.classList.remove('active'));
-        var btn = document.getElementById('btn-' + (mode === 'RiversAndWaterways' ? 'rivers' : mode.toLowerCase()));
-        if(btn) btn.classList.add('active');
-
-        // Clear Sidebar
-        const list = document.getElementById('items-list');
-        list.innerHTML = '';
-        
-        // Clear Map Markers (Placed items)
-        markers.forEach(m => map.removeLayer(m));
-        markers = [];
-
-        // Clear Target Markers (Hint dots)
-        targetMarkers.forEach(m => map.removeLayer(m));
-        targetMarkers = [];
-        
-        // Prepare Data
-        var data_to_render = [];
-        if (mode === "RiversAndWaterways") {
-            data_to_render = DATA["Rivers"].concat(DATA["Waterways"]);
-        } else if (mode === "Regions") {
-            data_to_render = DATA["Regions"]; // Note: this is a reference
-            // Create a copy to avoid modifying the original DATA if we were shuffling in place
-            data_to_render = [...DATA["Regions"]];
-        } else if (mode === "Cities") {
-            data_to_render = [...DATA["Cities"]];
+    // ── Mobile drawer ─────────────────────────────────────────────────────────
+    function toggleDrawer() {
+        drawerOpen = !drawerOpen;
+        const drawer = document.getElementById('mobile-drawer');
+        const toggleBtn = document.getElementById('wordbank-toggle');
+        const closeBtn  = document.getElementById('drawer-close-btn');
+        if (drawerOpen) {
+            drawer.classList.remove('closed');
+            drawer.classList.add('open');
+            toggleBtn.textContent = 'Word Bank ▼';
+            closeBtn.textContent  = '▼';
+        } else {
+            drawer.classList.remove('open');
+            drawer.classList.add('closed');
+            toggleBtn.textContent = 'Word Bank ▲';
+            closeBtn.textContent  = '▲';
         }
-
-        currentItems = data_to_render;
-        
-        // Shuffle the list for the sidebar so it's not in the same order every time
-        var shuffledList = shuffleArray([...data_to_render]);
-        
-        renderSidebar(shuffledList);
-        renderTargetMarkers(data_to_render);
     }
 
+    function updateDrawerCount() {
+        const total   = currentItems.length;
+        const placed  = markers.length;
+        const remaining = total - placed;
+        document.getElementById('drawer-handle-title').textContent =
+            'Word Bank (' + remaining + ' left)';
+        document.getElementById('wordbank-toggle').textContent =
+            (drawerOpen ? 'Word Bank ▼' : 'Word Bank ▲') ;
+        // Update the toggle button text too
+        const toggleBtn = document.getElementById('wordbank-toggle');
+        toggleBtn.textContent = 'Word Bank (' + remaining + ') ' + (drawerOpen ? '▼' : '▲');
+    }
+
+    // ── Tap-hint banner ───────────────────────────────────────────────────────
+    function showTapHint(text) {
+        if (!detectMobile()) return;
+        const el = document.getElementById('tap-hint');
+        el.textContent = text;
+        el.style.display = 'block';
+    }
+    function hideTapHint() {
+        document.getElementById('tap-hint').style.display = 'none';
+    }
+
+    // ── Load mode ─────────────────────────────────────────────────────────────
+    function loadMode(mode) {
+        isMobile = detectMobile();
+        resetTimer();
+        deselectMobileItem();
+        hideTapHint();
+        currentCategory = mode;
+
+        // Button states
+        document.querySelectorAll('#mode-btns button').forEach(b => b.classList.remove('active'));
+        const btnId = 'btn-' + (mode === 'RiversAndWaterways' ? 'rivers' : mode.toLowerCase());
+        const btn = document.getElementById(btnId);
+        if (btn) btn.classList.add('active');
+
+        // Clear map
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+        targetMarkers.forEach(m => map.removeLayer(m));
+        targetMarkers = [];
+
+        // Prepare data
+        let data = [];
+        if      (mode === 'RiversAndWaterways') data = [...DATA['Rivers'], ...DATA['Waterways']];
+        else if (mode === 'Regions')            data = [...DATA['Regions']];
+        else if (mode === 'Cities')             data = [...DATA['Cities']];
+
+        currentItems = data;
+        const shuffled = shuffleArray([...data]);
+
+        renderSidebar(shuffled);
+        renderMobileWordBank(shuffled);
+        renderTargetMarkers(data);
+        updateDrawerCount();
+
+        // Update instruction text
+        const instrText = (interactionMode === 'typing')
+            ? (isMobile ? 'Tap a dot, then type the name' : 'Word Bank:')
+            : (isMobile ? 'Tap a word, then tap the map'  : 'Drag Items onto Map:');
+        document.getElementById('sidebar-instruction').innerText = instrText;
+        document.getElementById('mobile-sidebar-instruction').innerText =
+            (interactionMode === 'typing') ? 'Tap a dot on the map, type the name' : 'Tap a word, then tap the map';
+    }
+
+    // ── Desktop sidebar ───────────────────────────────────────────────────────
+    function renderSidebar(data) {
+        const list = document.getElementById('items-list');
+        list.innerHTML = '';
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'draggable-item';
+            div.innerText = getItemDisplayName(item);
+            div.id = itemElemId(item);
+
+            if (interactionMode === 'drag') {
+                div.draggable = true;
+                div.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', JSON.stringify(item));
+                    e.dataTransfer.effectAllowed = 'move';
+                    div.style.opacity = '0.5';
+                });
+                div.addEventListener('dragend', () => { div.style.opacity = '1'; });
+            } else {
+                div.draggable = false;
+                div.style.cursor = 'text';
+                div.style.userSelect = 'text';
+            }
+            list.appendChild(div);
+        });
+    }
+
+    // ── Mobile word bank ──────────────────────────────────────────────────────
+    function renderMobileWordBank(data) {
+        const list = document.getElementById('mobile-items-list');
+        list.innerHTML = '';
+        // Re-use same structure but with mobile tap interaction
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'draggable-item';
+            div.innerText = getItemDisplayName(item);
+            div.id = 'mobile-' + itemElemId(item);
+
+            if (interactionMode === 'drag') {
+                div.style.cursor = 'pointer';
+                div.addEventListener('click', () => selectMobileItem(item, div));
+                div.addEventListener('touchend', e => {
+                    e.preventDefault();
+                    selectMobileItem(item, div);
+                });
+            } else {
+                div.draggable = false;
+                div.style.cursor = 'text';
+                div.style.userSelect = 'text';
+            }
+            list.appendChild(div);
+        });
+    }
+
+    function selectMobileItem(item, el) {
+        // Already placed → ignore
+        if (el.classList.contains('placed')) return;
+
+        // Deselect previous
+        deselectMobileItem();
+
+        selectedMobileItem = { item, el };
+        el.classList.add('selected-mobile');
+
+        // Close drawer so user can see map; show hint
+        if (drawerOpen) toggleDrawer();
+        showTapHint('Now tap the map to place: ' + getItemDisplayName(item));
+    }
+
+    function deselectMobileItem() {
+        if (selectedMobileItem) {
+            selectedMobileItem.el.classList.remove('selected-mobile');
+            selectedMobileItem = null;
+        }
+        hideTapHint();
+    }
+
+    // ── Target markers (hint dots) ────────────────────────────────────────────
     function renderTargetMarkers(data) {
         data.forEach(item => {
-            // Create a gray dot for each location
-            var circle = L.circleMarker([item.lat, item.lng], {
-                radius: 8,
-                color: '#666',
-                weight: 1,
-                fillColor: '#999',
-                fillOpacity: 0.5
+            const circle = L.circleMarker([item.lat, item.lng], {
+                radius: 8, color: '#666', weight: 1,
+                fillColor: '#999', fillOpacity: 0.5
             }).addTo(map);
-            
-            // Tag it so we can remove it when matched
             circle.quizItemName = item.name;
             targetMarkers.push(circle);
 
             if (interactionMode === 'typing') {
-                // Interactive click for typing mode
                 circle.setStyle({ cursor: 'pointer', color: '#007bff', weight: 2 });
                 circle.on('click', function(e) {
-                     var container = document.createElement('div');
-                     
-                     var label = document.createElement('div');
-                     label.innerText = 'Enter location name:';
-                     label.style.marginBottom = '5px';
-                     container.appendChild(label);
+                    const container = document.createElement('div');
 
-                     var input = document.createElement('input');
-                     input.type = 'text';
-                     input.style.width = '150px';
-                     input.style.padding = '4px';
-                     container.appendChild(input);
-                     
-                     var btn = document.createElement('button');
-                     btn.innerText = 'Check';
-                     btn.style.marginTop = '5px';
-                     btn.style.width = '100%';
-                     container.appendChild(btn);
+                    const label = document.createElement('div');
+                    label.innerText = 'Enter location name:';
+                    label.style.marginBottom = '5px';
+                    container.appendChild(label);
 
-                     function submit() {
-                        checkTypingAnswer(input.value, item);
-                     }
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.style.width = '160px';
+                    input.style.padding = '6px';
+                    input.style.fontSize = '16px'; // prevent iOS zoom
+                    container.appendChild(input);
 
-                     btn.onclick = submit;
-                     input.onkeypress = function(ev) {
-                        if (ev.key === 'Enter') submit();
-                     };
+                    const checkBtn = document.createElement('button');
+                    checkBtn.innerText = 'Check';
+                    checkBtn.style.marginTop = '6px';
+                    checkBtn.style.width = '100%';
+                    container.appendChild(checkBtn);
 
-                     L.popup()
+                    function submit() { checkTypingAnswer(input.value, item); }
+                    checkBtn.onclick = submit;
+                    input.onkeypress = ev => { if (ev.key === 'Enter') submit(); };
+
+                    L.popup()
                         .setLatLng(e.latlng)
                         .setContent(container)
                         .openOn(map);
-                    
-                     setTimeout(() => input.focus(), 100);
+
+                    setTimeout(() => input.focus(), 150);
                 });
             }
         });
     }
 
-    function checkTypingAnswer(startValue, item) {
-        if (!startValue) return;
-        // Simple case-insensitive exact match
-        if (startValue.trim().toLowerCase() === getItemDisplayName(item).toLowerCase()) {
+    // ── Typing answer check ───────────────────────────────────────────────────
+    function checkTypingAnswer(value, item) {
+        if (!value) return;
+        if (value.trim().toLowerCase() === getItemDisplayName(item).toLowerCase()) {
             map.closePopup();
             placeMarker(item, true);
-            markItemStartAsPlaced(item);
+            markAsPlaced(item);
         } else {
             alert('Incorrect. Check the Word Bank for the exact spelling.');
         }
     }
 
-    function renderSidebar(data) {
-        const list = document.getElementById('items-list');
-        list.innerHTML = '';
+    // ── Desktop drag-and-drop onto map ────────────────────────────────────────
+    const mapContainer = document.getElementById('map');
 
-        const instruction = document.getElementById('sidebar-instruction');
-        if (instruction) {
-             instruction.innerText = (interactionMode === 'typing') ? "Word Bank:" : "Drag Items onto Map:";
+    mapContainer.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    });
+
+    mapContainer.addEventListener('drop', e => {
+        e.preventDefault();
+        const dataStr = e.dataTransfer.getData('text/plain');
+        if (!dataStr) return;
+        const item = JSON.parse(dataStr);
+        const rect = mapContainer.getBoundingClientRect();
+        const latLng = map.containerPointToLatLng(L.point(e.clientX - rect.left, e.clientY - rect.top));
+        checkPlacement(item, latLng);
+    });
+
+    // ── Mobile tap-to-place on map ────────────────────────────────────────────
+    map.on('click', function(e) {
+        if (!detectMobile()) return;
+        if (interactionMode !== 'drag') return;
+        if (!selectedMobileItem) return;
+
+        const item = selectedMobileItem.item;
+        deselectMobileItem();
+        checkPlacement(item, e.latlng);
+    });
+
+    // ── Placement check ───────────────────────────────────────────────────────
+    function checkPlacement(item, dropLatLng) {
+        const dist = dropLatLng.distanceTo(L.latLng(item.lat, item.lng));
+        if (dist < 300000) {
+            placeMarker(item, true);
+            markAsPlaced(item);
+        } else {
+            L.popup()
+                .setLatLng(dropLatLng)
+                .setContent('<span style="color:red;font-weight:bold;">Try again!</span>')
+                .openOn(map);
         }
-        
-        data.forEach(item => {
-            let div = document.createElement('div');
-            div.className = 'draggable-item';
-            div.innerText = getItemDisplayName(item);
-            div.id = 'item-' + item.name.replace(/[^a-zA-Z0-9]/g, '');
-            
-            if (interactionMode === 'drag') {
-                div.draggable = true;
-                
-                // Drag Events
-                div.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', JSON.stringify(item));
-                    e.dataTransfer.effectAllowed = 'move';
-                    div.style.opacity = '0.5';
-                });
-                
-                div.addEventListener('dragend', (e) => {
-                    div.style.opacity = '1';
-                });
-            } else {
-                // Typing mode - just a list
-                div.draggable = false;
-                div.style.cursor = 'text';
-                div.style.userSelect = 'text';
-                div.style.color = '#333';
+    }
+
+    // ── Place confirmed marker ────────────────────────────────────────────────
+    function placeMarker(item) {
+        if (markers.length === 0 && !timerRunning) startTimer();
+
+        // Remove hint dot
+        const dot = targetMarkers.find(m => m.quizItemName === item.name);
+        if (dot) map.removeLayer(dot);
+
+        const marker = L.marker([item.lat, item.lng]).addTo(map);
+        marker.bindTooltip(getItemDisplayName(item), {
+            permanent: true, direction: 'auto', offset: [0, -10], opacity: 0.9
+        }).openTooltip();
+        markers.push(marker);
+
+        updateDrawerCount();
+
+        if (markers.length === currentItems.length) {
+            stopTimer();
+            const timeStr = document.getElementById('timer-display').innerText;
+            setTimeout(() => alert('🎉 Stage Completed! 🎉\n\nYour Time: ' + timeStr), 100);
+        }
+    }
+
+    // Mark the item in both sidebars as placed
+    function markAsPlaced(item) {
+        [itemElemId(item), 'mobile-' + itemElemId(item)].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.add('placed');
+                el.classList.remove('selected-mobile');
+                el.draggable = false;
             }
-            
-            list.appendChild(div);
         });
     }
 
+    // ── Show answers ──────────────────────────────────────────────────────────
     function showAnswers() {
         if (!currentItems || currentItems.length === 0) return;
-        
-        if (confirm("Are you sure you want to reveal all answers? (This will stop the timer)")) {
+        if (confirm('Are you sure you want to reveal all answers? (This will stop the timer)')) {
             stopTimer();
+            deselectMobileItem();
             currentItems.forEach(item => {
-                // Check if already placed (by checking sidebar state) to avoid duplicates
-                const id = 'item-' + item.name.replace(/[^a-zA-Z0-9]/g, '');
-                const el = document.getElementById(id);
-                
+                const el = document.getElementById(itemElemId(item));
                 if (el && !el.classList.contains('placed')) {
                     placeMarker(item, true);
-                    markItemStartAsPlaced(item);
+                    markAsPlaced(item);
                 }
             });
         }
     }
 
+    // ── Reset ─────────────────────────────────────────────────────────────────
     function resetCurrentMode() {
-        // Reload current data to reset "placed" status
-        const activeBtn = document.querySelector('#controls button.active');
-        if (activeBtn) activeBtn.click();
+        const active = document.querySelector('#mode-btns button.active');
+        if (active) active.click();
     }
 
-    // Map Drop Logic
-    // Leaflet does not have native drop event for HTML elements, so we add it to the container
-    const mapContainer = document.getElementById('map');
-
-    mapContainer.addEventListener('dragover', (e) => {
-        e.preventDefault(); // Necessary to allow dropping
-        e.dataTransfer.dropEffect = 'move';
-    });
-
-    mapContainer.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const dataStr = e.dataTransfer.getData('text/plain');
-        if (!dataStr) return;
-        
-        const item = JSON.parse(dataStr);
-        
-        // Calculate LatLng from mouse position
-        // We need the map container offset
-        const rect = mapContainer.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const point = L.point(x, y);
-        const latLng = map.containerPointToLatLng(point);
-        
-        checkPlacement(item, latLng);
-    });
-
-    function checkPlacement(item, dropLatLng) {
-        const targetLatLng = L.latLng(item.lat, item.lng);
-        const distance = dropLatLng.distanceTo(targetLatLng); // Meters
-        
-        // Threshold: 300km tolerance?
-        const threshold = 300000; 
-        
-        if (distance < threshold) {
-            // Correct - Snap to exact location for clarity
-            placeMarker(item, true);
-            markItemStartAsPlaced(item);
-        } else {
-            // Incorrect
-            L.popup()
-                .setLatLng(dropLatLng)
-                .setContent('<span style="color:red; font-weight:bold;">Try again!</span>')
-                .openOn(map);
-        }
-    }
-
-    function placeMarker(item, success) {
-        // Start timer on first placement if not running
-        if (markers.length === 0 && !timerRunning) {
-            startTimer();
-        }
-
-        // Remove the target circle for this item to avoid clutter
-        var targetToRemove = targetMarkers.find(m => m.quizItemName === item.name);
-        if(targetToRemove) {
-            map.removeLayer(targetToRemove);
-        }
-
-        var marker = L.marker([item.lat, item.lng]).addTo(map);
-        // Use a permanent tooltip instead of a popup so the name corresponds to the location always
-        marker.bindTooltip(getItemDisplayName(item), {
-            permanent: true, 
-            direction: 'auto',
-            offset: [0, -10],
-            opacity: 0.9
-        }).openTooltip();
-        markers.push(marker);
-
-        // Check for completion
-        if (markers.length === currentItems.length) {
-            stopTimer();
-            const timeStr = document.getElementById('timer-display').innerText;
-            // Short delay to allow UI to update
-            setTimeout(() => {
-                alert("🎉 Stage Completed! 🎉\n\nYour Time: " + timeStr);
-            }, 100);
-        }
-    }
-    
-    function markItemStartAsPlaced(item) {
-        const id = 'item-' + item.name.replace(/[^a-zA-Z0-9]/g, '');
-        const el = document.getElementById(id);
-        if (el) {
-            el.classList.add('placed');
-            el.draggable = false;
-        }
-    }
-
-    // Start with default
+    // ── Boot ──────────────────────────────────────────────────────────────────
     loadMode('RiversAndWaterways');
 
+    // Re-evaluate layout on resize
+    window.addEventListener('resize', () => {
+        isMobile = detectMobile();
+        map.invalidateSize();
+    });
 </script>
 
 </body>
