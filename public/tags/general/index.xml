@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>General on Braeden Silver</title>
+    <link>http://localhost:1313/tags/general/</link>
+    <description>Recent content in General on Braeden Silver</description>
+    <generator>Hugo -- 0.134.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/general/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hello World - Welcome to My Blog!</title>
+      <link>http://localhost:1313/blog/hello-world/</link>
+      <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blog/hello-world/</guid>
+      <description>&lt;h1 id=&#34;welcome-to-my-blog&#34;&gt;Welcome to My Blog!&lt;/h1&gt;
+&lt;p&gt;Hi, I’m Braeden Silver, and welcome to my corner of the internet! This blog is where I share what I’ve been learning, dive into hands-on engineering projects, and post tutorials on a wide range of topics. As a student with a passion for business and engineering, I aim to document my journey and help others along the way.&lt;/p&gt;
+&lt;h2 id=&#34;what-youll-find-here&#34;&gt;What You&amp;rsquo;ll Find Here&lt;/h2&gt;
+&lt;p&gt;On this blog, you can expect:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
