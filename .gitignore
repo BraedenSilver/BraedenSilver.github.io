@@ -1,0 +1,2 @@
+# Ignore the Python script to run Hugo server
+auto_hugo_server.py
