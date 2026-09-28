@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://braedensilver.com/sitemap.xml
+
+# RSS feed
+# https://braedensilver.com/feed.xml

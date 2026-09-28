@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  RSS feed for braedensilver.com.
+
+  This is hand-maintained, not generated — there's no build step on this
+  site. To publish an update:
+    1. Copy the <item> template below.
+    2. Fill in title/link/guid/pubDate (RFC-822 format, e.g. via
+       `date -R` in a terminal) and a one- or two-sentence description.
+    3. Paste it directly under <channel>, above the existing items
+       (newest first).
+    4. Bump <lastBuildDate> to the same pubDate.
+
+  The 3D desk scene has no per-page URLs (no hash routing) — link to the
+  homepage until/unless individual sections get real deep links.
+
+  Item template:
+    <item>
+        <title>TITLE HERE</title>
+        <link>https://braedensilver.com/</link>
+        <guid isPermaLink="false">SOME_STABLE_ID</guid>
+        <pubDate>Tue, 28 Jul 2026 00:00:00 GMT</pubDate>
+        <description>ONE OR TWO SENTENCES.</description>
+    </item>
+-->
+<rss version="2.0">
+    <channel>
+        <title>Braeden Silver</title>
+        <link>https://braedensilver.com/</link>
+        <description>Updates from Braeden Silver's portfolio — new writing, research, and projects.</description>
+        <language>en-us</language>
+        <lastBuildDate>Tue, 28 Jul 2026 00:00:00 GMT</lastBuildDate>
+    </channel>
+</rss>
