@@ -3,3 +3,6 @@ node_modules
 .vscode/
 *.log
 
+# scratch/test pages, not part of the live site
+fluffy-trees-test.html
+
